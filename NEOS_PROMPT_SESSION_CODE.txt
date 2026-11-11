@@ -1,0 +1,23 @@
+Je travaille sur NEOS, un dashboard personnalisé pour Nextcloud, déjà fonctionnel. Intègre le nouveau thème visuel en conservant entièrement l’architecture, les fonctions, les flux de données, les routes et les permissions existantes.
+
+Je joins `NEOS_UI_Kit_v1.zip`. Consulte d'abord `README.md`, `manifest.json`, `docs/HANDOFF_DEVELOPPEUR.md`, `demo/index.html` et les 2 captures dans `references/`.
+
+Objectif graphique : dashboard dark premium, icônes flat colorées (cyan, bleu, violet, menthe, rose, ambre), léger esprit cyber avec infime accent cuivre/steampunk ; très lisible, sans surcharge RGB. Respecter la maquette `references/concept-neos.png` comme référence de style, mais préserver structure et fonctionnement du dashboard existant.
+
+Tu disposes de :
+- 10 icônes d'apps SVG autonomes : Fichiers, Photos, Agenda, Tâches, Talk, Contacts, Mail, Activité, Deck, Notes ; versions glyphes transparentes et tuiles ;
+- plus de 40 icônes utilitaires SVG et PNG ;
+- logos `neos-mark.svg` et `neos-wordmark.svg` ;
+- 7 SVG de bannières, fonds, entêtes et pieds ;
+- `neos-tokens.css` et `neos-components.css` qui servent de base CSS et montrent les classes du thème ;
+- une page démo responsive, purement illustrative.
+
+Procède par étapes :
+1) analyser le code existant, identifier layout, composants et styles sans les remplacer inutilement ;
+2) importer les SVG comme assets locaux et mapper les 10 apps vers les icônes ;
+3) adapter les tokens et les classes dans un scope `.neos-theme` (pas de CSS global Nextcloud) ;
+4) styliser header, navigation, Mon espace, Fichiers/aperçu, Stockage, Hub apps, Horloge, Récents et Agenda ;
+5) tester desktop/tablette/mobile, accessibilité clavier et parcours fonctionnels ;
+6) montrer les fichiers modifiés et captures avant/après.
+
+Ne copie pas les données fictives de la démo comme données de production. Ne remplace pas de vraies interactions par des boutons inertes. Demande seulement les fichiers indispensables si le dépôt/projet n’est pas encore disponible.

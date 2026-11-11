@@ -1,0 +1,16 @@
+/* NEOS UI KIT v1.0 — all namespaced, dark-mode first */
+:root, .neos-theme {
+ --neos-bg: #07111F; --neos-panel: #0C192B; --neos-panel-elevated: #112035;
+ --neos-panel-soft: #102033; --neos-tile: #142239; --neos-tile-hover: #1B2D46;
+ --neos-border: #263D52; --neos-border-strong: #35596B;
+ --neos-text: #F0F6FF; --neos-text-subtle: #9DB2C6; --neos-text-dim: #6F899F;
+ --neos-cyan: #22DDD6; --neos-blue: #3BC8FA; --neos-violet: #A987FA;
+ --neos-mint: #38DCAB; --neos-pink: #EF71B2; --neos-amber: #F5BD57;
+ --neos-copper: #B57D57; --neos-danger: #F67985;
+ --neos-radius-lg: 18px; --neos-radius-md: 13px; --neos-radius-sm: 9px;
+ --neos-gap: 12px; --neos-space-1: 4px; --neos-space-2: 8px; --neos-space-3: 12px; --neos-space-4: 16px;
+ --neos-space-6: 24px; --neos-space-8: 32px;
+ --neos-shadow: 0 14px 30px rgba(1,5,14,.20); --neos-focus: 0 0 0 3px rgba(34,221,214,.38);
+ --neos-font: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+ --neos-asset-base: '../assets/';
+}

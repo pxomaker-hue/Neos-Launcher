@@ -1,0 +1,491 @@
+{
+  "name": "NEOS UI Kit — Cyber Flat",
+  "version": "1.0.0",
+  "language": "fr",
+  "targets": [
+    "Nextcloud",
+    "NEOS dashboard"
+  ],
+  "purpose": "Editable UI assets for frontend integration. No business logic or API dependencies.",
+  "style": {
+    "tone": "premium dark dashboard, flat iconography, discreet steampunk copper",
+    "colors": {
+      "bg": "#07111F",
+      "panel": "#0C192B",
+      "text": "#F0F6FF",
+      "cyan": "#22DDD6",
+      "violet": "#A987FA",
+      "mint": "#38DCAB",
+      "pink": "#EF71B2",
+      "amber": "#F5BD57",
+      "copper": "#B57D57"
+    }
+  },
+  "icons": [
+    {
+      "id": "fichiers",
+      "label": "Fichiers",
+      "hex": "#22DDD6",
+      "kind": "app",
+      "svg": "assets/icons/apps/fichiers.svg",
+      "png64": "assets/icons/png64/fichiers.png",
+      "tile_svg": "assets/icons/tiles/fichiers.svg"
+    },
+    {
+      "id": "photos",
+      "label": "Photos",
+      "hex": "#3BC8FA",
+      "kind": "app",
+      "svg": "assets/icons/apps/photos.svg",
+      "png64": "assets/icons/png64/photos.png",
+      "tile_svg": "assets/icons/tiles/photos.svg"
+    },
+    {
+      "id": "agenda",
+      "label": "Agenda",
+      "hex": "#A987FA",
+      "kind": "app",
+      "svg": "assets/icons/apps/agenda.svg",
+      "png64": "assets/icons/png64/agenda.png",
+      "tile_svg": "assets/icons/tiles/agenda.svg"
+    },
+    {
+      "id": "taches",
+      "label": "Tâches",
+      "hex": "#38DCAB",
+      "kind": "app",
+      "svg": "assets/icons/apps/taches.svg",
+      "png64": "assets/icons/png64/taches.png",
+      "tile_svg": "assets/icons/tiles/taches.svg"
+    },
+    {
+      "id": "talk",
+      "label": "Talk",
+      "hex": "#EF71B2",
+      "kind": "app",
+      "svg": "assets/icons/apps/talk.svg",
+      "png64": "assets/icons/png64/talk.png",
+      "tile_svg": "assets/icons/tiles/talk.svg"
+    },
+    {
+      "id": "contacts",
+      "label": "Contacts",
+      "hex": "#F7B955",
+      "kind": "app",
+      "svg": "assets/icons/apps/contacts.svg",
+      "png64": "assets/icons/png64/contacts.png",
+      "tile_svg": "assets/icons/tiles/contacts.svg"
+    },
+    {
+      "id": "mail",
+      "label": "Mail",
+      "hex": "#4DAAF8",
+      "kind": "app",
+      "svg": "assets/icons/apps/mail.svg",
+      "png64": "assets/icons/png64/mail.png",
+      "tile_svg": "assets/icons/tiles/mail.svg"
+    },
+    {
+      "id": "activite",
+      "label": "Activité",
+      "hex": "#C18AF4",
+      "kind": "app",
+      "svg": "assets/icons/apps/activite.svg",
+      "png64": "assets/icons/png64/activite.png",
+      "tile_svg": "assets/icons/tiles/activite.svg"
+    },
+    {
+      "id": "deck",
+      "label": "Deck",
+      "hex": "#23C9D9",
+      "kind": "app",
+      "svg": "assets/icons/apps/deck.svg",
+      "png64": "assets/icons/png64/deck.png",
+      "tile_svg": "assets/icons/tiles/deck.svg"
+    },
+    {
+      "id": "notes",
+      "label": "Notes",
+      "hex": "#F5BD57",
+      "kind": "app",
+      "svg": "assets/icons/apps/notes.svg",
+      "png64": "assets/icons/png64/notes.png",
+      "tile_svg": "assets/icons/tiles/notes.svg"
+    },
+    {
+      "id": "recherche",
+      "label": "Recherche",
+      "hex": "#35C5EF",
+      "kind": "utility",
+      "svg": "assets/icons/ui/recherche.svg",
+      "png64": "assets/icons/png64/recherche.png",
+      "tile_svg": null
+    },
+    {
+      "id": "parametres",
+      "label": "Paramètres",
+      "hex": "#B58CFF",
+      "kind": "utility",
+      "svg": "assets/icons/ui/parametres.svg",
+      "png64": "assets/icons/png64/parametres.png",
+      "tile_svg": null
+    },
+    {
+      "id": "accueil",
+      "label": "Accueil",
+      "hex": "#F08D8F",
+      "kind": "utility",
+      "svg": "assets/icons/ui/accueil.svg",
+      "png64": "assets/icons/png64/accueil.png",
+      "tile_svg": null
+    },
+    {
+      "id": "applications",
+      "label": "Applications",
+      "hex": "#4CAAFB",
+      "kind": "utility",
+      "svg": "assets/icons/ui/applications.svg",
+      "png64": "assets/icons/png64/applications.png",
+      "tile_svg": null
+    },
+    {
+      "id": "notifications",
+      "label": "Notifications",
+      "hex": "#FABF5A",
+      "kind": "utility",
+      "svg": "assets/icons/ui/notifications.svg",
+      "png64": "assets/icons/png64/notifications.png",
+      "tile_svg": null
+    },
+    {
+      "id": "televerser",
+      "label": "Téléverser",
+      "hex": "#36DDB2",
+      "kind": "utility",
+      "svg": "assets/icons/ui/televerser.svg",
+      "png64": "assets/icons/png64/televerser.png",
+      "tile_svg": null
+    },
+    {
+      "id": "telecharger",
+      "label": "Télécharger",
+      "hex": "#44B6FF",
+      "kind": "utility",
+      "svg": "assets/icons/ui/telecharger.svg",
+      "png64": "assets/icons/png64/telecharger.png",
+      "tile_svg": null
+    },
+    {
+      "id": "partager",
+      "label": "Partager",
+      "hex": "#B68CFB",
+      "kind": "utility",
+      "svg": "assets/icons/ui/partager.svg",
+      "png64": "assets/icons/png64/partager.png",
+      "tile_svg": null
+    },
+    {
+      "id": "favoris",
+      "label": "Favoris",
+      "hex": "#F5BA59",
+      "kind": "utility",
+      "svg": "assets/icons/ui/favoris.svg",
+      "png64": "assets/icons/png64/favoris.png",
+      "tile_svg": null
+    },
+    {
+      "id": "recents",
+      "label": "Récents",
+      "hex": "#F477AE",
+      "kind": "utility",
+      "svg": "assets/icons/ui/recents.svg",
+      "png64": "assets/icons/png64/recents.png",
+      "tile_svg": null
+    },
+    {
+      "id": "stockage",
+      "label": "Stockage",
+      "hex": "#2BD6D8",
+      "kind": "utility",
+      "svg": "assets/icons/ui/stockage.svg",
+      "png64": "assets/icons/png64/stockage.png",
+      "tile_svg": null
+    },
+    {
+      "id": "corbeille",
+      "label": "Corbeille",
+      "hex": "#F77E93",
+      "kind": "utility",
+      "svg": "assets/icons/ui/corbeille.svg",
+      "png64": "assets/icons/png64/corbeille.png",
+      "tile_svg": null
+    },
+    {
+      "id": "securite",
+      "label": "Sécurité",
+      "hex": "#49DCAE",
+      "kind": "utility",
+      "svg": "assets/icons/ui/securite.svg",
+      "png64": "assets/icons/png64/securite.png",
+      "tile_svg": null
+    },
+    {
+      "id": "synchronisation",
+      "label": "Synchronisation",
+      "hex": "#36BFFC",
+      "kind": "utility",
+      "svg": "assets/icons/ui/synchronisation.svg",
+      "png64": "assets/icons/png64/synchronisation.png",
+      "tile_svg": null
+    },
+    {
+      "id": "profil",
+      "label": "Profil",
+      "hex": "#A88BF8",
+      "kind": "utility",
+      "svg": "assets/icons/ui/profil.svg",
+      "png64": "assets/icons/png64/profil.png",
+      "tile_svg": null
+    },
+    {
+      "id": "retour",
+      "label": "Retour",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/retour.svg",
+      "png64": "assets/icons/png64/retour.png"
+    },
+    {
+      "id": "suivant",
+      "label": "Suivant",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/suivant.svg",
+      "png64": "assets/icons/png64/suivant.png"
+    },
+    {
+      "id": "fermer",
+      "label": "Fermer",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/fermer.svg",
+      "png64": "assets/icons/png64/fermer.png"
+    },
+    {
+      "id": "plus",
+      "label": "Ajouter",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/plus.svg",
+      "png64": "assets/icons/png64/plus.png"
+    },
+    {
+      "id": "moins",
+      "label": "Réduire",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/moins.svg",
+      "png64": "assets/icons/png64/moins.png"
+    },
+    {
+      "id": "plus-options",
+      "label": "Plus d’options",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/plus-options.svg",
+      "png64": "assets/icons/png64/plus-options.png"
+    },
+    {
+      "id": "grille",
+      "label": "Grille",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/grille.svg",
+      "png64": "assets/icons/png64/grille.png"
+    },
+    {
+      "id": "liste",
+      "label": "Liste",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/liste.svg",
+      "png64": "assets/icons/png64/liste.png"
+    },
+    {
+      "id": "fichier",
+      "label": "Document",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/fichier.svg",
+      "png64": "assets/icons/png64/fichier.png"
+    },
+    {
+      "id": "dossier",
+      "label": "Dossier",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/dossier.svg",
+      "png64": "assets/icons/png64/dossier.png"
+    },
+    {
+      "id": "ouvrir",
+      "label": "Ouvrir",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/ouvrir.svg",
+      "png64": "assets/icons/png64/ouvrir.png"
+    },
+    {
+      "id": "copier",
+      "label": "Copier",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/copier.svg",
+      "png64": "assets/icons/png64/copier.png"
+    },
+    {
+      "id": "actualiser",
+      "label": "Actualiser",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/actualiser.svg",
+      "png64": "assets/icons/png64/actualiser.png"
+    },
+    {
+      "id": "horloge",
+      "label": "Horloge",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/horloge.svg",
+      "png64": "assets/icons/png64/horloge.png"
+    },
+    {
+      "id": "chevron-bas",
+      "label": "Développer",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/chevron-bas.svg",
+      "png64": "assets/icons/png64/chevron-bas.png"
+    },
+    {
+      "id": "chevron-haut",
+      "label": "Réduire",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/chevron-haut.svg",
+      "png64": "assets/icons/png64/chevron-haut.png"
+    },
+    {
+      "id": "filtre",
+      "label": "Filtre",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/filtre.svg",
+      "png64": "assets/icons/png64/filtre.png"
+    },
+    {
+      "id": "tri",
+      "label": "Trier",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/tri.svg",
+      "png64": "assets/icons/png64/tri.png"
+    },
+    {
+      "id": "agrandir",
+      "label": "Plein écran",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/agrandir.svg",
+      "png64": "assets/icons/png64/agrandir.png"
+    },
+    {
+      "id": "verrou",
+      "label": "Verrou",
+      "hex": "#F1BA6E",
+      "kind": "utility",
+      "svg": "assets/icons/ui/verrou.svg",
+      "png64": "assets/icons/png64/verrou.png"
+    },
+    {
+      "id": "lien",
+      "label": "Lien",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/lien.svg",
+      "png64": "assets/icons/png64/lien.png"
+    },
+    {
+      "id": "modifier",
+      "label": "Modifier",
+      "hex": "#F1BA6E",
+      "kind": "utility",
+      "svg": "assets/icons/ui/modifier.svg",
+      "png64": "assets/icons/png64/modifier.png"
+    },
+    {
+      "id": "point-status",
+      "label": "Statut",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/point-status.svg",
+      "png64": "assets/icons/png64/point-status.png"
+    },
+    {
+      "id": "menu",
+      "label": "Menu",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/menu.svg",
+      "png64": "assets/icons/png64/menu.png"
+    },
+    {
+      "id": "info",
+      "label": "Information",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/info.svg",
+      "png64": "assets/icons/png64/info.png"
+    },
+    {
+      "id": "afficher",
+      "label": "Voir",
+      "hex": "#75D6EA",
+      "kind": "utility",
+      "svg": "assets/icons/ui/afficher.svg",
+      "png64": "assets/icons/png64/afficher.png"
+    }
+  ],
+  "branding": [
+    "assets/branding/neos-mark.svg",
+    "assets/branding/neos-wordmark.svg"
+  ],
+  "panels": [
+    "assets/panels/heading-cyber.svg",
+    "assets/panels/navigation-strip.svg",
+    "assets/panels/card-heading.svg",
+    "assets/panels/card-footer.svg",
+    "assets/panels/panel-texture.svg",
+    "assets/panels/dashboard-background.svg",
+    "assets/panels/empty-document.svg"
+  ],
+  "css": [
+    "css/neos-tokens.css",
+    "css/neos-components.css"
+  ],
+  "demo": "demo/index.html",
+  "breakpoints": {
+    "desktop": 1450,
+    "tablet": 1080,
+    "mobile": 700
+  },
+  "integration_rules": [
+    "Preserve existing Nextcloud functionality and data binding",
+    "Never overwrite core Nextcloud CSS globally",
+    "Use .neos-theme as root namespace",
+    "Replace demo hardcoded data with live data",
+    "Treat app cards as accessible links/buttons with real URLs",
+    "Use text and SVG icons separately for localization/accessibility",
+    "Respect prefers-reduced-motion"
+  ]
+}
