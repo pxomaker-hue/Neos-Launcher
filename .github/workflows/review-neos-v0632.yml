@@ -1,0 +1,22 @@
+name: Review Neos v0.6.32 work changes
+on:
+  push:
+    paths:
+      - '.github/workflows/review-neos-v0632.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 .neos-build/review-v0632.py
+      - name: Publish review diff
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .neos-build/v0632-source-diff.txt
+          git diff --cached --quiet && exit 0
+          git commit -m "Inspect changes in Neos v0.6.32"
+          git push origin HEAD:main
