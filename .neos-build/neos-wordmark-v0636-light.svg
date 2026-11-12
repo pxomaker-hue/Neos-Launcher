@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 315 88" width="315" height="88" role="img" aria-label="Neos">
+  <defs>
+    <linearGradient id="neos-mark-gradient" x2="1" y2="1">
+      <stop stop-color="#3BF6E2"/>
+      <stop offset="1" stop-color="#65A8FC"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="80" height="80" rx="20" fill="#101D33" stroke="#14879A" stroke-width="2"/>
+  <path d="M25 63V25L63 63V25" fill="none" stroke="url(#neos-mark-gradient)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="105" y="64" fill="#16273D" font-family="Arial,Helvetica,sans-serif" font-size="58" font-weight="800" letter-spacing="4">NEOS</text>
+</svg>
