@@ -1,0 +1,30 @@
+name: Publish Neos v0.6.23 ZIP
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build-neos-v0623.yml'
+      - '.neos-build/rebuild-v0623.py'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Neos repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Rebuild and validate v0.6.23 from v0.6.22
+        run: python3 .neos-build/rebuild-v0623.py
+      - name: Publish ZIP on main
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add neos-nextcloud35-v0.6.23.zip
+          git diff --cached --quiet && exit 0
+          git commit -m 'Publish Neos v0.6.23 ZIP'
+          git push origin HEAD:main
