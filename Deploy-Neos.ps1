@@ -8,6 +8,8 @@
   par SCP, sauvegarde l'application sur le NAS et installe la mise a jour.
   Verifie ensuite la version de Neos et lance occ upgrade si Nextcloud ou
   l'application demande une migration, puis controle le resultat final.
+  Charge une fois la cle SSH dans l'agent OpenSSH Windows (sans stocker
+  sa phrase secrete), puis reutilise la meme cle pour tous les transferts.
   Lance le script distant avec un seul appel sudo dans la session SSH
   interactive, sans conserver le mot de passe.
   En cas d'echec apres la copie, tente de restaurer les fichiers sauvegardes.
@@ -114,7 +116,7 @@ try {
     Write-Host "NAS       : $remote"
     Write-Host "Conteneur : $ContainerName"
     Write-Host 'Une sauvegarde de Neos sera realisee avant toute copie.' -ForegroundColor Yellow
-    Write-Host 'SSH peut demander son mot de passe lors des transferts et de la connexion.'
+    Write-Host 'SSH via ssh-agent : une saisie de phrase secrete au plus, puis aucune pour les transferts.'
     Write-Host 'Un seul appel sudo lance toute l installation sur le NAS.'
     Write-Host ''
     $confirmation = Read-Host 'Tape INSTALLER pour confirmer'
@@ -122,6 +124,52 @@ try {
         Write-Host 'Operation annulee. Aucun transfert effectue.'
         exit 0
     }
+
+    # SSH: une phrase secrete maximum grace a l'agent Windows OpenSSH.
+    # L'agent conserve la cle deverrouillee en memoire ; aucun secret n'est ecrit sur disque.
+    Write-Host '[SSH] Preparation de la cle SSH...' -ForegroundColor Cyan
+    $agentService = Get-Service -Name 'ssh-agent' -ErrorAction SilentlyContinue
+    if ($null -eq $agentService) {
+        throw 'Service ssh-agent absent. Installe le client OpenSSH de Windows.'
+    }
+    if ($agentService.Status -ne 'Running') {
+        try {
+            Start-Service -Name 'ssh-agent' -ErrorAction Stop
+        }
+        catch {
+            throw 'Agent SSH indisponible. Une seule fois, ouvre PowerShell en administrateur et execute : Set-Service ssh-agent -StartupType Automatic ; Start-Service ssh-agent'
+        }
+    }
+
+    $sshKey = Join-Path (Join-Path $env:USERPROFILE '.ssh') 'id_ed25519'
+    if (-not (Test-Path -LiteralPath $sshKey -PathType Leaf) -or
+        -not (Test-Path -LiteralPath "$sshKey.pub" -PathType Leaf)) {
+        throw "Cle SSH ED25519 introuvable : $sshKey (et son fichier .pub)."
+    }
+
+    # Une cle peut deja etre chargee depuis un precedent deploiement.
+    # Comparer les empreintes evite de re-saisir la phrase secrete inutilement.
+    $publicKeyInfo = @(& ssh-keygen -lf "$sshKey.pub") -join " "
+    Assert-ExitCode 'Lecture empreinte de la cle SSH'
+    $fingerprintMatch = [regex]::Match($publicKeyInfo, 'SHA256:[a-zA-Z0-9+/=]+')
+    if (-not $fingerprintMatch.Success) {
+        throw 'Impossible de lire l empreinte SHA256 de la cle SSH.'
+    }
+    $fingerprint = $fingerprintMatch.Value
+    $agentIdentities = @(& ssh-add -l 2>&1) -join " "
+    if ($agentIdentities -notmatch [regex]::Escape($fingerprint)) {
+        Write-Host 'Entre la phrase secrete de ta cle SSH une seule fois :' -ForegroundColor Yellow
+        & ssh-add "$sshKey"
+        Assert-ExitCode 'Chargement de la cle dans ssh-agent'
+    }
+    else {
+        Write-Host '[SSH] Cle deja deverrouillee dans ssh-agent.' -ForegroundColor Green
+    }
+
+    # Echouer avant toute copie si le NAS refuse encore l authentification par cle.
+    & ssh -o BatchMode=yes -o IdentitiesOnly=yes -i "$sshKey" "$remote" 'true'
+    Assert-ExitCode 'Test de connexion SSH par cle'
+    Write-Host '[SSH] Connexion validee : scp et ssh reutiliseront la meme cle.' -ForegroundColor Green
 
     # Cette partie s'execute sur le NAS via SSH. Les valeurs substituees sont
     # limitees a des noms ASCII verifies avant la construction du script.
@@ -289,16 +337,16 @@ echo 'Dans le navigateur : Ctrl + F5.'
 
     Write-Host ''
     Write-Host '[TRANSFERT] Archive ZIP...' -ForegroundColor Cyan
-    & scp "$($archive.FullName)" "${remote}:/tmp/$nomFichier"
+    & scp -o BatchMode=yes -o IdentitiesOnly=yes -i "$sshKey" "$($archive.FullName)" "${remote}:/tmp/$nomFichier"
     Assert-ExitCode 'Transfert ZIP'
 
     Write-Host '[TRANSFERT] Script temporaire...' -ForegroundColor Cyan
-    & scp "$temporaryScript" "${remote}:/tmp/$nomShell"
+    & scp -o BatchMode=yes -o IdentitiesOnly=yes -i "$sshKey" "$temporaryScript" "${remote}:/tmp/$nomShell"
     Assert-ExitCode 'Transfert du script'
 
     Write-Host '[INSTALLATION] Execution sur le NAS...' -ForegroundColor Cyan
     Write-Host '(Sudo peut demander son mot de passe une fois au lancement du script distant.)'
-    & ssh -tt $remote "sudo /bin/bash /tmp/$nomShell"
+    & ssh -tt -o BatchMode=yes -o IdentitiesOnly=yes -i "$sshKey" $remote "sudo /bin/bash /tmp/$nomShell"
     Assert-ExitCode 'Installation distante'
 
     Write-Host ''
