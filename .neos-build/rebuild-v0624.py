@@ -22,7 +22,7 @@ def sha(raw):
 def manifest(entries):
     digest = hashlib.sha256()
     for name in sorted(entries):
-        digest.update(name.encode("utf-8") + b"\\0" + bytes.fromhex(sha(entries[name])))
+        digest.update(name.encode("utf-8") + b"\0" + bytes.fromhex(sha(entries[name])))
     return digest.hexdigest()
 
 def build():
