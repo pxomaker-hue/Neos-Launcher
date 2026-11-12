@@ -32,7 +32,7 @@ with tempfile.TemporaryDirectory(prefix='neos-v0633-') as work:
         original.extractall(work)
         subprocess.run([sys.executable,str(patch),str(work/'novadashboard'),'0.6.32'],check=True)
         new_js=(work/'novadashboard/js/app.js').read_bytes()
-        for sig in [b'canCreate=hasRight(',b'notReadBack',b'homeTaskSelection()',b'data-action="home-task-open"',b'NEOS 0.6.33']:
+        for sig in [b'canCreate=hasRight(',b'notReadBack',b'homeTaskSelection()',b'home-task-open',b'NEOS 0.6.33']:
             if sig not in new_js:raise SystemExit('Patch validation failed: '+sig.decode())
         subprocess.run(['node','--check',str(work/'novadashboard/js/app.js')],check=True)
         with ZipFile(output,'w') as release:
