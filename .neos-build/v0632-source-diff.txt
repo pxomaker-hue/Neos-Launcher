@@ -1,0 +1,150 @@
+Files changed: novadashboard/CHANGELOG.md, novadashboard/INSTALLATION-OMV.md, novadashboard/README.md, novadashboard/appinfo/info.xml, novadashboard/css/app.css, novadashboard/js/app.js
+Only in v32: 
+Only in v31: 
+--- v31/novadashboard/CHANGELOG.md
++++ v32/novadashboard/CHANGELOG.md
+@@ -1,2 +1,9 @@
++## 0.6.32 — Création de tâches CalDAV
++
++- Le widget d’accueil ouvre directement le module Tâches.
++- La création utilise le droit DAV:bind de la liste ; la modification d’une tâche existante utilise DAV:write-content. Les calendriers virtuels Deck restent exclus.
++- Un échec de lecture REPORT n’empêche plus la création dans une liste qui autorise DAV:bind. Si aucune liste ne permet l’ajout, l’interface l’explique.
++- Vérifications locales uniquement ; aucune donnée du NAS n’a été modifiée.
++
+ ## 0.6.31 — États d’enregistrement et erreurs accessibles
+ 
+@@ -146,2 +153,3 @@
+ 
+ - Interface de composition texte dans Mail, envoi en deux étapes via Outbox.
++
+
+--- v31/novadashboard/INSTALLATION-OMV.md
++++ v32/novadashboard/INSTALLATION-OMV.md
+@@ -1,5 +1,5 @@
+-## Neos v0.6.31 — états accessibles
++## Neos v0.6.32 — création de tâches CalDAV
+ 
+-Ajout des états de sauvegarde et annonces accessibles dans les dialogues ; intégrations Nextcloud inchangées. Consulte CHANGELOG.md et PLAN-v0.7.md.
++Correctif local du module Tâches. Aucune donnée du NAS n’a été modifiée durant la préparation. Vérifie la version 0.6.32 avant toute installation avec Deploy-Neos.ps1 ; l’écriture CalDAV réelle devra être essayée sur le NAS avec une tâche de test.
+ 
+ # Neos v0.6.26 — installation OMV / Nextcloud 35
+
+--- v31/novadashboard/README.md
++++ v32/novadashboard/README.md
+@@ -1,5 +1,5 @@
+-## Neos v0.6.31 — états accessibles
++## Neos v0.6.32 — création de tâches CalDAV
+ 
+-Ajout des états de sauvegarde et annonces accessibles dans les dialogues ; intégrations Nextcloud inchangées. Consulte CHANGELOG.md et PLAN-v0.7.md.
++Le widget Tâches mène au module complet. La création tient compte du droit DAV:bind sur les listes CalDAV ; les cartes Deck restent gérées par Deck. Consulte CHANGELOG.md et PLAN-v0.7.md.
+ 
+ # v0.6.29 : recherche au clavier contextuelle, effacement par Échap, accès direct au contenu et maintien du focus des filtres.
+
+--- v31/novadashboard/appinfo/info.xml
++++ v32/novadashboard/appinfo/info.xml
+@@ -6,5 +6,5 @@
+   <summary>Dashboard personnalisable et hub de travail pour Nextcloud.</summary>
+   <description>Interface Blue Data pleine largeur, hub d'applications, explorateur de fichiers avec aperçu intégré, actions rapides (téléversement, dossier, partage, renommage, suppression), sélection multiple, copie et déplacement WebDAV, téléversement sans écrasement avec progression et annulation, sélecteur de dossier cible pour copier et déplacer, recherche globale filtrée avec actions rapides, favoris Nextcloud via WebDAV, fichiers récemment consultés, aperçus audio/vidéo et Markdown, notes avec aperçu et compteur de mots, édition des cartes Deck, création complète, échéances et déplacement vérifié entre colonnes, intégration Agenda et Tâches CalDAV avec vérification de version, relecture CalDAV GET et REPORT multiget, vérification UID/ETag, recherche de tâches déplacées par UID et diagnostic des erreurs d’écriture, vue Planning unifiée Agenda, Tâches et Deck avec tâches et cartes sans échéance, traitement des cartes Deck via commandes natives done/undone sans écriture dans les calendriers CalDAV virtuels, recherche du Planning et filtre en retard, consultation native Talk via OCS, Activité via OCS, Contacts via CardDAV et Mail via API, validation des tâches sans rechargement de l’interface, ordre personnalisable des onglets de navigation avec sauvegarde par utilisateur, icône Planning Flat Cyber, consultation IMAP des brouillons avec détection par identifiant configuré et sélection manuelle du dossier, suppression CardDAV sécurisée avec contrôle ETag, champs CardDAV multiples (deux courriels et deux téléphones), pagination Activité côté serveur, marqueur de lecture Talk explicite et actualisation prudente, reprise texte non destructive des brouillons IMAP dans un nouveau message, lecture et envoi Talk intégrés, fiches détaillées Contacts, création/édition CardDAV vérifiées par ETag et relecture, filtre des mails non lus, lecture sécurisée des courriels HTML filtrés ou en texte sans charger de ressources distantes, navigation entre les messages, filtres Activité, liens, widgets et personnalisation avancée.</description>
+-  <version>0.6.31</version>
++  <version>0.6.32</version>
+   <licence>AGPL-3.0-or-later</licence>
+   <author>Neos Community Edition</author>
+
+--- v31/novadashboard/css/app.css
++++ v32/novadashboard/css/app.css
+@@ -717,5 +717,5 @@
+ #nova-root .neos-deck-board-row>span:last-child{color:var(--muted)}
+ #nova-root .neos-deck-board-symbol{display:grid;place-items:center;width:32px;height:32px;flex:0 0 32px;color:var(--board-color);background:color-mix(in srgb,var(--board-color) 13%,transparent);border-radius:10px}
+-#nova-root .neos-deck-widget-footer{display:flex;justify-content:flex-end;align-items:center;padding-top:13px;margin-top:11px;border-top:1px solid var(--line)}
++#nova-root .neos-deck-widget-footer,#nova-root .neos-task-widget-footer{display:flex;justify-content:flex-end;align-items:center;padding-top:13px;margin-top:11px;border-top:1px solid var(--line)}
+ #nova-root .neos-widget-state{display:flex;align-items:center;gap:10px;min-height:74px;color:var(--muted);font-size:12px}
+ #nova-root .neos-widget-state>svg{color:var(--accent)}
+
+--- v31/novadashboard/js/app.js
++++ v32/novadashboard/js/app.js
+@@ -1,3 +1,3 @@
+-/** Neos 0.6.31 — accessible asynchronous dialog status and alerts. */
++/** Neos 0.6.32 — CalDAV task creation eligibility and guidance. */
+ (() => {
+   'use strict';
+@@ -891,6 +891,10 @@
+       const components=supports.length?xmlChildren(supports[0],'comp').map(e=>e.getAttribute('name')||''):['VEVENT','VTODO'];
+       const privileges=xmlChildren(props,'current-user-privilege-set');
+-      const writable=!privileges.length||xmlChildren(privileges[0],'write-content').length>0||xmlChildren(privileges[0],'write').length>0;
+-      calendars.push({url:href.endsWith('/')?href:href+'/',name:xmlText(props,'displayname')||decodeURIComponent(href.split('/').filter(Boolean).pop()||'Calendrier'),events:components.includes('VEVENT'),tasks:components.includes('VTODO'),writable:writable&&!deckVirtualResource(href.endsWith('/')?href:href+'/'),source:deckVirtualResource(href.endsWith('/')?href:href+'/')?'deck':'caldav'});
++      const rights=privileges[0];
++      const hasRight=name=>!rights||xmlChildren(rights,name).length>0||xmlChildren(rights,'all').length>0;
++      const writable=hasRight('write-content')||hasRight('write');
++      const canCreate=hasRight('bind')||hasRight('write');
++      const virtual=deckVirtualResource(href.endsWith('/')?href:href+'/');
++      calendars.push({url:href.endsWith('/')?href:href+'/',name:xmlText(props,'displayname')||decodeURIComponent(href.split('/').filter(Boolean).pop()||'Calendrier'),events:components.includes('VEVENT'),tasks:components.includes('VTODO'),writable:writable&&!virtual,canCreate:canCreate&&!virtual,source:virtual?'deck':'caldav'});
+     }
+     return calendars.slice(0,16);
+@@ -914,5 +918,5 @@
+     try{
+       if(demo){
+-        groupware.calendars=[{url:'demo://personal/',name:'Personnel',events:true,tasks:true,writable:true,source:'caldav'}];
++        groupware.calendars=[{url:'demo://personal/',name:'Personnel',events:true,tasks:true,writable:true,canCreate:true,source:'caldav'}];
+         groupware.events=(overview?.calendar||[]).map((e,i)=>({href:'demo-event-'+i,calendar:'Personnel',calendarUrl:'demo://personal/',title:e.title,start:e.start,end:new Date(new Date(e.start).getTime()+3600000).toISOString(),description:'',location:''}));
+         groupware.tasks=(overview?.tasks||[]).map((t,i)=>({href:'demo-task-'+i,calendar:t.source==='deck'?'Deck : Projet Neos':'Personnel',calendarUrl:'demo://personal/',title:t.title,due:t.due||'',description:'',done:!!t.done,raw:'',source:t.source||'caldav',deckBoardId:t.deckBoardId||null,deckCardId:t.deckCardId||null,writable:t.source!=='deck'}));
+@@ -942,5 +946,6 @@
+     const taskRows=filteredTasks.map(t=>{const isDeck=t.source==='deck';const canToggle=t.writable!==false||isDeck&&!!t.deckCardId&&availableApps().has('deck');const canEdit=t.writable!==false||isDeck&&!!t.deckCardId&&availableApps().has('deck');return `<div class="neos-gw-entry ${t.done?'neos-gw-done':''}"><button type="button" class="neos-gw-check" data-action="gw-toggle-done" data-href="${esc(t.href)}" aria-label="${t.done?'Rouvrir':'Terminer'} ${esc(t.title)}" title="${isDeck?'Modifier via Deck':canToggle?'Modifier via CalDAV':'Liste en lecture seule'}" ${groupware.busy||!canToggle?'disabled':''}>${icon(t.done?'check':'plus',15)}</button><div class="neos-gw-detail"><strong>${esc(t.title)}</strong><small>${isDeck?'<span class="neos-source neos-source-deck">Deck</span> ':''}${esc(t.calendar)}${t.due?' · '+esc(fmtTime(t.due)):''}${!canToggle?' · Lecture seule':''}</small></div><button type="button" class="neos-mini-action" data-action="gw-edit-task" data-href="${esc(t.href)}" title="${isDeck?'Ouvrir dans Deck':'Modifier'}" ${groupware.busy||!canEdit?'disabled':''}>${icon(isDeck?'kanban':'settings',16)}</button></div>`;}).join('');
+     const hasNative=nativeModuleAvailable(calendar?'calendar':'tasks');
+-    const toolbar=`<button type="button" class="neos-iconbtn" data-action="gw-refresh" title="Actualiser" aria-label="Actualiser">${icon('refresh',16)}</button><button type="button" class="neos-btn neos-btn-primary" data-action="gw-new" data-gw-type="${calendar?'event':'task'}" ${!isReady||(!calendar&&groupware.taskSuccess===0)||!groupware.calendars.some(c=>c.writable&&(calendar?c.events:c.tasks))?'disabled':''}>${icon('plus',15)} ${calendar?'Événement':'Tâche'}</button>${nativeModuleButton(calendar?'calendar':'tasks','Ouvrir')}`;
++    const canCreate=groupware.calendars.some(c=>c.canCreate&&(calendar?c.events:c.tasks));
++    const toolbar=`<button type="button" class="neos-iconbtn" data-action="gw-refresh" title="Actualiser" aria-label="Actualiser">${icon('refresh',16)}</button><button type="button" class="neos-btn neos-btn-primary" data-action="gw-new" data-gw-type="${calendar?'event':'task'}" ${!isReady||!canCreate?'disabled':''}>${icon('plus',15)} ${calendar?'Événement':'Tâche'}</button>${nativeModuleButton(calendar?'calendar':'tasks','Ouvrir')}`;
+     let content;
+     if(groupware.status==='loading')content='<div class="neos-module-loader"><span class="neos-spinner"></span>Chargement CalDAV…</div>';
+@@ -951,4 +956,5 @@
+     else if(groupware.taskSuccess===0&&groupware.taskErrors.length)content=`<div class="neos-gw-info"><strong>Impossible de lire les listes de tâches</strong><p>${esc(groupware.taskErrors.map(e=>`${e.calendar} : ${e.message}`).join(' · '))}</p><p>L’Agenda peut continuer à fonctionner normalement. Vérifie le code HTTP de la requête REPORT CalDAV dans F12 → Réseau.</p></div>`;
+     else content=`<div class="neos-task-filters">${[['open','À faire'],['done','Terminées'],['all','Toutes']].map(([id,label])=>`<button type="button" data-action="task-view" data-view="${id}" class="${taskView===id?'is-active':''}" aria-pressed="${taskView===id}">${label}</button>`).join('')}</div>${!hasNative?'<div class="neos-gw-info neos-gw-info-inline">Le module Tâches de Neos reste accessible via CalDAV. Le raccourci vers l’application Tâches native est masqué si elle n’est pas activée.</div>':''}${groupware.taskErrors.length?`<p class="neos-gw-warning">Certaines listes n’ont pas pu être chargées : ${esc(groupware.taskErrors.map(e=>`${e.calendar} (${e.message})`).join(', '))}</p>`:''}${taskRows?`<div class="neos-gw-list">${taskRows}</div>`:'<div class="neos-empty">Aucune tâche dans ce filtre.</div>'}`;
++    if(!calendar&&isReady&&!canCreate)content=`<p class="neos-gw-warning" role="status">Création indisponible : aucune liste de tâches CalDAV n’autorise l’ajout. Les cartes Deck ne sont pas des listes de tâches modifiables.</p>${content}`;
+     return `<section class="neos-module">${panelHeader(title,calendar?'Calendrier mensuel et hebdomadaire':'Tâches CalDAV synchronisées avec Nextcloud',toolbar)}<div class="neos-module-body">${content}</div></section>`;
+   }
+@@ -960,5 +966,5 @@
+     }
+     if(record?.writable===false){toast('Liste CalDAV en lecture seule','error');return;}
+-    const calendar=type==='event';const candidates=groupware.calendars.filter(c=>c.writable&&(calendar?c.events:c.tasks));
++    const calendar=type==='event';const candidates=groupware.calendars.filter(c=>(record?c.writable:c.canCreate)&&(calendar?c.events:c.tasks));
+     if(!candidates.length){toast('Aucun calendrier autorisant les modifications','error');return;}
+     const first=candidates.find(c=>c.url===record?.calendarUrl)||candidates[0];
+@@ -990,5 +996,5 @@
+     const selected=groupware.calendars.find(c=>c.url===fields.calendarUrl);
+     const record=groupware.tasks.find(x=>x.href===fields.href);
+-    if(!record&&(!selected||!selected.writable)){fail('Choisis un calendrier modifiable.');return;}
++    if(!record&&(!selected||!selected.canCreate||(fields.type==='event'?!selected.events:!selected.tasks))){fail('Choisis une liste autorisant la création.');return;}
+     groupware.busy=true;const btn=popHost.querySelector('[data-action="gw-save"]');
+     const dialog=popHost.querySelector('.neos-gw-form');
+@@ -997,4 +1003,5 @@
+     if(progress)progress.textContent='Enregistrement en cours…';
+     if(btn){btn.disabled=true;btn.setAttribute('aria-disabled','true');}
++    let createdHref='';
+     try{
+       if(demo){
+@@ -1008,8 +1015,10 @@
+         const href=selected.url+encodeURIComponent(uuid)+'.ics';
+         await caldavRequest('PUT',href,createIcs(fields,uuid+'@neos.local'),{'Content-Type':'text/calendar; charset=utf-8','If-None-Match':'*'});
++        createdHref=href;
+       }
+       groupware.busy=false;popMode='';popHost.replaceChildren();
+       if(!demo)await loadGroupware(true);else render();
+-      toast('Enregistré dans Nextcloud','success');
++      const notReadBack=fields.type==='task'&&createdHref&&!groupware.tasks.some(task=>task.href===createdHref);
++      toast(notReadBack?'Création acceptée, mais tâche non relue. Vérifie dans Tâches Nextcloud avant de réessayer.':'Enregistré dans Nextcloud',notReadBack?'info':'success');
+       if(fields.type==='task'&&!demo)void load(true);
+     }catch(e){
+@@ -2589,5 +2598,6 @@
+   function tasksWidget(){
+     const list = overview?.tasks || [];
+-    return box('tasks', list.length ? `<div class="neos-list">${list.map(x => `<div class="neos-item"><span class="neos-item-icon">${icon('check',16)}</span><span class="neos-item-title"><strong>${esc(x.title)}</strong><small>${x.due ? fmtTime(x.due) : 'Sans échéance'}</small></span></div>`).join('')}</div>` : '<div class="neos-empty">Aucune tâche ouverte.</div>');
++    const entries=list.length ? `<div class="neos-list">${list.map(x => `<div class="neos-item"><span class="neos-item-icon">${icon('check',16)}</span><span class="neos-item-title"><strong>${esc(x.title)}</strong><small>${x.due ? fmtTime(x.due) : 'Sans échéance'}</small></span></div>`).join('')}</div>` : '<div class="neos-empty">Aucune tâche ouverte.</div>';
++    return box('tasks',`${entries}<div class="neos-task-widget-footer"><button type="button" class="neos-btn" data-action="workspace" data-workspace="tasks">${icon('arrow',16)} Ouvrir Tâches</button></div>`);
+   }
+   function linksWidget(){
+@@ -2834,5 +2844,5 @@
+         ${activeWorkspace==='home'?homeWorkspace(widgets):activeWorkspace==='files'?filesWorkspace():currentModule()}
+       </div>
+-      <footer class="neos-footer"><span>NEOS 0.6.31</span><span>Nextcloud 35</span></footer>
++      <footer class="neos-footer"><span>NEOS 0.6.32</span><span>Nextcloud 35</span></footer>
+     </div></main>`;
+     updateClock();
