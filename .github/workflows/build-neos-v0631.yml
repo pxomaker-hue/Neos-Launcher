@@ -1,0 +1,31 @@
+name: Publish Neos v0.6.31 ZIP
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build-neos-v0631.yml'
+      - '.neos-build/rebuild-v0631.py'
+      - '.neos-build/neos-v0.6.31.delta.part*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Neos repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Rebuild and verify Neos v0.6.31
+        run: python3 .neos-build/rebuild-v0631.py
+      - name: Publish ZIP
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add neos-nextcloud35-v0.6.31.zip
+          git diff --cached --quiet && exit 0
+          git commit -m 'Publish Neos v0.6.31 ZIP'
+          git push origin HEAD:main
