@@ -195,6 +195,8 @@
   let overview = null;
   let settings = null;
   let editing = false;
+  let hiddenWidgetsOpen = false;
+  let widgetResize = null;
   let editorOpen = false;
   let dragWidgetId = '';
   let dragTabId = '';
@@ -471,9 +473,11 @@
   }
   function box(id, body, sub='', tools='') {
     const size=widgetSpan(id);
-    return `<section class="neos-card neos-${id} ${editing&&activeWorkspace==='home'?'neos-editable-card':''}" data-widget="${id}" data-size="${size}" data-min-height="${widgetMinHeight(id)}" draggable="false">
-      <header class="neos-card-head"><div class="neos-card-name">${icon(widgetIcons[id],18)}<span>${esc(widgetLabels[id])}</span></div><div class="neos-card-actions">${editing&&activeWorkspace==='home'?editWidgetTools(id):tools}<span class="neos-card-sub">${editing&&activeWorkspace==='home'?'':sub}</span></div></header>
+    const arranging=editing&&activeWorkspace==='home';
+    return `<section class="neos-card neos-${id} ${arranging?'neos-editable-card':''}" data-widget="${id}" data-size="${size}" data-min-height="${widgetMinHeight(id)}" draggable="false">
+      <header class="neos-card-head"><div class="neos-card-name">${icon(widgetIcons[id],18)}<span>${esc(widgetLabels[id])}</span></div>${arranging?`<button type="button" class="neos-mini-action neos-widget-hide" data-action="widget-hide" data-id="${id}" aria-label="Masquer ${esc(widgetLabels[id])}" title="Masquer ce widget">${icon('minus',15)}</button>`:''}<div class="neos-card-actions">${arranging?editWidgetTools(id):tools}<span class="neos-card-sub">${arranging?'':sub}</span></div></header>
       <div class="neos-card-body">${body}</div>
+      ${arranging&&settings.gridMode==='manual'?'<span class="neos-widget-resize-handle" data-widget-resize-handle title="Tirer pour redimensionner" aria-hidden="true"></span>':''}
     </section>`;
   }
 
@@ -3439,9 +3443,13 @@
     return `<div class="neos-files-workspace">${explorerWidget()}</div>`;
   }
   function homeWorkspace(widgets){
-    const visible=settings.order.filter(id=>!settings.hidden.includes(id)&&(id!=='shortcuts'||settings.launcherMode==='widget'));
+    const candidates=settings.order.filter(id=>id!=='shortcuts'||settings.launcherMode==='widget');
+    const visible=candidates.filter(id=>!settings.hidden.includes(id));
+    const hidden=candidates.filter(id=>settings.hidden.includes(id));
     const homeWidgets={...widgets,explorer:homeExplorerWidget};
-    return `${editing?`<div class="neos-editbar neos-layout-toolbar"><div class="neos-layout-toolbar-heading"><span class="neos-layout-pulse"></span><strong>Mode disposition</strong><small>Déplace, redimensionne et remplis les espaces</small></div><div class="neos-layout-toolbar-actions"><button type="button" class="neos-layout-toggle ${settings.gridMode==='adaptive'?'is-active':''}" data-action="grid-mode" data-mode="adaptive">Adaptatif</button><button type="button" class="neos-layout-toggle ${settings.gridMode==='manual'?'is-active':''}" data-action="grid-mode" data-mode="manual">Libre</button><button type="button" class="neos-btn neos-btn-primary" data-action="finish-arrange">${icon('check',16)} Terminer</button></div></div>`:''}${editing?`<div class="neos-grid-legend" aria-hidden="true"><span class="neos-grid-legend-dot"></span> GRILLE 12 COLONNES <span class="neos-grid-legend-divider"></span> DÉPOSE SUR UNE CARTE POUR RÉORGANISER <span class="neos-grid-legend-flex"></span> ${settings.gridMode==='manual'?'DIMENSIONS LIBRES':'TAILLES ADAPTATIVES'}</div>`:''}<div class="neos-grid-cards neos-home-grid ${editing?'neos-arranging':''}" data-grid-mode="${esc(settings.gridMode||'adaptive')}">${visible.map(id=>homeWidgets[id]?homeWidgets[id]():'').join('')}</div>${editing?`<div class="neos-layout-announce" role="status" aria-live="polite">${esc(layoutAnnounce||'Déplacement et tailles enregistrés automatiquement.')}</div>`:''}`;
+    const toolbar=editing?`<div class="neos-editbar neos-layout-toolbar"><div class="neos-layout-toolbar-heading"><span class="neos-layout-pulse" aria-hidden="true"></span><strong>Mode disposition</strong><small>${settings.gridMode==='manual'?'Tire le coin inférieur d’une carte pour la redimensionner.':'Déplace les cartes pour réorganiser l’accueil.'}</small></div><div class="neos-layout-toolbar-actions"><button type="button" class="neos-layout-toggle ${settings.gridMode==='adaptive'?'is-active':''}" data-action="grid-mode" data-mode="adaptive" aria-pressed="${settings.gridMode==='adaptive'}">Adaptatif</button><button type="button" class="neos-layout-toggle ${settings.gridMode==='manual'?'is-active':''}" data-action="grid-mode" data-mode="manual" aria-pressed="${settings.gridMode==='manual'}">Libre</button><button type="button" class="neos-btn neos-layout-widgets" data-action="widgets-toggle" aria-expanded="${hiddenWidgetsOpen}" aria-controls="neos-hidden-widgets">${icon('grid',16)} Widgets masqués (${hidden.length})</button><button type="button" class="neos-btn neos-btn-primary" data-action="finish-arrange">${icon('check',16)} Terminer</button></div></div>
+    <div class="neos-hidden-widgets" id="neos-hidden-widgets" ${hiddenWidgetsOpen?'':'hidden'}>${hidden.length?hidden.map(id=>`<button type="button" class="neos-btn" data-action="widget-show" data-id="${id}" aria-label="Réafficher ${esc(widgetLabels[id])}">${icon('plus',15)} ${esc(widgetLabels[id])}</button>`).join(''):'<span>Tous les widgets disponibles sont affichés.</span>'}</div>`:'';
+    return `${toolbar}<div class="neos-grid-cards neos-home-grid ${editing?'neos-arranging':''}" data-grid-mode="${esc(settings.gridMode||'adaptive')}">${visible.map(id=>homeWidgets[id]?homeWidgets[id]():'').join('')}</div>${visible.length?'':`<p class="neos-home-empty">Aucun widget affiché.${editing?'':` <button type="button" class="neos-btn" data-action="customize">Personnaliser</button>`}</p>`}${editing?`<div class="neos-layout-announce" role="status" aria-live="polite">${esc(layoutAnnounce||'Déplacement et tailles enregistrés automatiquement.')}</div>`:''}`;
   }
 
   // Dense 12-column grid. The cards are measured by their content and assigned
@@ -3454,16 +3462,12 @@
     const grid=surface.querySelector('.neos-home-grid');if(!grid)return;
     const cards=[...grid.querySelectorAll(':scope > .neos-card')];
     const narrow=window.matchMedia('(max-width:700px)').matches;
-    if(narrow){
-      cards.forEach(card=>{card.style.gridRowEnd='auto';card.style.minHeight='';});
-      return;
-    }
     const style=getComputedStyle(grid);const rowHeight=Number.parseFloat(style.gridAutoRows)||8;
     const rowGap=Number.parseFloat(style.rowGap)||14;
     const pxPerRow=rowHeight+rowGap;
     for(const card of cards){
       // Measure content rather than the stretched grid slot.
-      card.style.gridRowEnd='span 1';
+      card.style.gridRowEnd=narrow?'auto':'span 1';
       card.style.minHeight='';
       const head=card.querySelector(':scope > .neos-card-head');
       const body=card.querySelector(':scope > .neos-card-body');
@@ -3471,23 +3475,23 @@
       const marginHead=head?Number.parseFloat(getComputedStyle(head).marginBottom)||0:0;
       const natural=(head?.scrollHeight||0)+(body?.scrollHeight||0)+marginHead+
         (Number.parseFloat(cs.paddingTop)||0)+(Number.parseFloat(cs.paddingBottom)||0)+2;
-      const chosen=widgetMinHeight(card.dataset.widget);
+      const chosen=Number(card.dataset.minHeight)||0;
       const height=Math.max(natural, chosen, 112);
       const rows=Math.max(1,Math.ceil((height+rowGap)/pxPerRow));
-      card.style.gridRowEnd=`span ${rows}`;
-      card.style.minHeight=`${height}px`;
+      card.style.gridRowEnd=narrow?'auto':`span ${rows}`;
+      card.style.minHeight=narrow?(chosen?`${chosen}px`:''):`${height}px`;
     }
   }
   window.addEventListener('resize',()=>{if(activeWorkspace==='home')scheduleMasonry();positionTabSlider();},{passive:true});
 
   function render() {
+    finishWidgetResize(false);
     const pillFrom=previousTabPosition();
     applyTheme();
     const warnings=overview?.warnings||[];
     const activeTopApps=settings.launcherMode==='topbar' ? topApps() : [];
     const widgets={explorer:explorerWidget,storage:storageWidget,shortcuts:shortcutsWidget,clock:clockWidget,files:recentWidget,calendar:calendarWidget,tasks:tasksWidget,summary:summaryWidget,links:linksWidget,notes:notesWidget,deck:deckWidget};
     // One launcher placement at a time: topbar OR widget. The Apps button opens the full catalogue.
-    const visible = settings.order.filter(id=>!settings.hidden.includes(id) && (id!=='shortcuts'||settings.launcherMode==='widget'));
     surface.innerHTML=`<main class="neos-shell"><div class="neos-layout">
       <a class="neos-skip-link" href="#neos-workspace-stage">Aller au contenu de Neos</a>
       <header class="neos-topbar">
@@ -3501,7 +3505,7 @@
         ${(activeWorkspace==='files'||activeWorkspace==='home')&&warnings.length?`<div class="neos-warning">${icon('info',16)} ${esc(warnings[0])}</div>`:''}
         ${activeWorkspace==='home'?homeWorkspace(widgets):activeWorkspace==='files'?filesWorkspace():currentModule()}
       </div>
-      <footer class="neos-footer"><span>NEOS 0.7.2</span><span>Nextcloud 35</span></footer>
+      <footer class="neos-footer"><span>NEOS 0.7.3</span><span>Nextcloud 35</span></footer>
     </div></main>`;
     updateClock();
     positionTabSlider(pillFrom);
@@ -3985,7 +3989,7 @@
     const put = (key, value) => form.append(`settings[${key}]`, String(value));
     ['theme','density','accent','layout','motion','launcherMode','gridMode','notes'].forEach(key => put(key, settings[key] || ''));
     settings.order.forEach((v,i) => form.append(`settings[order][${i}]`, v));
-    settings.hidden.forEach((v,i) => form.append(`settings[hidden][${i}]`, v));
+    (settings.hidden.length?settings.hidden:['']).forEach((v,i) => form.append(`settings[hidden][${i}]`, v));
     Object.entries(settings.sizes || {}).forEach(([id,v]) => form.append(`settings[sizes][${id}]`, String(v)));
     Object.entries(settings.heights || {}).forEach(([id,v]) => form.append(`settings[heights][${id}]`, String(v)));
     (settings.links || []).forEach((l,i) => { form.append(`settings[links][${i}][title]`, l.title); form.append(`settings[links][${i}][url]`, l.url); });
@@ -4350,8 +4354,20 @@
     else if(action==='home-open-folder'){const path=target.dataset.path||'/';void chooseWorkspace('files').then(()=>browse(path));}
     else if(action==='home-open-recent'){void openHomeRecent({...target.dataset});}
     else if(action==='focus-search'){void chooseWorkspace('files').then(()=>surface.querySelector('[data-browser-search]')?.focus());}
-    else if(action==='finish-arrange'){editing=false;layoutAnnounce='';render();queueSave();}
-    else if(action==='grid-mode'){settings.gridMode=target.dataset.mode==='manual'?'manual':'adaptive';layoutAnnounce=settings.gridMode==='manual'?'Largeurs manuelles activées.':'Mise en page adaptative activée.';queueSave();render();}
+    else if(action==='finish-arrange'){editing=false;hiddenWidgetsOpen=false;layoutAnnounce='';render();surface.querySelector('.neos-top-actions [data-action="customize"]')?.focus({preventScroll:true});}
+    else if(action==='grid-mode'){settings.gridMode=target.dataset.mode==='manual'?'manual':'adaptive';layoutAnnounce=settings.gridMode==='manual'?'Dimensions manuelles activées.':'Mise en page adaptative activée.';queueSave();render();surface.querySelector(`[data-action="grid-mode"][data-mode="${settings.gridMode}"]`)?.focus({preventScroll:true});}
+    else if(action==='widgets-toggle'&&editing&&activeWorkspace==='home'){
+      hiddenWidgetsOpen=!hiddenWidgetsOpen;
+      target.setAttribute('aria-expanded',String(hiddenWidgetsOpen));
+      surface.querySelector('#neos-hidden-widgets').hidden=!hiddenWidgetsOpen;
+    }
+    else if(['widget-hide','widget-show'].includes(action)&&editing&&activeWorkspace==='home'){
+      const id=target.dataset.id;
+      if(setWidgetVisibility(id,action==='widget-show')){
+        const next=action==='widget-show'?surface.querySelector('[data-action="widget-show"]'):null;
+        (next||surface.querySelector('[data-action="widgets-toggle"]'))?.focus();
+      }
+    }
     else if(action==='widget-move'){moveWidget(target.dataset.id,Number(target.dataset.step)||0);}
     else if(action==='widget-resize'){resizeWidget(target.dataset.id,Number(target.dataset.step)||0);}
     else if(action==='widget-height'){resizeWidgetHeight(target.dataset.id,Number(target.dataset.step)||0);}
@@ -4611,7 +4627,7 @@
       queueSave(); render();
       if (el.name === 'launcherMode' || el.name === 'gridMode') renderEditor();
     }
-    else if (el.matches('[data-toggle]')) { const id = el.dataset.toggle; settings.hidden = el.checked ? settings.hidden.filter(x => x !== id) : [...settings.hidden, id]; queueSave(); render(); if(id==='deck'&&el.checked&&deckState.status==='idle')void loadDeck(); if(el.checked&&['summary','tasks'].includes(id)&&groupware.status==='idle')void loadGroupware(); }
+    else if (el.matches('[data-toggle]')) setWidgetVisibility(el.dataset.toggle,el.checked);
     else if (el.matches('[data-size]')) { settings.sizes[el.dataset.size] = Number(el.value); queueSave(); render(); }
     else if (el.matches('[data-height]')) { settings.heights[el.dataset.height] = Number(el.value); queueSave(); render(); }
     else if (el.matches('[data-topapp]')) {
@@ -4657,6 +4673,7 @@
       }
     }
     if (event.key === 'Escape') {
+      if(widgetResize){event.preventDefault();finishWidgetResize(false);return;}
       if(neosDialogBusy()){ event.preventDefault();event.stopPropagation();return; }
       if (editorOpen) { event.preventDefault(); closeEditor(); }
       else if (popMode || fullPreview) { event.preventDefault(); hidePop(); }
@@ -4817,14 +4834,32 @@
     const visible=settings.order.filter(key=>!settings.hidden.includes(key)&&(key!=='shortcuts'||settings.launcherMode==='widget'));
     const i=visible.indexOf(id);const to=visible[i+delta];if(!to)return;
     reorderWidget(id,to,delta>0);
+    const controls=surface.querySelector(`.neos-home-grid [data-widget="${id}"] .neos-widget-edit-controls`);
+    const same=controls?.querySelector(`[data-action="widget-move"][data-step="${delta}"]:not(:disabled)`);
+    (same||controls?.querySelector('[data-action="widget-move"]:not(:disabled)'))?.focus({preventScroll:true});
+  }
+  function setWidgetVisibility(id,visible){
+    if(!widgetIds.includes(id)||visible!==settings.hidden.includes(id))return false;
+    settings.hidden=visible?settings.hidden.filter(key=>key!==id):[...settings.hidden,id];
+    layoutAnnounce=`${widgetLabels[id]} ${visible?'réaffiché':'masqué'}.`;
+    render();queueSave();
+    if(visible&&id==='deck'&&deckState.status==='idle')void loadDeck();
+    if(visible&&['summary','tasks'].includes(id)&&groupware.status==='idle')void loadGroupware(false,true);
+    return true;
+  }
+  function applyWidgetDimensions(id,width,height){
+    if(width===widgetSpan(id)&&height===widgetMinHeight(id))return;
+    settings.sizes[id]=width;
+    settings.heights[id]=height;
+    layoutAnnounce=`${widgetLabels[id]} : ${Math.round(width/12*100)} % de largeur, hauteur minimale ${height?height+' px':'automatique'}.`;
+    render();queueSave();flashLayoutOrder(id);
   }
   function resizeWidget(id,delta){
     if(settings.gridMode!=='manual')return;
     const current=widgetSpan(id);const idx=allowedSizes.indexOf(current);
     const next=allowedSizes[Math.max(0,Math.min(allowedSizes.length-1,idx+delta))];
-    if(next===current)return;
-    settings.sizes[id]=next;layoutAnnounce=`${widgetLabels[id]} : ${Math.round(next/12*100)} % de largeur.`;
-    queueSave();render();flashLayoutOrder(id);
+    applyWidgetDimensions(id,next,widgetMinHeight(id));
+    surface.querySelector(`[data-action="widget-resize"][data-id="${id}"][data-step="${delta}"]`)?.focus({preventScroll:true});
   }
   function resizeWidgetHeight(id,delta){
     if(settings.gridMode!=='manual')return;
@@ -4835,10 +4870,74 @@
       const naturalHeight=Math.ceil((card?.getBoundingClientRect().height||160)+20);
       next=allowedHeights.find(h=>h>=naturalHeight)||allowedHeights[allowedHeights.length-1];
     }
-    if(next===current)return;
-    settings.heights[id]=next;
-    layoutAnnounce=`${widgetLabels[id]} : hauteur ${next?next+' pixels':'automatique'}.`;
-    queueSave();render();flashLayoutOrder(id);
+    applyWidgetDimensions(id,widgetSpan(id),next);
+    surface.querySelector(`[data-action="widget-height"][data-id="${id}"][data-step="${delta}"]`)?.focus({preventScroll:true});
+  }
+  function nearestWidgetSize(sizes,value){
+    return sizes.reduce((nearest,size)=>Math.abs(size-value)<Math.abs(nearest-value)?size:nearest);
+  }
+  function previewWidgetResize(event){
+    const resize=widgetResize;
+    if(!resize||event.pointerId!==resize.pointerId)return;
+    const dx=event.clientX-resize.x;
+    const dy=event.clientY-resize.y;
+    let width=resize.startWidth;
+    if(resize.columnWidth&&Math.abs(dx)>6){
+      const span=nearestWidgetSize(resize.widthSteps,resize.visualSpan+dx/resize.columnWidth);
+      if(span!==resize.visualSpan)width=span;
+    }
+    const height=Math.abs(dy)>6
+      ?nearestWidgetSize(allowedHeights,Math.max(0,resize.startHeight+dy)):resize.initialHeight;
+    if(width===resize.width&&height===resize.height)return;
+    resize.width=width;resize.height=height;
+    resize.card.dataset.size=String(width);
+    resize.card.dataset.minHeight=String(height);
+    resize.card.querySelector('.neos-widget-span').textContent=`${Math.round(width/12*100)}%`;
+    resize.card.querySelector('.neos-height-indicator').textContent=height?`${height} px`:'Auto';
+    scheduleMasonry();
+  }
+  function finishWidgetResize(commit){
+    const resize=widgetResize;
+    if(!resize)return;
+    widgetResize=null;
+    resize.card.classList.remove('neos-widget-resizing');
+    resize.card.dataset.size=String(resize.startWidth);
+    resize.card.dataset.minHeight=String(resize.initialHeight);
+    resize.card.querySelector('.neos-widget-span').textContent=`${Math.round(resize.startWidth/12*100)}%`;
+    resize.card.querySelector('.neos-height-indicator').textContent=resize.initialHeight?`${resize.initialHeight} px`:'Auto';
+    if(resize.handle.hasPointerCapture(resize.pointerId))resize.handle.releasePointerCapture(resize.pointerId);
+    scheduleMasonry();
+    if(commit)applyWidgetDimensions(resize.card.dataset.widget,resize.width,resize.height);
+  }
+  surface.addEventListener('pointerdown',event=>{
+    const handle=event.target.closest('[data-widget-resize-handle]');
+    if(!handle||event.button!==0||!event.isPrimary||widgetResize||!editing||settings.gridMode!=='manual')return;
+    const card=handle.closest('[data-widget]');
+    const grid=card.parentElement;
+    const style=getComputedStyle(grid);
+    const gap=Number.parseFloat(style.columnGap)||0;
+    const columns=style.gridTemplateColumns.split(' ').length;
+    const columnWidth=columns===12?(Number.parseFloat(style.gridTemplateColumns)+gap):0;
+    const startWidth=widgetSpan(card.dataset.widget);
+    const initialHeight=widgetMinHeight(card.dataset.widget);
+    const visualSpan=columnWidth?Math.round((card.offsetWidth+gap)/columnWidth):startWidth;
+    const widthSteps=window.matchMedia('(max-width:1120px)').matches?[6,12]:allowedSizes;
+    handle.setPointerCapture(event.pointerId);
+    widgetResize={handle,card,pointerId:event.pointerId,x:event.clientX,y:event.clientY,columnWidth,visualSpan,widthSteps,
+      startWidth,initialHeight,startHeight:card.offsetHeight,width:startWidth,height:initialHeight};
+    card.classList.add('neos-widget-resizing');
+    event.preventDefault();
+  });
+  surface.addEventListener('pointermove',previewWidgetResize);
+  surface.addEventListener('pointerup',event=>{
+    if(event.pointerId!==widgetResize?.pointerId)return;
+    previewWidgetResize(event);
+    finishWidgetResize(true);
+  });
+  for(const type of ['pointercancel','lostpointercapture']){
+    surface.addEventListener(type,event=>{
+      if(event.pointerId===widgetResize?.pointerId)finishWidgetResize(false);
+    });
   }
   function clearDropGuide(){surface.querySelectorAll('.neos-drop-before,.neos-drop-after,.neos-is-dragging').forEach(el=>el.classList.remove('neos-drop-before','neos-drop-after','neos-is-dragging'));}
   function clearDeckDropGuide(){surface.querySelectorAll('.neos-deck-drop-target,.neos-deck-dragging').forEach(el=>el.classList.remove('neos-deck-drop-target','neos-deck-dragging'));}

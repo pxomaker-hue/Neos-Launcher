@@ -1,3 +1,9 @@
+## 0.7.3
+
+- Le mode disposition permet de masquer les widgets directement sur leurs cartes et de les réafficher depuis le tiroir « Widgets masqués ».
+- En mode Libre, une poignée ajuste la largeur et la hauteur minimale par paliers. Sur écran étroit, elle ajuste la hauteur de la carte.
+- Les préférences conservent aussi une disposition dans laquelle tous les widgets sont affichés.
+
 ## 0.7.2
 
 - Les badges de non-lus de Mail et Talk adoptent un halo cyan diffus et un quadrillage discret, avec libellés comme en mode icônes.

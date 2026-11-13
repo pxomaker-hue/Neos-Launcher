@@ -616,6 +616,9 @@
 #nova-root .neos-layout-toolbar-heading small {color:#a3bcd2;font-size:11px}
 #nova-root .neos-layout-pulse {display:block;width:10px;height:10px;background:#22ddd6;border-radius:50%;box-shadow:0 0 0 5px rgba(34,221,214,.11),0 0 18px rgba(34,221,214,.35);animation:neos-layout-pulse 1.8s ease-in-out infinite}
 #nova-root .neos-layout-toolbar-actions {display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#nova-root .neos-hidden-widgets {display:flex;flex-wrap:wrap;gap:8px;padding:12px;margin-bottom:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+#nova-root .neos-hidden-widgets[hidden] {display:none}
+#nova-root .neos-home-empty {padding:16px;color:var(--muted)}
 #nova-root .neos-layout-toggle {min-height:35px;padding:8px 13px;color:#b5c9da;background:#112b41;border:1px solid #365469;border-radius:10px;font-size:12px;font-weight:700;transition:border-color .2s,color .2s,background .2s}
 #nova-root .neos-layout-toggle.is-active {color:#04191f;background:#22ddd6;border-color:#22ddd6}
 #nova-root .neos-layout-announce {margin:9px 4px 4px;font-size:11px;color:#8ea9ba}
@@ -627,6 +630,18 @@
 #nova-root .neos-editable-card:hover {border-color:rgba(47,225,228,.72)!important;box-shadow:0 16px 35px rgba(0,0,0,.21),0 0 0 1px rgba(34,221,214,.1) inset;}
 #nova-root .neos-editable-card .neos-card-head {flex-wrap:wrap;gap:10px;}
 #nova-root .neos-editable-card .neos-card-actions {display:block;width:100%;flex:1 1 100%;}
+#nova-root .neos-widget-hide {margin-inline-start:auto}
+#nova-root .neos-editable-card:has(.neos-widget-resize-handle) {padding-block-end:calc(var(--pad) + 16px)}
+#nova-root .neos-widget-resize-handle {
+  position:absolute;inset-inline-end:2px;inset-block-end:2px;z-index:5;
+  width:26px;height:26px;cursor:nwse-resize;touch-action:none;
+}
+#nova-root .neos-widget-resize-handle::after {
+  content:"";position:absolute;right:7px;bottom:7px;width:10px;height:10px;
+  border-right:2px solid var(--accent);border-bottom:2px solid var(--accent);
+  border-end-end-radius:3px;
+}
+#nova-root .neos-widget-resizing {cursor:nwse-resize;user-select:none;outline-color:var(--accent)}
 #nova-root .neos-widget-edit-controls {display:flex;align-items:center;justify-content:flex-start;gap:6px;flex-wrap:wrap;padding-top:6px;border-top:1px dashed rgba(88,168,186,.18);}
 #nova-root .neos-mini-action {display:grid;place-items:center;min-width:27px;height:29px;border:1px solid rgba(105,165,189,.24);border-radius:8px;background:#122b40;color:#bddde8;font-size:17px;line-height:1;transition:background .2s,border-color .2s,transform .2s}
 #nova-root .neos-mini-action:hover:not(:disabled),#nova-root .neos-mini-action:focus-visible {background:#1b4453;border-color:#31d5d5;color:#fff;transform:translateY(-1px)}
@@ -744,7 +759,9 @@
 @keyframes neos-hero-scan{0%,55%,100%{transform:translateX(-140%);opacity:0}68%{opacity:.72}88%{transform:translateX(140%);opacity:0}}
 @media (max-width:700px){
   #nova-root .neos-home-grid{grid-auto-rows:auto;grid-auto-flow:row;gap:11px}
-  #nova-root .neos-home-grid > .neos-card{grid-row-end:auto!important;height:auto!important;min-height:0!important}
+  #nova-root .neos-home-grid > .neos-card{grid-row-end:auto!important;height:auto!important}
+  #nova-root .neos-home-grid > .neos-card[data-min-height="0"]{min-height:0!important}
+  #nova-root .neos-widget-resize-handle,#nova-root .neos-widget-resizing {cursor:ns-resize}
   #nova-root .neos-pref-row .neos-pref-tools{flex-wrap:wrap;justify-content:flex-end}
   #nova-root .neos-widget-edit-controls{gap:4px}
   #nova-root .neos-tab-image-wrap .neos-hub-png256{width:23px!important;height:23px!important}

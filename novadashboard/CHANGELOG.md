@@ -1,3 +1,9 @@
+## 0.7.3
+
+- Hide home widgets from their cards and restore them through the hidden widgets drawer.
+- In manual layout mode, drag the bottom corner of a card to resize it in steps.
+- Preferences now retain layouts with every widget visible.
+
 ## 0.7.2
 
 - Mail and Talk unread badges use a soft cyan halo with a subtle grid, with and without tab labels.
