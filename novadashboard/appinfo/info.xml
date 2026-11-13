@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+  <id>novadashboard</id>
+  <name>Neos</name>
+  <summary>Customizable workspace for Nextcloud</summary>
+  <summary lang="fr">Tableau de bord personnalisable pour Nextcloud</summary>
+  <description><![CDATA[Neos brings files, deadlines and everyday Nextcloud apps together in a customizable workspace.
+
+- Dashboard widgets and shortcuts for upcoming tasks and events.
+- Filename search, favourites and file previews.
+- A planning view for Calendar, Tasks and Deck.
+- Integrated Notes, Contacts, Activity, Talk and Mail where available.
+- Compact navigation on narrow screens.
+
+Neos 0.7 targets Nextcloud 35. The application interface is in French. Integrations depend on the enabled Nextcloud apps and the current user's permissions.]]></description>
+  <description lang="fr"><![CDATA[Neos réunit les fichiers, les échéances et les applications du quotidien dans un espace Nextcloud personnalisable.
+
+- Accueil avec widgets, raccourcis et aperçu des prochaines échéances.
+- Recherche par nom, favoris et aperçu des fichiers.
+- Planning qui rassemble Agenda, Tâches et Deck.
+- Accès intégré à Notes, Contacts, Activité, Talk et Mail selon les applications activées.
+- Navigation compacte par icônes sur écran réduit.
+
+Neos 0.7 cible Nextcloud 35. Les intégrations dépendent des applications activées et des droits du compte connecté.]]></description>
+  <version>0.7.0</version>
+  <licence>AGPL-3.0-or-later</licence>
+  <author>Neos Community Edition</author>
+  <namespace>NovaDashboard</namespace>
+  <documentation>
+    <user>https://github.com/pxomaker-hue/Neos-Launcher#fonctionnalités</user>
+    <admin>https://github.com/pxomaker-hue/Neos-Launcher#installation</admin>
+    <developer>https://github.com/pxomaker-hue/Neos-Launcher/blob/main/docs/PUBLICATION-NEXTCLOUD.md</developer>
+  </documentation>
+  <category>customization</category>
+  <website>https://github.com/pxomaker-hue/Neos-Launcher</website>
+  <bugs>https://github.com/pxomaker-hue/Neos-Launcher/issues</bugs>
+  <repository type="git">https://github.com/pxomaker-hue/Neos-Launcher</repository>
+  <screenshot>https://raw.githubusercontent.com/pxomaker-hue/Neos-Launcher/main/docs/media/dashboard-v0.7.0.png</screenshot>
+  <dependencies>
+    <php min-version="8.3" />
+    <nextcloud min-version="35" max-version="35" />
+  </dependencies>
+  <navigations>
+    <navigation>
+      <name>Neos</name>
+      <route>novadashboard.page.index</route>
+      <order>0</order>
+    </navigation>
+  </navigations>
+</info>

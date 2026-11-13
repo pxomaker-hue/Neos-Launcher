@@ -1,0 +1,1867 @@
+/* NEOS / FLAT CYBER 0.4.6 — authored UI system for Nextcloud 35 */
+#nova-root{
+  --bg:#070d1a;--panel:#111b2e;--panel-2:#142037;--panel-3:#18263e;
+  --line:#253550;--line-strong:#385178;--text:#edf4ff;--muted:#8293b1;
+  --accent:#48cafa;--accent-2:#8a84f8;--accent-soft:rgba(72,202,250,.12);
+  --radius:17px;--space:16px;--pad:20px;
+  color:var(--text);background:var(--bg);font:14px/1.48 Inter,"Segoe UI",system-ui,sans-serif;
+  position:fixed!important;inset:var(--header-height,50px) 0 0!important;
+  width:100vw!important;max-width:none!important;height:calc(100dvh - var(--header-height,50px))!important;
+  padding:0!important;margin:0!important;overflow:auto hidden!important;z-index:15;isolation:isolate;
+  color-scheme:dark;font-synthesis:none;-webkit-font-smoothing:antialiased;
+}
+#nova-root[data-density="compact"]{--space:12px;--pad:15px}
+#nova-root[data-accent="indigo"]{--accent:#9297ff;--accent-2:#55d1ff;--accent-soft:rgba(146,151,255,.12)}
+#nova-root[data-accent="emerald"]{--accent:#46ddbd;--accent-2:#5bcbff;--accent-soft:rgba(70,221,189,.12)}
+#nova-root[data-accent="rose"]{--accent:#c18aff;--accent-2:#ff83c1;--accent-soft:rgba(193,138,255,.12)}
+#nova-root[data-accent="amber"]{--accent:#f0be68;--accent-2:#5ed7ff;--accent-soft:rgba(240,190,104,.11)}
+#nova-root.neos-light{--bg:#edf2fa;--panel:#fff;--panel-2:#f6f9ff;--panel-3:#edf4ff;--line:#d9e3f0;--line-strong:#b7c8de;--text:#1c2a40;--muted:#657a99;color-scheme:light}
+#nova-root *,#nova-root *::before,#nova-root *::after{box-sizing:border-box}
+#nova-root a{color:inherit;text-decoration:none}
+#nova-root button,#nova-root input,#nova-root select,#nova-root textarea{font:inherit}
+#nova-root button{cursor:pointer}
+#nova-root button:disabled{opacity:.35;cursor:not-allowed}
+#nova-root button:focus-visible,#nova-root input:focus-visible,#nova-root select:focus-visible,#nova-root textarea:focus-visible,#nova-root a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#nova-root input,#nova-root select,#nova-root textarea{min-width:0}
+#nova-root svg{flex-shrink:0}
+
+/* Ambient layer is fixed and never recreated during file navigation */
+#nova-root .neos-ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;isolation:isolate;background:
+  radial-gradient(ellipse 60% 40% at 70% 5%,rgba(69,65,166,.19),transparent 72%),
+  radial-gradient(ellipse 70% 42% at 0 10%,rgba(9,87,158,.17),transparent 70%),
+  linear-gradient(165deg,#091326 0%,#070d1a 54%,#081429 100%)}
+#nova-root .neos-ambient-mesh,#nova-root .neos-ambient-grid,#nova-root .neos-ambient-beam,#nova-root .neos-ambient-aurora,#nova-root .neos-ambient-noise,#nova-root .neos-ambient-orbits{position:absolute;inset:0;width:100%;height:100%}
+#nova-root .neos-ambient-mesh{background:radial-gradient(circle at 88% 8%,rgba(83,104,230,.18),transparent 38%),radial-gradient(circle at 24% 80%,rgba(28,148,224,.09),transparent 32%);filter:blur(34px);animation:neos-mesh 28s ease-in-out infinite alternate}
+#nova-root .neos-ambient-grid{background-image:linear-gradient(rgba(133,188,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(133,188,255,.045) 1px,transparent 1px);background-size:56px 56px;opacity:.28;mask-image:linear-gradient(to bottom,transparent,black 42%,transparent)}
+#nova-root .neos-ambient-beam{background:linear-gradient(115deg,transparent 42%,rgba(52,156,254,.028) 50%,transparent 60%);animation:neos-beam 24s ease-in-out infinite alternate}
+#nova-root .neos-ambient-aurora{background:radial-gradient(ellipse 38% 18% at 36% 76%,rgba(0,130,209,.10),transparent),radial-gradient(ellipse 32% 24% at 80% 68%,rgba(80,69,175,.085),transparent);animation:neos-mesh 22s ease-in-out infinite alternate-reverse}
+#nova-root .neos-ambient-orbits{opacity:.36}
+#nova-root .neos-ambient-noise{opacity:.14;background-image:url("../img/neos-field.svg");background-size:cover;background-position:center;mix-blend-mode:screen}
+#nova-root .neos-datafield{position:absolute;inset:0;width:100%;height:100%;opacity:.75;pointer-events:none;mix-blend-mode:screen;mask-image:linear-gradient(to bottom,transparent,#000 25%,#000 80%,transparent)}
+#nova-root.neos-light .neos-ambient{background:radial-gradient(ellipse at 20% 15%,rgba(112,164,255,.15),transparent 50%),linear-gradient(165deg,#f4f8ff,#e7f0fc)}
+#nova-root.neos-light .neos-datafield{mix-blend-mode:multiply;opacity:.17}
+#nova-root.neos-light .neos-ambient-noise{opacity:.05}
+#nova-root[data-motion="subtle"] .neos-datafield{opacity:.35}
+#nova-root[data-motion="off"] .neos-datafield,#nova-root[data-motion="off"] .neos-ambient-orbits{display:none!important}
+#nova-root[data-motion="off"] .neos-ambient-mesh,#nova-root[data-motion="off"] .neos-ambient-beam,#nova-root[data-motion="off"] .neos-ambient-aurora{animation:none!important}
+
+/* App surface: full-bleed width by default */
+#nova-root .neos-shell{position:relative;min-height:100%;padding:22px clamp(16px,2.7vw,50px) 34px;z-index:1}
+#nova-root .neos-layout{position:relative;width:100%;max-width:none;margin:0 auto;z-index:1}
+#nova-root[data-layout="focused"] .neos-layout{max-width:1480px}
+#nova-root .neos-topbar{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:24px;min-height:72px;padding:12px 18px;margin-bottom:18px;background:linear-gradient(180deg,rgba(18,29,52,.94),rgba(13,22,39,.92));border:1px solid color-mix(in srgb,var(--accent) 16%,var(--line));border-radius:18px;box-shadow:0 14px 45px rgba(0,3,12,.18),inset 0 1px 0 rgba(255,255,255,.03);backdrop-filter:blur(14px)}
+#nova-root.neos-light .neos-topbar{background:rgba(255,255,255,.9)}
+#nova-root .neos-brand{display:flex;align-items:center;gap:12px;min-width:140px}
+#nova-root .neos-brand-mark{display:grid;place-items:center;width:50px;height:50px;border-radius:15px;background:linear-gradient(180deg,#12203a,#0a1530);border:1px solid color-mix(in srgb,var(--accent) 20%,var(--line));overflow:hidden;box-shadow:0 10px 26px rgba(0,0,0,.22),0 0 0 1px rgba(255,255,255,.02) inset}
+#nova-root .neos-brand-mark img{width:100%;height:100%;display:block;object-fit:contain}
+#nova-root .neos-brand>div{display:flex;flex-direction:column;line-height:1.1;gap:3px}
+#nova-root .neos-brand strong{font-size:20px;font-weight:760;letter-spacing:-.045em}
+#nova-root .neos-brand>div>span{color:var(--muted);font-size:9px;font-weight:700;letter-spacing:.18em}
+#nova-root .neos-launchbar{display:flex;justify-content:center;gap:6px;overflow:auto hidden;min-width:0;scrollbar-width:none}
+#nova-root .neos-launchbar::-webkit-scrollbar{display:none}
+#nova-root .neos-launch-chip{display:inline-flex;align-items:center;gap:10px;white-space:nowrap;border-radius:12px;padding:8px 13px 8px 10px;color:var(--muted);font-weight:640;background:rgba(255,255,255,.025);border:1px solid transparent;transition:background .2s,color .2s,transform .2s,border-color .2s,box-shadow .2s}
+#nova-root .neos-launch-chip svg{color:var(--app,var(--accent))}
+#nova-root .neos-launch-chip:hover{background:var(--panel-3);color:var(--text);transform:translateY(-1px);border-color:color-mix(in srgb,var(--app) 30%,var(--line));box-shadow:0 12px 28px rgba(0,0,0,.12)}
+#nova-root .neos-launch-chip-art{display:grid;place-items:center;width:28px;height:28px;border-radius:10px;background:color-mix(in srgb,var(--app) 12%,var(--panel));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--app) 20%,transparent)}
+#nova-root .neos-glyph-img{width:18px;height:18px;display:block;object-fit:contain}
+#nova-root .neos-top-actions{display:flex;align-items:center;gap:8px;white-space:nowrap}
+#nova-root .neos-header-readout{font-size:12px;letter-spacing:.02em;font-variant-numeric:tabular-nums;color:var(--muted);margin-right:7px}
+#nova-root .neos-header-readout i{display:none}
+#nova-root .neos-btn,#nova-root .neos-iconbtn,#nova-root .neos-crumb,#nova-root .neos-pin{display:inline-flex;justify-content:center;align-items:center;gap:9px;min-height:38px;padding:9px 13px;color:var(--text);background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:10px;font-weight:610;transition:background .2s,border-color .2s,transform .2s,box-shadow .2s}
+#nova-root .neos-iconbtn{width:38px;height:38px;padding:0}
+#nova-root .neos-btn:hover,#nova-root .neos-iconbtn:hover,#nova-root .neos-crumb:hover,#nova-root .neos-pin:hover{background:var(--panel-3);border-color:var(--line-strong);transform:translateY(-1px)}
+#nova-root .neos-btn-primary{background:var(--accent);border-color:transparent;color:#081322;font-weight:750}
+#nova-root .neos-btn-primary:hover{background:color-mix(in srgb,var(--accent) 86%,white);color:#081322;border-color:transparent;box-shadow:0 8px 25px rgba(40,155,255,.15)}
+#nova-root .neos-iconbtn.is-on{color:var(--accent);background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 24%,var(--line))}
+#nova-root .neos-warning,#nova-root .neos-editbar{display:flex;align-items:center;gap:9px;padding:13px 16px;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;margin:0 0 16px;color:var(--muted)}
+#nova-root .neos-fatal{display:flex;gap:12px;align-items:center;justify-content:center;min-height:380px;color:var(--text);padding:24px}
+
+/* Responsive 12-column widgets */
+#nova-root .neos-grid-cards{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--space)}
+#nova-root .neos-card{grid-column:span 6;min-width:0;position:relative;overflow:hidden;padding:var(--pad);background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 10px 36px rgba(0,4,16,.12);transition:border-color .25s,box-shadow .25s,transform .25s}
+#nova-root .neos-card::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(300px circle at var(--mx,50%) var(--my,0%),rgba(110,178,255,.045),transparent 70%);opacity:0;transition:opacity .25s}
+#nova-root .neos-card:hover{border-color:var(--line-strong)}
+#nova-root .neos-card:hover::after{opacity:1}
+#nova-root .neos-card[data-size="3"]{grid-column:span 3}
+#nova-root .neos-card[data-size="4"]{grid-column:span 4}
+#nova-root .neos-card[data-size="6"]{grid-column:span 6}
+#nova-root .neos-card[data-size="8"]{grid-column:span 8}
+#nova-root .neos-card[data-size="12"]{grid-column:span 12}
+#nova-root .neos-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px;min-width:0}
+#nova-root .neos-card-name{display:flex;align-items:center;gap:10px;min-width:0;font-weight:720;font-size:15px;letter-spacing:-.015em}
+#nova-root .neos-card-name svg{color:var(--accent)}
+#nova-root .neos-card-actions{display:flex;align-items:center;gap:8px;min-width:0}
+#nova-root .neos-card-sub{color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+#nova-root .neos-card-body{min-width:0;position:relative;z-index:1}
+#nova-root .neos-explorer{padding:0}
+#nova-root .neos-explorer .neos-card-head{margin:0;padding:19px 22px 17px;border-bottom:1px solid var(--line)}
+#nova-root .neos-explorer .neos-card-name{font-size:17px}
+#nova-root .neos-explorer .neos-card-body{padding:18px}
+#nova-root .neos-card.is-dragging{opacity:.5;transform:scale(.99)}
+
+/* File workspace */
+#nova-root .neos-browser-shell{display:grid;gap:15px;min-width:0}
+#nova-root .neos-browser-tools{display:grid;gap:12px}
+#nova-root .neos-breadcrumb{display:flex;align-items:center;gap:8px;min-width:0}
+#nova-root .neos-breadcrumb-items{display:flex;align-items:center;gap:5px;min-width:0;flex-wrap:wrap}
+#nova-root .neos-crumb{border:0;background:transparent;color:var(--muted);min-height:33px;padding:7px 9px;font-size:12px}
+#nova-root .neos-crumb.active{background:var(--accent-soft);color:var(--accent);font-weight:700}
+#nova-root .neos-nav-btn{width:33px;height:33px;min-height:33px;background:var(--panel-2)}
+#nova-root .neos-browser-total{margin-left:auto;font-size:11px;color:var(--muted);white-space:nowrap}
+#nova-root .neos-browser-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#nova-root .neos-pins{grid-column:1/-1;display:flex;gap:7px;align-items:center;overflow:auto hidden;padding:1px 0 2px;scrollbar-width:none}
+#nova-root .neos-pins::-webkit-scrollbar{display:none}
+#nova-root .neos-pin{min-height:32px;font-size:11px;background:var(--panel-2);border:1px solid var(--line);padding:6px 10px;white-space:nowrap}
+#nova-root .neos-search{display:flex;align-items:center;gap:9px;min-width:0;flex:1 1 280px;min-height:40px;padding:0 12px;border:1px solid var(--line);background:var(--panel-2);border-radius:10px;color:var(--muted)}
+#nova-root .neos-search:focus-within{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+#nova-root .neos-search input{width:100%;min-width:0;padding:10px 0;background:transparent;color:var(--text);border:0!important;outline:0!important;box-shadow:none!important}
+#nova-root .neos-search input::placeholder{color:var(--muted)}
+#nova-root .neos-search kbd{display:inline-flex;min-width:19px;height:20px;align-items:center;justify-content:center;font-size:11px;font-family:inherit;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:5px}
+#nova-root .neos-browser-actions select,#nova-root .neos-pref-tools select{height:40px;min-width:85px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);border-radius:10px;padding:0 12px;outline:0}
+#nova-root .neos-browser-actions select:focus{border-color:var(--accent)}
+#nova-root .neos-browser-main{display:grid;grid-template-columns:minmax(0,1.07fr) minmax(340px,.93fr);gap:12px;align-items:stretch;min-width:0}
+#nova-root .neos-browser-list-wrap,#nova-root .neos-preview{border:1px solid var(--line);border-radius:14px;background:var(--panel-2);min-width:0;overflow:hidden;min-height:520px}
+#nova-root .neos-browser-list-wrap{display:flex;flex-direction:column}
+#nova-root .neos-list-caption{display:grid;grid-template-columns:1fr 98px 90px;gap:10px;padding:13px 17px;color:var(--muted);font-weight:700;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02)}
+#nova-root .neos-file-list{display:grid;gap:2px;padding:8px;max-height:562px;overflow:auto}
+#nova-root .neos-file-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center;min-width:0;border-radius:12px;border:1px solid transparent;transition:background .18s,border-color .18s}
+#nova-root .neos-file-row:hover{background:rgba(135,172,255,.055)}
+#nova-root .neos-file-row.is-active{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 22%,var(--line))}
+#nova-root .neos-file-actions{display:flex;align-items:center;gap:6px;padding-right:4px}
+#nova-root .neos-file-main{display:grid;grid-template-columns:40px minmax(0,1fr) 80px;gap:10px;align-items:center;width:100%;min-width:0;min-height:62px;text-align:left;border:0;background:transparent;color:var(--text);border-radius:9px;padding:8px 8px}
+#nova-root .neos-file-symbol{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;overflow:hidden;color:#6caefe;background:rgba(73,135,232,.10);position:relative}
+#nova-root .neos-file-symbol svg{z-index:1}
+#nova-root .neos-file-symbol .neos-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
+#nova-root .neos-file-label{display:grid;gap:5px;min-width:0}
+#nova-root .neos-file-label strong{font-size:12.5px;font-weight:640;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+#nova-root .neos-file-label small{font-size:10.5px;color:var(--muted);white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+#nova-root .neos-file-size{color:var(--muted);text-align:right;font-size:11px;white-space:nowrap}
+#nova-root .neos-file-actions{display:flex;align-items:center;gap:4px;margin-right:4px}
+#nova-root .neos-file-actions .neos-iconbtn{width:30px;height:30px;min-height:30px;border:0;background:transparent;color:var(--muted)}
+#nova-root .neos-file-actions .neos-iconbtn:hover{color:var(--accent);background:var(--panel-3)}
+#nova-root .neos-file-list.is-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;padding:12px}
+#nova-root .neos-file-list.is-grid .neos-file-row{display:flex;flex-direction:column;align-items:stretch;background:var(--panel-3);padding:8px}
+#nova-root .neos-file-list.is-grid .neos-file-main{display:flex;flex-direction:column;align-items:flex-start;min-height:120px}
+#nova-root .neos-file-list.is-grid .neos-file-symbol{width:48px;height:48px}
+#nova-root .neos-file-list.is-grid .neos-file-size{display:block;text-align:left}
+#nova-root .neos-file-list.is-grid .neos-file-actions{align-self:flex-end}
+#nova-root .neos-truncated{padding:12px 15px;color:var(--muted);border-top:1px solid var(--line)}
+#nova-root .neos-truncated a{color:var(--accent)}
+
+/* Preview inspector */
+#nova-root .neos-preview{display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+#nova-root .neos-preview-head{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:15px 17px;border-bottom:1px solid var(--line);min-width:0;min-height:76px}
+#nova-root .neos-preview-title{display:grid;gap:4px;min-width:0}
+#nova-root .neos-preview-title small{font-size:9px;font-weight:760;letter-spacing:.13em;color:var(--accent)}
+#nova-root .neos-preview-title strong{font-size:13px;font-weight:680;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#nova-root .neos-preview-title>span{font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#nova-root .neos-preview-actions{display:flex;gap:4px;align-items:center;flex-shrink:0}
+#nova-root .neos-preview-actions .neos-iconbtn{width:32px;height:32px;min-height:32px;border:0;background:transparent;color:var(--muted)}
+#nova-root .neos-preview-actions .neos-iconbtn:hover{background:var(--panel-3);color:var(--text)}
+#nova-root .neos-preview-body{padding:16px;min-height:0;display:grid;place-items:center;overflow:auto}
+#nova-root .neos-preview-foot{display:flex;justify-content:space-between;gap:12px;min-width:0;border-top:1px solid var(--line);padding:10px 16px;color:var(--muted);font-size:10px}
+#nova-root .neos-preview-foot span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#nova-root .neos-preview-empty,#nova-root .neos-preview-loading,#nova-root .neos-browser-state{display:grid;justify-items:center;align-content:center;text-align:center;gap:10px;min-height:310px;color:var(--muted);padding:20px}
+#nova-root .neos-preview-empty small{font-size:11px;opacity:.7}
+#nova-root .neos-empty-symbol,#nova-root .neos-folder-emblem,#nova-root .neos-office-illustration{display:grid;place-items:center;width:70px;height:70px;border-radius:19px;color:var(--accent);background:var(--accent-soft);margin-bottom:4px}
+#nova-root .neos-preview-loading{min-height:330px}
+#nova-root .neos-image-preview{display:grid;place-items:center;width:100%;height:100%}
+#nova-root .neos-image-preview img,#nova-root .neos-office-thumb{max-width:100%;max-height:62vh;object-fit:contain;border-radius:10px}
+#nova-root .neos-text-preview{width:100%;max-height:64vh;margin:0;padding:17px 18px;background:rgba(5,12,27,.4);border:1px solid var(--line);border-radius:10px;overflow:auto;white-space:pre-wrap;font:12px/1.65 ui-monospace,Consolas,monospace;color:var(--text)}
+#nova-root .neos-table-preview{width:100%;max-height:64vh;overflow:auto;border:1px solid var(--line);border-radius:10px}
+#nova-root .neos-table-preview table{width:100%;border-collapse:collapse;white-space:nowrap;font-size:11px}
+#nova-root .neos-table-preview th,#nova-root .neos-table-preview td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line)}
+#nova-root .neos-table-preview th{position:sticky;top:0;background:var(--panel-3)}
+#nova-root .neos-pdf-container{width:100%}
+#nova-root .neos-pdf-preview{width:100%;height:64vh;background:#fff;border:0;border-radius:10px}
+#nova-root .neos-folder-preview,#nova-root .neos-office-preview{display:grid;justify-items:center;align-content:center;gap:14px;min-height:360px;text-align:center;padding:18px}
+#nova-root .neos-office-preview strong{font-size:14px}
+#nova-root .neos-office-preview>span{color:var(--muted)}
+#nova-root .neos-preview-meta{display:grid;gap:8px;min-width:0;width:100%}
+#nova-root .neos-preview-meta span{color:var(--muted);font-size:11px}
+#nova-root .neos-preview-meta code{display:block;padding:12px 14px;border-radius:9px;border:1px solid var(--line);background:var(--panel-3);word-break:break-all;white-space:pre-wrap;font-size:11px}
+#nova-root .neos-spinner{display:inline-block;width:27px;height:27px;border:2px solid var(--line-strong);border-top-color:var(--accent);border-radius:50%;animation:neos-spin 1s linear infinite}
+
+/* Secondary widgets */
+#nova-root .neos-stat-main{font-size:clamp(24px,2.2vw,34px);font-weight:770;letter-spacing:-.055em;margin:10px 0}
+#nova-root .neos-meter{width:100%;height:6px;border-radius:99px;overflow:hidden;background:var(--panel-3);margin:14px 0 8px}
+#nova-root .neos-meter span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+#nova-root .neos-subtle{font-size:11px;color:var(--muted)}
+#nova-root .neos-clock{font-size:clamp(26px,2.9vw,42px);font-weight:750;line-height:1.2;letter-spacing:-.055em;margin:8px 0}
+#nova-root .neos-list{display:grid;gap:6px}
+#nova-root .neos-item{display:flex;align-items:center;gap:11px;min-height:52px;width:100%;text-align:left;padding:10px;background:transparent;border:1px solid transparent;border-radius:10px;color:var(--text)}
+#nova-root .neos-item:hover{background:var(--panel-2);border-color:var(--line)}
+#nova-root .neos-item-icon{display:grid;place-items:center;width:33px;height:33px;border-radius:9px;background:var(--accent-soft);color:var(--accent);flex-shrink:0}
+#nova-root .neos-item-title{display:grid;gap:4px;min-width:0;flex:1}
+#nova-root .neos-item-title strong{font-size:12px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#nova-root .neos-item-title small{color:var(--muted);font-size:10px}
+#nova-root .neos-item-meta{font-size:10px;color:var(--muted);white-space:nowrap}
+#nova-root .neos-event-bar{width:3px;align-self:stretch;border-radius:99px}
+#nova-root .neos-metric-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#nova-root .neos-metric{display:grid;gap:7px;padding:14px;border-radius:10px;background:var(--panel-2)}
+#nova-root .neos-metric strong{font-size:25px;font-weight:750;line-height:1}
+#nova-root .neos-metric span{font-size:10px;color:var(--muted)}
+#nova-root .neos-note{width:100%;min-height:170px;resize:vertical;color:var(--text);background:var(--panel-2);border:1px solid var(--line);padding:14px;border-radius:10px}
+#nova-root .neos-note-tools{display:flex;justify-content:flex-end;margin-top:10px}
+#nova-root .neos-link-grid,#nova-root .neos-hub-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:9px}
+#nova-root .neos-link-card{display:flex;align-items:center;gap:9px;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2);font-size:12px}
+#nova-root .neos-link-card span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#nova-root .neos-link-card:hover{border-color:var(--line-strong)}
+#nova-root .neos-empty{display:grid;place-items:center;min-height:100px;padding:15px;color:var(--muted);font-size:12px}
+#nova-root .neos-footer{display:flex;justify-content:space-between;padding:24px 3px;color:var(--muted);font-size:10px;letter-spacing:.06em}
+
+/* App launcher: one catalogue, one configurable placement */
+#nova-root .neos-hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
+#nova-root .neos-hub-grid.is-compact{grid-template-columns:repeat(auto-fill,minmax(106px,1fr))}
+#nova-root .neos-app{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:14px;min-height:136px;padding:15px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--panel-2),var(--panel));transition:transform .23s,border-color .23s,background .23s,box-shadow .23s}
+#nova-root .neos-app:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--app) 40%,var(--line));background:linear-gradient(180deg,var(--panel-3),var(--panel));box-shadow:0 16px 32px rgba(0,0,0,.18)}
+#nova-root .neos-app-glyph{display:grid;place-items:center;width:47px;height:47px;border-radius:13px;background:color-mix(in srgb,var(--app) 11%,var(--panel));color:var(--app)}
+#nova-root .neos-app-visual{display:block}
+#nova-root .neos-app-tile{display:block;width:66px;height:66px;object-fit:contain;filter:drop-shadow(0 12px 22px rgba(0,0,0,.18))}
+#nova-root .neos-app-meta{display:flex;flex-direction:column;gap:2px}
+#nova-root .neos-app-meta small{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+#nova-root .neos-app-label{font-size:13px;font-weight:720}
+
+/* Modal surfaces */
+#nova-root .neos-overlay,#nova-root .neos-pop-layer,#nova-root .neos-fullscreen-overlay{position:fixed;inset:0;z-index:65;background:rgba(2,7,18,.65);display:grid;padding:20px;backdrop-filter:blur(7px)}
+#nova-root .neos-overlay{place-items:stretch end;padding:0}
+#nova-root .neos-editor{width:min(525px,100%);height:100%;max-height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:var(--panel);border-left:1px solid var(--line);box-shadow:-14px 0 55px rgba(0,0,0,.34);overflow:hidden}
+#nova-root .neos-editor-head,#nova-root .neos-editor-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:19px 23px;border-bottom:1px solid var(--line)}
+#nova-root .neos-editor-head h2{font-size:18px;margin:0;font-weight:740}
+#nova-root .neos-editor-foot{border-top:1px solid var(--line);border-bottom:0}
+#nova-root .neos-editor-foot>div{display:flex;gap:8px;align-items:center}
+#nova-root .neos-editor-foot>span{font-size:10px;color:var(--muted)}
+#nova-root .neos-editor-body{padding:21px 23px 32px;overflow:auto;display:grid;align-content:start;gap:24px}
+#nova-root .neos-editor-body section{display:grid;gap:12px}
+#nova-root .neos-editor-body h3{font-size:12px;letter-spacing:.04em;font-weight:740;margin:0}
+#nova-root .neos-choice-set{display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:7px}
+#nova-root .neos-choice,#nova-root .neos-check{display:flex;align-items:center;gap:9px;min-width:0;padding:10px 11px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:11px}
+#nova-root .neos-choice:has(input:checked),#nova-root .neos-check:has(input:checked){border-color:color-mix(in srgb,var(--accent) 34%,var(--line));background:var(--accent-soft)}
+#nova-root .neos-choice input,#nova-root .neos-check input{accent-color:var(--accent)}
+#nova-root .neos-pref-list{display:grid;gap:2px}
+#nova-root .neos-pref-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}
+#nova-root .neos-pref-row .neos-check{border:0;background:transparent;padding:6px}
+#nova-root .neos-pref-tools{display:flex;gap:6px;align-items:center}
+#nova-root .neos-pref-tools select{height:34px;min-width:72px;font-size:11px}
+#nova-root .neos-pref-tools .neos-iconbtn{height:32px;width:32px;min-height:32px}
+#nova-root .neos-app-picks,#nova-root .neos-custom-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#nova-root .neos-link-edit{grid-column:1/-1;display:grid;grid-template-columns:1fr 1.3fr auto;gap:8px}
+#nova-root .neos-link-edit input{min-width:0;width:100%;height:38px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--panel-2);color:var(--text)}
+#nova-root .neos-pop-layer{place-items:start center;padding-top:min(10vh,84px)}
+#nova-root .neos-hub-pop{display:grid;gap:16px;width:min(880px,100%);max-height:82vh;padding:22px;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:19px;box-shadow:0 30px 110px rgba(0,0,0,.5)}
+#nova-root .neos-hub-pop>header{display:flex;justify-content:space-between;gap:10px;align-items:center}
+#nova-root .neos-hub-header-title{display:grid;gap:4px}
+#nova-root .neos-hub-header-title strong{font-size:19px;font-weight:750}
+#nova-root .neos-hub-header-title span{color:var(--muted);font-size:11px}
+#nova-root .neos-hub-shell,#nova-root .neos-hub-main{display:grid;gap:18px}
+#nova-root .neos-hub-links{padding-top:15px;border-top:1px solid var(--line)}
+#nova-root .neos-context-overlay{place-items:center}
+#nova-root .neos-context-menu{display:grid;gap:3px;min-width:280px;max-width:90vw;padding:9px;background:var(--panel);border:1px solid var(--line);border-radius:13px;box-shadow:0 20px 70px rgba(0,0,0,.4)}
+#nova-root .neos-context-title{padding:10px 11px;color:var(--muted);font-size:11px;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#nova-root .neos-context-menu button,#nova-root .neos-context-menu a{display:flex;align-items:center;gap:10px;width:100%;padding:11px;border:0;border-radius:8px;background:transparent;color:var(--text);text-align:left;font-size:12px}
+#nova-root .neos-context-menu .is-danger{color:#ff98ab}
+#nova-root .neos-context-menu button:hover,#nova-root .neos-context-menu a:hover{background:var(--panel-3)}
+#nova-root .neos-fullscreen-overlay{place-items:center}
+#nova-root .neos-fullscreen-panel{width:min(1200px,100%);height:min(88vh,950px);display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 100px rgba(0,0,0,.48)}
+#nova-root .neos-fullscreen-panel>header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 20px;border-bottom:1px solid var(--line)}
+#nova-root .neos-fullscreen-panel>header>div{display:flex;align-items:center;gap:8px}
+#nova-root .neos-fullscreen-content{display:grid;padding:14px;overflow:auto;min-height:0}
+#nova-root .neos-fullscreen-content .neos-preview{min-height:100%}
+#nova-root .neos-toast{position:fixed;bottom:18px;right:22px;z-index:80;padding:12px 16px;border-radius:11px;background:var(--panel);border:1px solid var(--line);box-shadow:0 15px 40px rgba(0,0,0,.3)}
+#nova-root .neos-toast-success{border-color:rgba(70,221,189,.3)}
+#nova-root .neos-toast-error{border-color:rgba(255,97,125,.3)}
+
+/* Responsive rules */
+@media (max-width:1250px){
+  #nova-root .neos-topbar{gap:12px}
+  #nova-root .neos-launch-chip{padding:9px}
+  #nova-root .neos-browser-main{grid-template-columns:1fr}
+  #nova-root .neos-browser-list-wrap,#nova-root .neos-preview{min-height:390px}
+  #nova-root .neos-file-list{max-height:420px}
+  #nova-root .neos-preview-body{min-height:320px}
+}
+@media (max-width:960px){
+  #nova-root .neos-card[data-size="3"],#nova-root .neos-card[data-size="4"],#nova-root .neos-card[data-size="6"],#nova-root .neos-card[data-size="8"]{grid-column:span 6}
+  #nova-root .neos-topbar{grid-template-columns:auto 1fr auto}
+  #nova-root .neos-launchbar{justify-content:flex-start}
+  #nova-root .neos-launch-chip span{display:none}
+  #nova-root .neos-hub-trigger span{display:none}
+}
+@media (max-width:700px){
+  #nova-root .neos-shell{padding:10px 10px 26px}
+  #nova-root .neos-topbar{min-height:60px;padding:9px 11px;border-radius:14px;grid-template-columns:1fr auto;gap:8px}
+  #nova-root .neos-brand{min-width:0;gap:8px}
+  #nova-root .neos-brand-mark{width:40px;height:40px;border-radius:12px}
+  #nova-root .neos-brand strong{font-size:17px}
+  #nova-root .neos-brand>div>span{font-size:8px}
+  #nova-root .neos-launchbar{display:none}
+  #nova-root .neos-top-actions{gap:5px}
+  #nova-root .neos-header-readout{display:none}
+  #nova-root .neos-btn{min-height:35px;padding:7px 10px}
+  #nova-root .neos-iconbtn{width:35px;height:35px;min-height:35px}
+  #nova-root .neos-btn-primary span{display:none}
+  #nova-root .neos-grid-cards{grid-template-columns:minmax(0,1fr);gap:11px}
+  #nova-root .neos-card[data-size]{grid-column:span 1}
+  #nova-root .neos-card{padding:15px;border-radius:14px}
+  #nova-root .neos-explorer{padding:0}
+  #nova-root .neos-explorer .neos-card-head{padding:14px 15px}
+  #nova-root .neos-explorer .neos-card-body{padding:12px}
+  #nova-root .neos-browser-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  #nova-root .neos-search{grid-column:1/-1}
+  #nova-root .neos-browser-actions select{min-width:0;width:100%}
+  #nova-root .neos-browser-actions select:nth-of-type(2){grid-column:auto}
+  #nova-root .neos-browser-actions>a{display:none}
+  #nova-root .neos-browser-actions .neos-iconbtn{width:35px;height:35px;min-height:35px}
+  #nova-root .neos-breadcrumb{flex-wrap:wrap}
+  #nova-root .neos-browser-total{display:none}
+  #nova-root .neos-browser-list-wrap,#nova-root .neos-preview{min-height:310px}
+  #nova-root .neos-file-list{max-height:350px}
+  #nova-root .neos-preview-body{min-height:280px}
+  #nova-root .neos-list-caption{display:none}
+  #nova-root .neos-file-main{grid-template-columns:36px minmax(0,1fr) 56px;gap:7px}
+  #nova-root .neos-file-size{font-size:10px}
+  #nova-root .neos-preview-title strong{max-width:165px}
+  #nova-root .neos-preview-actions .neos-iconbtn{width:30px;height:30px;min-height:30px}
+  #nova-root .neos-hub-grid,#nova-root .neos-hub-grid.is-compact{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  #nova-root .neos-app{min-height:108px;padding:12px;gap:14px}
+  #nova-root .neos-app-glyph{width:42px;height:42px}
+  #nova-root .neos-editor{width:100%;border-left:0}
+  #nova-root .neos-editor-body{padding:17px}
+  #nova-root .neos-editor-foot{padding:14px}
+  #nova-root .neos-choice-set{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #nova-root .neos-pref-row{grid-template-columns:1fr;gap:4px}
+  #nova-root .neos-pref-tools{justify-content:flex-end}
+  #nova-root .neos-link-edit{grid-template-columns:1fr;gap:6px}
+  #nova-root .neos-pop-layer,#nova-root .neos-fullscreen-overlay{padding:10px}
+  #nova-root .neos-hub-pop{padding:15px;max-height:94vh}
+  #nova-root .neos-fullscreen-panel{height:95vh}
+}
+@media (prefers-reduced-motion:reduce){
+  #nova-root .neos-ambient-mesh,#nova-root .neos-ambient-beam,#nova-root .neos-ambient-aurora,#nova-root .neos-spinner{animation:none!important}
+  #nova-root .neos-datafield{display:none!important}
+  #nova-root .neos-card,#nova-root .neos-btn,#nova-root .neos-iconbtn,#nova-root .neos-launch-chip,#nova-root .neos-file-row,#nova-root .neos-app{transition:none!important}
+}
+@keyframes neos-spin{to{transform:rotate(360deg)}}
+@keyframes neos-mesh{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(3%, -2%,0)}}
+@keyframes neos-beam{0%{transform:translateX(-6%)}100%{transform:translateX(6%)}}
+
+/* NEOS 0.5 — Cyber Flat UI Kit integration. All rules scoped to Neos. */
+#nova-root {
+  --bg:#07111f;
+  --panel:#0c192b;
+  --panel-2:#112035;
+  --panel-3:#172940;
+  --line:#263d52;
+  --line-strong:#375b70;
+  --text:#f0f6ff;
+  --muted:#9db2c6;
+  --accent:#22ddd6;
+  --accent-2:#a987fa;
+  --accent-soft:rgba(34,221,214,.105);
+  --radius:18px;
+}
+#nova-root.neos-light{
+  --bg:#eaf1f9;--panel:#fff;--panel-2:#f4f8fc;--panel-3:#eaf1f9;
+  --line:#cedae7;--line-strong:#a2bed0;--text:#16273d;--muted:#597089;
+}
+#nova-root[data-accent="cyan"]{--accent:#22ddd6;--accent-2:#a987fa;--accent-soft:rgba(34,221,214,.11)}
+#nova-root .neos-shell{padding:15px clamp(14px,1.8vw,32px) 28px;}
+#nova-root .neos-layout{max-width:1920px;}
+#nova-root .neos-topbar{
+  position:relative;top:auto;min-height:72px;margin-bottom:10px;
+  background:rgba(5,16,32,.88);
+  border:1px solid rgba(77,122,156,.38);
+  border-radius:17px;
+  display:grid;grid-template-columns:auto minmax(200px,1fr) auto;gap:20px;
+  box-shadow:0 8px 26px rgba(1,8,20,.25),inset 0 1px 0 rgba(255,255,255,.035);
+}
+#nova-root .neos-topbar::after{content:"";position:absolute;bottom:-1px;left:16%;width:32%;height:1px;background:linear-gradient(90deg,transparent,rgba(44,218,220,.68),transparent);pointer-events:none;}
+#nova-root .neos-brand{min-width:220px;max-width:260px;}
+#nova-root .neos-brand-mark{width:235px;height:48px;border:0!important;border-radius:0;background:none!important;box-shadow:none!important;}
+#nova-root .neos-brand-mark img{width:100%;height:100%;object-fit:contain;object-position:left center;}
+#nova-root .neos-topsearch{display:flex;align-items:center;gap:12px;width:min(650px,100%);margin:0 auto;height:40px;background:#0d1b2d;border:1px solid #304c63;border-radius:11px;color:#98b3c9;padding:0 14px;font-size:13px;}
+#nova-root .neos-topsearch span:nth-child(2){flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+#nova-root .neos-topsearch kbd{font-size:10px;border:1px solid #29465b;border-radius:5px;padding:2px 6px;}
+#nova-root .neos-workspace-tabs{
+  display:flex;gap:5px;min-height:58px;align-items:center;padding:7px 10px;margin-bottom:12px;
+  border:1px solid rgba(77,122,156,.30);border-radius:17px;
+  background:#0b1c2b url('../img/kit/panels/navigation-strip.svg') center center/100% 100% no-repeat;
+  overflow:auto hidden;scrollbar-width:thin;
+}
+#nova-root .neos-workspace-tab{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;flex:1 0 auto;
+  min-width:94px;max-width:190px;min-height:42px;padding:8px 14px;
+  color:#afc2d3;border:1px solid transparent;border-radius:13px;background:transparent;
+  font-size:13px;font-weight:660;white-space:nowrap;
+  transition:background .22s ease,color .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;
+}
+#nova-root .neos-workspace-tab img{width:22px;height:22px;object-fit:contain;}
+#nova-root .neos-workspace-tab:hover{color:#f0f6ff;background:rgba(26,52,77,.7);transform:translateY(-1px);}
+#nova-root .neos-workspace-tab.is-active{color:#ecfffd;background:linear-gradient(180deg,rgba(13,90,100,.65),rgba(13,65,78,.8));border-color:rgba(34,221,214,.72);box-shadow:0 0 0 1px rgba(34,221,214,.04),0 8px 20px rgba(0,146,156,.11);}
+#nova-root .neos-hero{
+  position:relative;display:flex;align-items:center;justify-content:space-between;gap:18px;
+  min-height:94px;padding:16px clamp(18px,2vw,30px);margin-bottom:14px;
+  border:1px solid rgba(57,179,174,.4);border-radius:18px;overflow:hidden;
+  background:#0b1e2b url('../img/kit/panels/heading-cyber.svg') center center/100% 100% no-repeat;
+}
+#nova-root .neos-hero-head{z-index:1;min-width:0;}
+#nova-root .neos-hero-eyebrow{color:#20d8cb;font-size:10px;font-weight:800;letter-spacing:.16em;}
+#nova-root .neos-hero-eyebrow span{color:#d9a15d;margin:0 4px;}
+#nova-root .neos-hero h1{margin:4px 0 0;font-size:clamp(22px,2.5vw,34px);line-height:1.12;font-weight:780;letter-spacing:-.04em;}
+#nova-root .neos-hero-meta{z-index:1;display:flex;align-items:center;gap:12px;font-size:12px;color:#b7c7dd;}
+#nova-root .neos-dot{display:block;width:7px;height:7px;border-radius:50%;background:#22ddd6;box-shadow:0 0 11px rgba(34,221,214,.8);}
+#nova-root .neos-hero-clock{padding-left:13px;border-left:1px solid rgba(180,220,235,.25);font-size:21px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;}
+#nova-root .neos-grid-cards{gap:14px;}
+#nova-root .neos-card{border:1px solid rgba(65,99,126,.55);background:linear-gradient(180deg,rgba(13,27,45,.97),rgba(10,23,41,.96));box-shadow:0 9px 34px rgba(0,3,12,.16);border-radius:18px;}
+#nova-root .neos-card[data-widget="storage"]{border-left-color:rgba(34,221,214,.5);}
+#nova-root .neos-card[data-widget="clock"]{border-left-color:rgba(245,189,87,.6);}
+#nova-root .neos-card-name svg{color:#22ddd6;}
+#nova-root .neos-card-head{padding-bottom:2px;}
+#nova-root .neos-meter span{background:linear-gradient(90deg,#22ddd6,#3bc8fa,#a987fa);}
+#nova-root .neos-explorer .neos-card-head{background:linear-gradient(180deg,rgba(18,45,63,.45),transparent);}
+#nova-root .neos-app{min-height:122px;background:#102138;border-color:#30485c;}
+#nova-root .neos-app:hover{background:#182a42;border-color:rgba(34,221,214,.5);}
+#nova-root .neos-app-tile{width:54px;height:54px;filter:none;}
+#nova-root .neos-app-meta small{display:none;}
+#nova-root .neos-app-meta .neos-app-label{font-size:12px;}
+#nova-root .neos-hub-grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));}
+#nova-root .neos-browser-list-wrap,#nova-root .neos-preview{border-color:#294059;}
+#nova-root .neos-file-row.is-active{background:rgba(49,100,146,.16);border-color:rgba(34,221,214,.55);}
+#nova-root .neos-file-row:hover{background:rgba(58,102,143,.13);}
+#nova-root .neos-preview-head{background:#0f2135;}
+#nova-root .neos-browser-actions .neos-btn{white-space:nowrap;}
+#nova-root .neos-browser-actions .neos-btn[data-action="upload-trigger"]{background:#0e666c;border-color:#1db4b2;}
+#nova-root .neos-browser-actions .neos-btn[data-action="new-folder"]{background:#18344c;border-color:#315c78;}
+#nova-root .neos-module{border:1px solid rgba(65,99,126,.55);border-radius:18px;background:rgba(12,25,43,.96);overflow:hidden;min-height:480px;box-shadow:0 8px 28px rgba(0,3,12,.18);}
+#nova-root .neos-module-header{display:flex;justify-content:space-between;align-items:center;gap:18px;min-height:98px;padding:22px 26px 18px;background:linear-gradient(180deg,rgba(19,48,66,.56),transparent);border-bottom:1px solid #294156;}
+#nova-root .neos-module-header h2{font-size:22px;font-weight:760;margin:3px 0 0;letter-spacing:-.035em;}
+#nova-root .neos-module-header p{margin:4px 0 0;font-size:12px;color:var(--muted);}
+#nova-root .neos-module-eyebrow{font-size:10px;letter-spacing:.18em;color:#31d3d3;font-weight:780;}
+#nova-root .neos-module-actions{display:flex;gap:9px;flex-wrap:wrap;}
+#nova-root .neos-module-body{padding:18px 24px 26px;min-height:350px;}
+#nova-root .neos-module-loader{display:flex;align-items:center;justify-content:center;gap:13px;min-height:260px;color:var(--muted);}
+#nova-root .neos-spinner{display:inline-block;width:25px;height:25px;border:2px solid #264355;border-top-color:#22ddd6;border-radius:50%;animation:neos-module-spin 1s linear infinite;}
+@keyframes neos-module-spin{to{transform:rotate(360deg)}}
+#nova-root .neos-module-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;min-height:320px;color:var(--muted);text-align:center;}
+#nova-root .neos-module-empty strong{font-size:14px;color:var(--text);font-weight:660;}
+#nova-root .neos-module-empty-mark{display:grid;place-items:center;width:70px;height:70px;border:1px solid #284759;border-radius:20px;color:#2ecbcf;background:#102638;}
+#nova-root .neos-module-small{color:var(--muted);font-size:11px;margin:13px 0 0;}
+#nova-root .neos-photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;}
+#nova-root .neos-photo-item{position:relative;display:block;min-width:0;aspect-ratio:1.2;border:1px solid #345066;border-radius:15px;overflow:hidden;background:#10243b;padding:0;transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;}
+#nova-root .neos-photo-item img{display:block;width:100%;height:100%;object-fit:cover;}
+#nova-root .neos-photo-item span{position:absolute;bottom:0;left:0;right:0;padding:23px 12px 11px;background:linear-gradient(transparent,rgba(1,11,22,.9));color:#fff;text-align:left;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#nova-root .neos-photo-item:hover{transform:translateY(-4px);border-color:#28d6ce;box-shadow:0 16px 42px rgba(0,5,13,.3);}
+#nova-root .neos-photo-lightbox{width:min(1100px,98vw);height:min(86vh,800px);display:grid;grid-template-rows:auto minmax(0,1fr) auto;border:1px solid #3d627b;border-radius:20px;overflow:hidden;background:#07111f;box-shadow:0 25px 95px rgba(0,0,0,.5);}
+#nova-root .neos-photo-lightbox header,#nova-root .neos-photo-lightbox footer{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 18px;background:#0c192b;border-bottom:1px solid #294358;}
+#nova-root .neos-photo-lightbox footer{border-top:1px solid #294358;border-bottom:0;}
+#nova-root .neos-photo-lightbox>div{display:grid;place-items:center;overflow:hidden;padding:18px;}
+#nova-root .neos-photo-lightbox>div img{max-width:100%;max-height:100%;object-fit:contain;}
+#nova-root .neos-notes-layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:16px;min-height:510px;}
+#nova-root .neos-notes-sidebar{padding:8px;border-radius:12px;background:#0a1728;border:1px solid #263c51;overflow:auto;max-height:620px;}
+#nova-root .neos-note-row{display:grid;gap:5px;width:100%;padding:13px;border:1px solid transparent;border-radius:10px;background:transparent;text-align:left;color:var(--text);}
+#nova-root .neos-note-row strong{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#nova-root .neos-note-row span{font-size:11px;color:var(--muted);}
+#nova-root .neos-note-row:hover{background:#182c40;}
+#nova-root .neos-note-row.is-active{background:#133b49;border-color:rgba(34,221,214,.35);}
+#nova-root .neos-notes-main{min-width:0;}
+#nova-root .neos-note-editor{display:grid;grid-template-rows:auto minmax(220px,1fr) auto;height:100%;min-height:450px;border:1px solid #2b4357;border-radius:13px;background:#0b182a;overflow:hidden;}
+#nova-root .neos-note-title-input{min-height:68px;padding:20px;border:0;border-bottom:1px solid #2b4357;background:#0b182a;color:#f0f6ff;font-size:20px;font-weight:750;outline:0;}
+#nova-root .neos-note-content-input{width:100%;height:100%;min-height:260px;padding:20px;border:0;background:#0b182a;color:#eaf0fb;font:14px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;resize:vertical;outline:0;}
+#nova-root .neos-note-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;border-top:1px solid #2b4357;color:#9db2c6;font-size:11px;}
+#nova-root .neos-notes-error,#nova-root .neos-module-empty-small{padding:18px;color:var(--muted);font-size:12px;}
+#nova-root .neos-board-nav{display:flex;gap:9px;overflow:auto;padding-bottom:18px;}
+#nova-root .neos-board-chip{flex:0 0 auto;border:1px solid #345066;border-radius:10px;padding:10px 15px;background:#13263b;color:var(--text);font-weight:680;}
+#nova-root .neos-board-chip.is-active{border-color:#22ddd6;background:#113d4b;}
+#nova-root .neos-kanban{display:grid;grid-auto-columns:minmax(240px,1fr);grid-auto-flow:column;gap:15px;overflow:auto hidden;padding-bottom:14px;}
+#nova-root .neos-stack{display:flex;flex-direction:column;gap:12px;min-height:380px;padding:15px;border:1px solid #294357;border-radius:14px;background:#091827;}
+#nova-root .neos-stack header{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+#nova-root .neos-stack header h3{margin:0;font-size:14px;font-weight:740;}
+#nova-root .neos-stack header span{font-size:11px;color:var(--muted);}
+#nova-root .neos-stack-cards{display:grid;gap:9px;align-content:start;flex:1;}
+#nova-root .neos-deck-card{display:grid;gap:9px;padding:15px;border:1px solid #314a5e;border-radius:11px;background:#12263c;}
+#nova-root .neos-deck-card small{color:var(--muted);}
+#nova-root .neos-stack-add{display:flex;align-items:center;justify-content:center;gap:6px;min-height:38px;border:1px dashed #40677c;background:#113040;color:#aeece8;border-radius:9px;}
+#nova-root .neos-lite-list{display:grid;align-content:start;gap:10px;}
+#nova-root .neos-lite-item{display:flex;gap:16px;align-items:center;min-height:60px;padding:14px 17px;border:1px solid #2a4355;background:#102239;border-radius:12px;}
+#nova-root .neos-lite-item strong{flex:1;}
+#nova-root .neos-lite-item span:last-child{color:var(--muted);font-size:12px;}
+#nova-root .neos-color-dot{width:9px;height:9px;border-radius:50%;}
+#nova-root .neos-footer{margin-top:0;}
+#nova-root.neos-light .neos-workspace-tabs,#nova-root.neos-light .neos-module,#nova-root.neos-light .neos-card{background:var(--panel);}
+#nova-root.neos-light .neos-module-header{background:var(--panel-2);}
+@media(max-width:1160px){
+ #nova-root .neos-brand{min-width:150px;max-width:190px;}#nova-root .neos-brand-mark{width:185px;}
+ #nova-root .neos-topsearch{display:none;}
+ #nova-root .neos-topbar{grid-template-columns:minmax(0,1fr) auto;}
+ #nova-root .neos-workspace-tab{min-width:106px;flex:0 0 auto;}
+}
+@media(max-width:760px){
+ #nova-root .neos-shell{padding:10px 10px 24px;}
+ #nova-root .neos-topbar{min-height:58px;padding:8px 11px;}
+ #nova-root .neos-brand{min-width:115px;max-width:175px;}
+ #nova-root .neos-brand-mark{width:165px;height:42px;}
+ #nova-root .neos-workspace-tabs{min-height:54px;padding:6px 8px;margin-bottom:9px;}
+ #nova-root .neos-workspace-tab{padding:9px 10px;min-width:98px;min-height:40px;font-size:12px;}
+ #nova-root .neos-hero{min-height:75px;padding:14px 16px;}
+ #nova-root .neos-hero-meta span:nth-child(2){display:none;}
+ #nova-root .neos-hero-clock{font-size:16px;}
+ #nova-root .neos-module-header{padding:17px;flex-wrap:wrap;}
+ #nova-root .neos-module-body{padding:13px;}
+ #nova-root .neos-notes-layout{grid-template-columns:1fr;gap:10px;}
+ #nova-root .neos-notes-sidebar{max-height:150px;}
+ #nova-root .neos-photo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+ #nova-root .neos-kanban{grid-auto-columns:minmax(220px,86%);}
+ #nova-root .neos-module-actions{width:100%;}
+ #nova-root .neos-module-actions a{flex:1;justify-content:center;}
+}
+@media(prefers-reduced-motion:reduce){
+ #nova-root .neos-workspace-tab,#nova-root .neos-photo-item{transition:none!important;}
+ #nova-root .neos-spinner{animation:none!important;}
+}
+
+#nova-root .neos-topsearch{color:#9db2c6;text-align:left;cursor:pointer;font-weight:500;}
+#nova-root .neos-topsearch:hover{border-color:#22ddd6;background:#122a3a;}
+
+/* Neos 0.5.1 — Home/Files separation, lightweight app icons, slide workspaces */
+#nova-root {
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior-y:contain;
+  touch-action:pan-y;
+  scrollbar-gutter:stable;
+}
+#nova-root #neos-surface { display:block; min-height:100%; }
+#nova-root .neos-shell {min-height:100%; padding-bottom:56px; overflow:visible;}
+#nova-root .neos-layout {min-height:100%;}
+#nova-root .neos-workspace-stage {min-width:0; min-height:310px; position:relative; transform-origin:center center;}
+#nova-root .neos-workspace-tabs {position:relative; z-index:2;}
+#nova-root .neos-workspace-tab {position:relative; isolation:isolate;}
+#nova-root .neos-workspace-tab::after {content:"";position:absolute;bottom:4px;left:22%;right:22%;height:2px;border-radius:99px;background:linear-gradient(90deg,transparent,#24e6df,transparent);opacity:0;transform:scaleX(.4);transition:opacity .28s ease,transform .32s cubic-bezier(.16,1,.3,1);}
+#nova-root .neos-workspace-tab.is-active::after {opacity:1;transform:scaleX(1);}
+#nova-root .neos-home-grid .neos-card {align-self:start;}
+#nova-root .neos-home-files-head {display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:3px 0 12px;border-bottom:1px solid var(--line);}
+#nova-root .neos-home-file-stats {display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px;}
+#nova-root .neos-home-file-stats strong {font-size:22px;line-height:1;color:var(--text);font-variant-numeric:tabular-nums;}
+#nova-root .neos-home-pins {display:flex;gap:8px;flex-wrap:wrap;padding:11px 0;}
+#nova-root .neos-home-pins button {display:flex;gap:8px;align-items:center;background:var(--panel-2);border:1px solid var(--line);padding:8px 11px;border-radius:10px;color:var(--text);}
+#nova-root .neos-home-pins button:hover {border-color:var(--accent);background:var(--panel-3);}
+#nova-root .neos-home-files-list {display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:8px;margin-top:12px;}
+#nova-root .neos-home-file {display:flex;align-items:center;gap:10px;padding:13px 11px;background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:11px;text-align:left;min-width:0;transition:background .2s ease,border-color .2s ease,transform .2s ease;}
+#nova-root .neos-home-file:hover {background:var(--panel-3);border-color:rgba(34,221,214,.45);transform:translateY(-2px);}
+#nova-root .neos-home-file>span {display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;background:var(--accent-soft);border-radius:8px;color:var(--accent);}
+#nova-root .neos-home-file strong {font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1;}
+#nova-root .neos-home-file small {font-size:11px;color:var(--muted);white-space:nowrap;}
+#nova-root .neos-home-file>svg {flex-shrink:0;color:var(--muted);}
+#nova-root .neos-files-workspace .neos-explorer {width:100%;margin-bottom:16px;}
+#nova-root .neos-files-workspace .neos-browser-main {min-height:560px;}
+#nova-root .neos-hub-icons,#nova-root .neos-hub-icons.is-compact {grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:12px;}
+#nova-root .neos-hub-icons .neos-app {
+  position:relative;min-height:108px;padding:10px 8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  background:transparent!important;border:1px solid transparent!important;box-shadow:none!important;
+  color:var(--text);border-radius:14px;
+  transition:background .24s ease,transform .25s cubic-bezier(.16,1,.3,1),filter .22s ease;
+}
+#nova-root .neos-hub-icons .neos-app:hover,
+#nova-root .neos-hub-icons .neos-app:focus-visible {transform:translateY(-5px);background:rgba(41,93,127,.22)!important;filter:drop-shadow(0 8px 14px rgba(16,209,231,.12));}
+#nova-root .neos-hub-icons .neos-app-visual {display:grid;place-items:center;width:56px;height:56px;background:none;border:0;box-shadow:none;}
+#nova-root .neos-hub-icons .neos-app-visual img,#nova-root .neos-hub-icons .neos-app-visual svg {display:block;width:52px;height:52px;object-fit:contain;}
+#nova-root .neos-hub-icons .neos-app-meta {gap:2px;text-align:center;align-items:center;}
+#nova-root .neos-hub-icons .neos-app-label {font-size:12px;font-weight:650;}
+#nova-root .neos-hub-icons .neos-app.is-unavailable {opacity:.55;}
+#nova-root .neos-hub-icons .neos-app.is-unavailable small {font-size:10px;color:var(--muted);}
+#nova-root .neos-hub-icons.is-compact .neos-app-visual {width:46px;height:46px;}
+#nova-root .neos-hub-icons.is-compact .neos-app-visual img,#nova-root .neos-hub-icons.is-compact .neos-app-visual svg {width:43px;height:43px;}
+#nova-root .neos-hub-icons.is-compact .neos-app {min-height:96px;}
+@media (max-width:760px){
+ #nova-root .neos-hub-icons,#nova-root .neos-hub-icons.is-compact {grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;}
+ #nova-root .neos-home-files-list {grid-template-columns:1fr;}
+ #nova-root .neos-home-files-head {align-items:flex-start;}
+ #nova-root .neos-files-workspace .neos-browser-main {min-height:0;}
+}
+@media (prefers-reduced-motion: reduce){
+ #nova-root .neos-workspace-stage,#nova-root .neos-workspace-tab::after,#nova-root .neos-hub-icons .neos-app,#nova-root .neos-home-file {animation:none!important;transition:none!important;}
+}
+#nova-root[data-motion="off"] .neos-workspace-stage,#nova-root[data-motion="off"] .neos-workspace-tab::after,#nova-root[data-motion="off"] .neos-hub-icons .neos-app {animation:none!important;transition:none!important;}
+
+/* Compact clock calendar label must not overlap the time on small cards. */
+#nova-root .neos-clock {line-height:1.1; margin:10px 0 12px;}
+#nova-root .neos-clock + .neos-subtle {display:block;position:relative;line-height:1.55;max-width:100%;word-break:normal;white-space:normal;}
+#nova-root section.neos-clock {font-size:14px;line-height:1.48;letter-spacing:normal;font-weight:400;margin:0;}
+#nova-root section.neos-clock .neos-card-body > div.neos-clock {font-size:clamp(26px,2.9vw,42px);line-height:1.1;font-weight:750;letter-spacing:-.055em;margin:10px 0 12px;}
+
+/* ── Neos 0.5.2: adaptive layout and arrangement feedback ── */
+#nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-explorer,
+#nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-shortcuts {grid-column:span 8}
+#nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-storage,
+#nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-clock,
+#nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-summary {grid-column:span 4}
+#nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-files,
+#nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-calendar,
+#nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-tasks,
+#nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-links,
+#nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-notes {grid-column:span 6}
+#nova-root .neos-home-grid .neos-card[data-size="9"] {grid-column:span 9}
+#nova-root .neos-layout-toolbar {
+  position:sticky;top:78px;z-index:12;
+  display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  margin-bottom:12px;padding:12px 16px;
+  background:linear-gradient(105deg,rgba(19,60,80,.96),rgba(13,29,52,.98));
+  border:1px solid rgba(34,221,214,.38);border-radius:16px;
+  box-shadow:0 12px 30px rgba(0,0,0,.2),0 0 0 1px rgba(43,229,235,.05) inset;
+  backdrop-filter:blur(14px)
+}
+#nova-root .neos-layout-toolbar-heading {display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+#nova-root .neos-layout-toolbar-heading strong {font-size:13px;color:#e6fdfd;letter-spacing:.03em}
+#nova-root .neos-layout-toolbar-heading small {color:#a3bcd2;font-size:11px}
+#nova-root .neos-layout-pulse {display:block;width:10px;height:10px;background:#22ddd6;border-radius:50%;box-shadow:0 0 0 5px rgba(34,221,214,.11),0 0 18px rgba(34,221,214,.35);animation:neos-layout-pulse 1.8s ease-in-out infinite}
+#nova-root .neos-layout-toolbar-actions {display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#nova-root .neos-layout-toggle {min-height:35px;padding:8px 13px;color:#b5c9da;background:#112b41;border:1px solid #365469;border-radius:10px;font-size:12px;font-weight:700;transition:border-color .2s,color .2s,background .2s}
+#nova-root .neos-layout-toggle.is-active {color:#04191f;background:#22ddd6;border-color:#22ddd6}
+#nova-root .neos-layout-announce {margin:9px 4px 4px;font-size:11px;color:#8ea9ba}
+#nova-root .neos-pref-hint {border:1px solid rgba(34,221,214,.22);background:rgba(34,221,214,.065);border-radius:10px;padding:12px;color:var(--muted);font-size:12px;line-height:1.5}
+#nova-root .neos-arranging {position:relative;isolation:isolate;padding:13px;border:1px dashed rgba(39,217,216,.24);border-radius:20px;gap:14px;
+  background-image:linear-gradient(rgba(75,171,197,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(75,171,197,.035) 1px,transparent 1px);background-size:48px 48px}
+#nova-root .neos-arranging .neos-card{transition:box-shadow .25s ease,border-color .25s ease,transform .25s ease;}
+#nova-root .neos-editable-card {min-height:144px;border-color:rgba(57,200,209,.35)!important;outline:1px solid rgba(42,204,215,.06);outline-offset:-4px;background-image:linear-gradient(180deg,rgba(14,40,62,.96),rgba(12,27,45,.95));}
+#nova-root .neos-editable-card:hover {border-color:rgba(47,225,228,.72)!important;box-shadow:0 16px 35px rgba(0,0,0,.21),0 0 0 1px rgba(34,221,214,.1) inset;}
+#nova-root .neos-editable-card .neos-card-head {flex-wrap:wrap;gap:10px;}
+#nova-root .neos-editable-card .neos-card-actions {display:block;width:100%;flex:1 1 100%;}
+#nova-root .neos-widget-edit-controls {display:flex;align-items:center;justify-content:flex-start;gap:6px;flex-wrap:wrap;padding-top:6px;border-top:1px dashed rgba(88,168,186,.18);}
+#nova-root .neos-mini-action {display:grid;place-items:center;min-width:27px;height:29px;border:1px solid rgba(105,165,189,.24);border-radius:8px;background:#122b40;color:#bddde8;font-size:17px;line-height:1;transition:background .2s,border-color .2s,transform .2s}
+#nova-root .neos-mini-action:hover:not(:disabled),#nova-root .neos-mini-action:focus-visible {background:#1b4453;border-color:#31d5d5;color:#fff;transform:translateY(-1px)}
+#nova-root .neos-mini-action:disabled {opacity:.27;cursor:default}
+#nova-root .neos-drag-handle {cursor:grab;background:linear-gradient(180deg,#15636e,#135060);border-color:#26989b;color:#fff;touch-action:none}
+#nova-root .neos-drag-handle:active {cursor:grabbing}
+#nova-root .neos-widget-span {min-width:48px;white-space:nowrap;text-align:center;color:#92caca;font-size:11px;font-variant-numeric:tabular-nums}
+#nova-root .neos-arranging .neos-drop-before,#nova-root .neos-arranging .neos-drop-after {border-color:#31e7df!important;background:linear-gradient(180deg,rgba(34,221,214,.12),rgba(14,34,57,.93));box-shadow:0 0 0 2px rgba(40,225,221,.15),0 0 30px rgba(17,188,194,.12);}
+#nova-root .neos-arranging .neos-drop-before::before,#nova-root .neos-arranging .neos-drop-after::before {content:"";position:absolute;z-index:10;pointer-events:none;top:15px;bottom:15px;width:5px;border-radius:8px;background:#29e6e3;box-shadow:0 0 14px rgba(34,221,214,.9)}
+#nova-root .neos-arranging .neos-drop-before::before {left:-10px}
+#nova-root .neos-arranging .neos-drop-after::before {right:-10px}
+#nova-root .neos-arranging .neos-is-dragging {opacity:.33;transform:scale(.985);border-style:dashed}
+#nova-root .neos-arranging .neos-just-moved {animation:neos-card-land .65s cubic-bezier(.16,1,.3,1)}
+@keyframes neos-layout-pulse {50%{box-shadow:0 0 0 9px rgba(34,221,214,0),0 0 24px rgba(34,221,214,.6)}}
+@keyframes neos-card-land {0%{border-color:#37ebde;box-shadow:0 0 0 3px rgba(34,221,214,.3),0 0 40px rgba(34,221,214,.1)}100%{box-shadow:0 0 0 0 rgba(34,221,214,0),0 0 0 rgba(34,221,214,0)}}
+@media (min-width:701px) and (max-width:1120px){
+ #nova-root .neos-home-grid .neos-card[data-size="3"],#nova-root .neos-home-grid .neos-card[data-size="4"]{grid-column:span 6}
+ #nova-root .neos-home-grid .neos-card[data-size="8"],#nova-root .neos-home-grid .neos-card[data-size="9"]{grid-column:span 12}
+ #nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-card{grid-column:span 6}
+ #nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-explorer,#nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-shortcuts{grid-column:span 12}
+}
+@media (max-width:700px){
+ #nova-root .neos-home-grid .neos-card[data-size],#nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-card {grid-column:span 1}
+ #nova-root .neos-layout-toolbar {top:64px;padding:10px 12px;}
+ #nova-root .neos-layout-toolbar-heading small {display:none}
+ #nova-root .neos-arranging {padding:8px}
+ #nova-root .neos-mini-action {min-width:30px;height:32px}
+}
+@media (prefers-reduced-motion:reduce){
+ #nova-root .neos-layout-pulse,#nova-root .neos-just-moved {animation:none!important}
+ #nova-root .neos-editable-card,#nova-root .neos-mini-action {transition:none!important}
+}
+#nova-root[data-motion="off"] .neos-layout-pulse,#nova-root[data-motion="off"] .neos-just-moved {animation:none!important}
+
+/* Neos 0.5.3 — PNG256 launcher artwork / inline PDF / notes fallback */
+#nova-root .neos-hub-icons .neos-app-visual {width:72px;height:72px;}
+#nova-root .neos-hub-icons .neos-app-visual .neos-hub-png256 {
+  display:block;width:70px;height:70px;object-fit:contain;
+  filter:drop-shadow(0 5px 16px rgba(18,176,217,.15));
+  transition:transform .28s cubic-bezier(.2,.8,.2,1),filter .28s ease;
+}
+#nova-root .neos-hub-icons .neos-app:hover .neos-hub-png256,
+#nova-root .neos-hub-icons .neos-app:focus-visible .neos-hub-png256 {
+  transform:translateY(-3px) scale(1.075);
+  filter:drop-shadow(0 8px 20px rgba(18,176,217,.3));
+}
+#nova-root .neos-hub-icons .neos-app {min-height:124px;}
+#nova-root .neos-hub-icons.is-compact .neos-app-visual {width:54px;height:54px;}
+#nova-root .neos-hub-icons.is-compact .neos-app-visual .neos-hub-png256 {width:52px;height:52px;}
+#nova-root .neos-hub-icons.is-compact .neos-app {min-height:104px;}
+#nova-root .neos-pdf-container,
+#nova-root .neos-pdf-preview {min-width:0;width:100%;}
+#nova-root .neos-pdf-preview {height:min(76vh,860px);min-height:420px;border:0;display:block;background:#202c3c;border-radius:10px;}
+@media(max-width:760px){
+  #nova-root .neos-hub-icons .neos-app-visual {width:58px;height:58px;}
+  #nova-root .neos-hub-icons .neos-app-visual .neos-hub-png256 {width:56px;height:56px;}
+  #nova-root .neos-hub-icons .neos-app {min-height:110px;}
+  #nova-root .neos-pdf-preview {min-height:360px;}
+}
+@media(prefers-reduced-motion:reduce){
+  #nova-root .neos-hub-icons .neos-app-visual .neos-hub-png256 {transition:none!important;transform:none!important;}
+}
+
+
+/* NEOS 0.5.4 — dense masonry workspace, deck widget, refined motion */
+#nova-root .neos-home-grid{
+  grid-auto-flow:row dense;
+  grid-auto-rows:8px;
+  gap:14px;
+  align-items:stretch;
+}
+#nova-root .neos-home-grid > .neos-card{
+  align-self:stretch;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  will-change:auto;
+}
+#nova-root .neos-home-grid > .neos-card > .neos-card-head{flex:0 0 auto}
+#nova-root .neos-home-grid > .neos-card > .neos-card-body{flex:1 1 auto;min-height:0}
+#nova-root .neos-home-grid .neos-deck[data-size="3"],
+#nova-root .neos-home-grid .neos-deck[data-size="4"]{min-width:0}
+#nova-root .neos-deck-widget-boards{display:grid;gap:8px}
+#nova-root .neos-deck-board-row{width:100%;display:flex;align-items:center;gap:11px;padding:10px 11px;color:var(--text);background:var(--panel-2);border:1px solid var(--line);border-radius:11px;text-align:left;transition:background .22s,transform .22s,border-color .22s}
+#nova-root .neos-deck-board-row:hover{background:var(--panel-3);border-color:rgba(42,224,212,.44);transform:translateX(3px)}
+#nova-root .neos-deck-board-row strong{flex:1;font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#nova-root .neos-deck-board-row>span:last-child{color:var(--muted)}
+#nova-root .neos-deck-board-symbol{display:grid;place-items:center;width:32px;height:32px;flex:0 0 32px;color:var(--board-color);background:color-mix(in srgb,var(--board-color) 13%,transparent);border-radius:10px}
+#nova-root .neos-deck-widget-footer,#nova-root .neos-task-widget-footer{display:flex;justify-content:flex-end;align-items:center;padding-top:13px;margin-top:11px;border-top:1px solid var(--line)}
+#nova-root .neos-widget-state{display:flex;align-items:center;gap:10px;min-height:74px;color:var(--muted);font-size:12px}
+#nova-root .neos-widget-state>svg{color:var(--accent)}
+#nova-root .neos-widget-edit-controls .neos-edit-sep{width:1px;height:20px;background:rgba(118,196,220,.24);margin:0 2px}
+#nova-root .neos-widget-edit-controls .neos-height-indicator{min-width:52px;color:#cfb9ff}
+#nova-root .neos-widget-edit-controls button[data-action="widget-height"]{border-color:rgba(188,141,255,.34);color:#d3b7ff}
+#nova-root .neos-widget-edit-controls button[data-action="widget-height"]:hover:not(:disabled){background:rgba(135,97,218,.22);border-color:#b79aff}
+#nova-root .neos-pref-row .neos-pref-tools select[data-height]{min-width:84px}
+#nova-root .neos-workspace-tabs{isolation:isolate}
+#nova-root .neos-workspace-tab{transition:color .23s ease,transform .23s ease,background .23s ease,box-shadow .23s ease}
+#nova-root .neos-workspace-tab:hover{transform:translateY(-2px)}
+#nova-root .neos-workspace-tab .neos-tab-image{width:24px;height:24px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 0 5px rgba(46,204,247,.22))}
+#nova-root .neos-workspace-tab .neos-tab-home{width:25px;height:25px}
+#nova-root .neos-tab-image-wrap{display:grid;place-items:center;flex:0 0 25px}
+#nova-root .neos-tab-image-wrap .neos-hub-png256,
+#nova-root .neos-tab-image-wrap .neos-hub-icon{display:block;width:27px!important;height:27px!important;object-fit:contain}
+#nova-root .neos-workspace-tab.is-active .neos-tab-image{filter:drop-shadow(0 0 10px rgba(24,228,222,.46))}
+#nova-root .neos-hero{position:relative;overflow:hidden}
+#nova-root .neos-hero::after{content:"";position:absolute;pointer-events:none;inset:0;background:linear-gradient(105deg,transparent 20%,rgba(42,196,232,.07) 43%,transparent 66%);transform:translateX(-130%);animation:neos-hero-scan 18s ease-in-out infinite}
+#nova-root .neos-home-grid .neos-card::before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(120deg,transparent 0%,rgba(41,208,223,.025) 38%,transparent 65%);opacity:.5}
+#nova-root .neos-home-grid .neos-card:hover::after{opacity:.95}
+#nova-root .neos-layout-toolbar{box-shadow:0 14px 40px rgba(0,0,0,.2),inset 0 1px 0 rgba(49,235,229,.075)}
+#nova-root .neos-arranging{background-size:32px 32px;}
+#nova-root .neos-arranging .neos-card{cursor:default}
+#nova-root .neos-arranging .neos-is-dragging{opacity:.28;filter:saturate(.7) blur(.3px)}
+@keyframes neos-hero-scan{0%,55%,100%{transform:translateX(-140%);opacity:0}68%{opacity:.72}88%{transform:translateX(140%);opacity:0}}
+@media (max-width:700px){
+  #nova-root .neos-home-grid{grid-auto-rows:auto;grid-auto-flow:row;gap:11px}
+  #nova-root .neos-home-grid > .neos-card{grid-row-end:auto!important;height:auto!important;min-height:0!important}
+  #nova-root .neos-pref-row .neos-pref-tools{flex-wrap:wrap;justify-content:flex-end}
+  #nova-root .neos-widget-edit-controls{gap:4px}
+  #nova-root .neos-tab-image-wrap .neos-hub-png256{width:23px!important;height:23px!important}
+}
+@media (prefers-reduced-motion:reduce){
+  #nova-root .neos-hero::after{animation:none!important;display:none}
+  #nova-root .neos-deck-board-row,#nova-root .neos-workspace-tab{transition:none!important}
+}
+#nova-root[data-motion="off"] .neos-hero::after{animation:none!important;display:none}
+
+
+/* NEOS 0.5.5 | real sliding tab indicator + layout sandbox + atmosphere */
+#nova-root .neos-workspace-tabs{position:relative;isolation:isolate;}
+#nova-root .neos-workspace-tab{
+  position:relative;z-index:1;isolation:auto;
+  background:transparent!important;border-color:transparent!important;
+  box-shadow:none!important;
+  transition:color .24s ease,transform .24s ease!important;
+}
+#nova-root .neos-workspace-tab.is-active{
+  color:#eaffff!important;
+  background:transparent!important;border-color:transparent!important;box-shadow:none!important;
+}
+#nova-root .neos-workspace-tab::after{display:none!important;}
+#nova-root .neos-tab-slider{
+  position:absolute;left:0;top:50%;height:calc(100% - 14px);
+  border-radius:12px;z-index:0;pointer-events:none;
+  border:1px solid rgba(23,224,225,.78);
+  background:linear-gradient(110deg,rgba(21,108,118,.68),rgba(16,66,86,.82));
+  box-shadow:0 0 0 1px rgba(37,229,232,.11) inset,0 7px 22px rgba(0,188,197,.16);
+  transform:translate3d(0,-50%,0);
+  will-change:transform,width;
+}
+#nova-root .neos-tab-slider.neos-tab-slider-ready{
+  transition:transform 560ms cubic-bezier(.22,1,.36,1),width 560ms cubic-bezier(.22,1,.36,1);
+}
+#nova-root .neos-tab-flat-icon{display:block;width:20px!important;height:20px!important;object-fit:contain;flex:0 0 20px;filter:drop-shadow(0 0 4px rgba(45,205,243,.11));}
+#nova-root .neos-workspace-tab.is-active .neos-tab-flat-icon{filter:drop-shadow(0 0 7px rgba(32,229,226,.32));}
+#nova-root .neos-grid-legend{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:9px 13px;margin:5px 0 12px;
+  background:linear-gradient(90deg,rgba(17,73,92,.35),rgba(16,35,62,.20));
+  border:1px solid rgba(38,224,222,.19);border-radius:10px;
+  font:650 10px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.08em;color:rgba(165,226,231,.78);
+}
+#nova-root .neos-grid-legend-dot{width:7px;height:7px;border-radius:2px;background:#25e5da;box-shadow:0 0 10px rgba(34,219,214,.42);}
+#nova-root .neos-grid-legend-divider{width:1px;height:13px;background:rgba(130,202,216,.27);}
+#nova-root .neos-grid-legend-flex{flex:1 1 auto;}
+#nova-root .neos-arranging{
+  position:relative;isolation:isolate;
+  padding:13px;border:1px dashed rgba(37,216,226,.33);
+  border-radius:18px;
+  background:rgba(9,32,55,.27);
+  box-shadow:0 0 0 1px rgba(2,205,231,.027) inset,0 8px 30px rgba(1,12,25,.14);
+}
+#nova-root .neos-arranging::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  border-radius:inherit;
+  background-image:
+    linear-gradient(to right,rgba(41,210,224,.15) 1px,transparent 1px),
+    linear-gradient(to bottom,rgba(41,210,224,.12) 1px,transparent 1px),
+    radial-gradient(circle,rgba(29,218,240,.22) 1px,transparent 1.7px);
+  background-size:calc(100% / 12) 96px, calc(100% / 12) 96px, calc(100% / 12) 96px;
+  background-position:13px 12px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.85),rgba(0,0,0,.52));
+}
+#nova-root .neos-arranging > .neos-card{position:relative;z-index:1;}
+#nova-root .neos-arranging .neos-drop-before{
+  outline:2px solid rgba(35,237,223,.94)!important;outline-offset:3px;
+  background:linear-gradient(145deg,rgba(19,82,97,.4),rgba(11,31,53,.92))!important;
+  box-shadow:0 0 0 4px rgba(35,237,223,.06),0 0 32px rgba(7,206,211,.15)!important;
+}
+#nova-root .neos-arranging .neos-drop-after{
+  outline:2px solid rgba(172,116,255,.9)!important;outline-offset:3px;
+  background:linear-gradient(145deg,rgba(60,50,106,.4),rgba(11,31,53,.92))!important;
+  box-shadow:0 0 0 4px rgba(172,116,255,.07),0 0 32px rgba(114,77,235,.16)!important;
+}
+/* NEOS v0.5.6 — inner-widget animation and consistent panels. */
+/* No animated line above card titles. Animation now lives in the data area. */
+#nova-root .neos-home-grid .neos-card > .neos-card-head::before {content:none!important;display:none!important;animation:none!important;}
+#nova-root .neos-home-grid .neos-card::before {background:none!important;}
+#nova-root .neos-home-grid .neos-card{overflow:hidden;isolation:isolate;}
+#nova-root .neos-data-label{font:700 10px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.13em;color:var(--muted);}
+#nova-root .neos-storage-console{display:grid;grid-template-columns:minmax(0,1fr) 120px;align-items:center;gap:10px;min-width:0;}
+#nova-root .neos-storage-values{min-width:0;align-self:center;}
+#nova-root .neos-storage-values .neos-stat-main{font-size:clamp(25px,2.3vw,36px);letter-spacing:-.055em;white-space:nowrap;}
+#nova-root .neos-storage-values .neos-subtle{margin:0;}
+#nova-root .neos-storage-orb{width:116px;height:116px;display:grid;place-items:center;position:relative;isolation:isolate;}
+#nova-root .neos-storage-orb::before{content:"";position:absolute;inset:12px;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(27,197,214,.16) 0%,rgba(18,105,148,.09) 43%,transparent 74%);filter:blur(6px);pointer-events:none;}
+#nova-root .neos-storage-orb svg{width:100%;height:100%;overflow:visible;transform:rotate(-90deg);}
+#nova-root .neos-orb-track,#nova-root .neos-orb-progress,#nova-root .neos-orb-inner{fill:none;}
+#nova-root .neos-orb-track{stroke:rgba(107,160,209,.16);stroke-width:6;}
+#nova-root .neos-orb-progress{stroke:#23ddd8;stroke-width:6;stroke-linecap:round;stroke-dasharray:270.18;stroke-dashoffset:calc(270.18 - 2.7018 * var(--neos-circle-progress,0));filter:drop-shadow(0 0 6px rgba(36,219,227,.45));transition:stroke-dashoffset 1s cubic-bezier(.22,1,.36,1);}
+#nova-root .neos-orb-inner{stroke:rgba(107,183,247,.17);stroke-width:1;stroke-dasharray:3 6;}
+#nova-root .neos-orb-dots{fill:#53d4f7;opacity:.75;}
+#nova-root .neos-orb-value{position:absolute;inset:0;display:grid;place-items:center;color:var(--text);font-size:20px;font-weight:750;font-variant-numeric:tabular-nums;letter-spacing:-.02em;}
+#nova-root .neos-storage-track{display:flex;align-items:center;gap:10px;margin-top:13px;}
+#nova-root .neos-storage-track .neos-meter{flex:1;margin:0;height:8px;min-width:0;position:relative;border:1px solid rgba(78,134,185,.13);background:rgba(39,76,114,.19);}
+#nova-root .neos-storage-track .neos-meter>span{position:relative;display:block;overflow:hidden;background:linear-gradient(90deg,#1be9d5,#37c8fb,#9b8bff);background-size:180% 100%;height:100%;min-width:0;border-radius:100px;box-shadow:0 0 16px rgba(34,218,219,.17);transition:width .9s cubic-bezier(.22,1,.36,1);}
+#nova-root .neos-storage-track .neos-meter>span::after{content:"";position:absolute;top:0;left:-80%;width:64%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.66),transparent);opacity:.8;transform:skewX(-18deg);animation:neos-storage-flow 5.6s ease-in-out infinite;}
+#nova-root .neos-storage-track .neos-meter-unlimited>span{opacity:.38;background:repeating-linear-gradient(110deg,#1fc8df 0px,#1fc8df 24px,rgba(146,137,255,.45) 24px,rgba(146,137,255,.45) 36px);background-size:130px 100%;animation:neos-storage-waves 9s linear infinite;}
+#nova-root .neos-storage-track-hint{font-size:9px;letter-spacing:.11em;white-space:nowrap;color:var(--muted);font-weight:700;}
+#nova-root .neos-holo-clock{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 128px;align-items:center;gap:12px;min-height:132px;}
+#nova-root .neos-clock-details{display:grid;gap:8px;min-width:0;align-content:center;}
+#nova-root .neos-clock-details .neos-clock{font-variant-numeric:tabular-nums;white-space:nowrap;margin:0;line-height:1.04;font-size:clamp(27px,2.6vw,42px);text-shadow:0 0 24px rgba(37,209,242,.13);}
+#nova-root .neos-clock-details .neos-subtle{margin:0;line-height:1.5;max-width:100%;}
+#nova-root .neos-clock-live{display:inline-block;margin-right:6px;width:6px;height:6px;border-radius:50%;background:#29edd2;box-shadow:0 0 0 3px rgba(30,214,205,.1),0 0 13px rgba(30,214,205,.35);vertical-align:1px;}
+#nova-root .neos-clock-dial{display:grid;place-items:center;width:128px;height:128px;position:relative;isolation:isolate;}
+#nova-root .neos-clock-dial::before{content:"";position:absolute;inset:11px;background:radial-gradient(circle,rgba(24,201,217,.07) 10%,rgba(19,74,108,.08) 48%,transparent 69%);border-radius:50%;}
+#nova-root .neos-clock-dial svg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 0 12px rgba(27,192,222,.06));}
+#nova-root .neos-dial-track{fill:none;stroke:rgba(31,206,226,.23);stroke-width:1.4;stroke-dasharray:2 5;}
+#nova-root .neos-dial-grid{fill:none;stroke:rgba(94,151,217,.16);stroke-width:.8;stroke-dasharray:1 5;}
+#nova-root .neos-dial-ticks{stroke:#68cbea;stroke-width:1.8;stroke-linecap:round;opacity:.85;}
+#nova-root .neos-clock-hour-hand{stroke:#b8b4ff;stroke-linecap:round;stroke-width:3.6;transform-origin:62px 62px;transition:transform .8s ease;}
+#nova-root .neos-clock-minute-hand{stroke:#3aedef;stroke-linecap:round;stroke-width:2.1;transform-origin:62px 62px;transition:transform .8s ease;}
+#nova-root .neos-clock-center{fill:#c4fff6;filter:drop-shadow(0 0 5px #3aebed);}
+#nova-root .neos-clock-orbit{position:absolute;inset:7px;border-radius:50%;border:1px solid rgba(104,189,246,.18);border-left-color:rgba(66,227,226,.65);border-bottom-color:rgba(155,133,246,.55);animation:neos-dial-rotate 32s linear infinite;}
+#nova-root .neos-clock-orbit-dot{position:absolute;top:10px;left:50%;width:5px;height:5px;border-radius:50%;background:#2bf4f2;box-shadow:0 0 10px rgba(43,244,242,.7);animation:neos-holo-orbit 8s ease-in-out infinite alternate;}
+/* Cohesive glass surfaces across all integrated app tabs. */
+#nova-root .neos-module,
+#nova-root .neos-files-workspace .neos-card{border:1px solid color-mix(in srgb,var(--accent) 16%,var(--line));background:linear-gradient(180deg,rgba(14,29,49,.97),rgba(9,22,39,.98));border-radius:18px;box-shadow:0 15px 50px rgba(1,6,18,.22),inset 0 1px 0 rgba(148,198,255,.035);position:relative;isolation:isolate;}
+#nova-root .neos-module::before,
+#nova-root .neos-files-workspace .neos-card::before{content:"";pointer-events:none;position:absolute;inset:0;z-index:0;background:radial-gradient(circle at 92% -4%,rgba(28,206,227,.075),transparent 31%),radial-gradient(circle at 2% 102%,rgba(132,110,235,.055),transparent 42%);border-radius:inherit;}
+#nova-root .neos-module>*,#nova-root .neos-files-workspace .neos-card>*{position:relative;z-index:1;}
+#nova-root .neos-module-header{border-bottom:1px solid var(--line);background:linear-gradient(95deg,rgba(28,52,81,.30),rgba(14,33,54,.12));}
+#nova-root .neos-module-header .neos-module-eyebrow{color:var(--accent);}
+#nova-root .neos-module-body{background:transparent;}
+#nova-root .neos-module-empty-mark{border-radius:18px;background:radial-gradient(circle at 30% 20%,rgba(46,216,228,.22),rgba(12,49,78,.55));box-shadow:0 0 35px rgba(26,192,222,.08) inset;}
+#nova-root .neos-notes-sidebar,#nova-root .neos-notes-main,#nova-root .neos-kanban .neos-stack,#nova-root .neos-file-row{transition:background .25s ease,border-color .25s ease,transform .25s ease,box-shadow .25s ease;}
+#nova-root .neos-photo-item{border-radius:16px;box-shadow:0 7px 22px rgba(0,0,0,.15);}
+#nova-root .neos-photo-item img{transition:transform .45s cubic-bezier(.2,.8,.2,1),filter .45s ease;}
+#nova-root .neos-photo-item:hover img{transform:scale(1.035);filter:saturate(1.12);}
+#nova-root .neos-note-row:hover,#nova-root .neos-deck-board-row:hover{box-shadow:0 7px 23px rgba(0,5,14,.15);}
+#nova-root .neos-home-grid .neos-metric{position:relative;overflow:hidden;border:1px solid rgba(67,128,178,.12);background:linear-gradient(155deg,rgba(17,48,72,.5),rgba(12,28,47,.45));}
+#nova-root .neos-home-grid .neos-metric::after{content:"";position:absolute;right:-15px;bottom:-22px;width:70px;height:70px;border-radius:50%;border:1px solid rgba(48,216,226,.1);pointer-events:none;box-shadow:0 0 0 12px rgba(39,176,233,.025),0 0 0 25px rgba(56,129,215,.018);}
+#nova-root .neos-home-grid .neos-item:hover .neos-item-icon{color:#4feef0;filter:drop-shadow(0 0 5px rgba(31,204,221,.15));}
+#nova-root .neos-home-grid .neos-deck .neos-deck-board-symbol{transition:transform .28s ease,filter .28s ease;}
+#nova-root .neos-home-grid .neos-deck .neos-deck-board-row:hover .neos-deck-board-symbol{transform:rotate(-4deg) scale(1.08);filter:drop-shadow(0 0 7px rgba(58,222,230,.16));}
+/* Compositor-friendly decorative animation only; no external JS engine. */
+@keyframes neos-storage-flow{0%,12%{transform:translateX(-60%) skewX(-18deg);opacity:0;}22%{opacity:.8;}52%,100%{transform:translateX(330%) skewX(-18deg);opacity:0;}}
+@keyframes neos-storage-waves{to{background-position:260px 0;}}
+@keyframes neos-dial-rotate{to{transform:rotate(360deg);}}
+@keyframes neos-holo-orbit{50%{transform:translate(5px,-3px);opacity:.8;}100%{transform:translate(-6px,2px);opacity:.45;}}
+@media(max-width:920px){#nova-root .neos-storage-console{grid-template-columns:minmax(0,1fr) 106px;}#nova-root .neos-storage-orb{width:106px;height:106px;}#nova-root .neos-holo-clock{grid-template-columns:minmax(0,1fr) 112px;}#nova-root .neos-clock-dial{width:112px;height:112px;}}
+@media(max-width:640px){#nova-root .neos-storage-console{grid-template-columns:minmax(0,1fr) 110px;}#nova-root .neos-storage-orb{width:110px;height:110px;}#nova-root .neos-holo-clock{grid-template-columns:minmax(0,1fr) 112px;gap:4px;}#nova-root .neos-clock-dial{width:112px;height:112px;}#nova-root .neos-clock-details .neos-clock{font-size:32px;}}
+@media(max-width:360px){#nova-root .neos-storage-console{grid-template-columns:minmax(0,1fr) 88px;}#nova-root .neos-storage-orb{width:88px;height:88px;}#nova-root .neos-holo-clock{grid-template-columns:minmax(0,1fr) 96px;}#nova-root .neos-clock-dial{width:96px;height:96px;}}
+@media(prefers-reduced-motion:reduce){
+ #nova-root .neos-clock-orbit,#nova-root .neos-clock-orbit-dot,#nova-root .neos-storage-track .neos-meter>span::after,#nova-root .neos-storage-track .neos-meter-unlimited>span{animation:none!important;transition:none!important;}
+ #nova-root .neos-photo-item img,#nova-root .neos-clock-hour-hand,#nova-root .neos-clock-minute-hand{transition:none!important;}
+}
+#nova-root[data-motion="off"] .neos-clock-orbit,#nova-root[data-motion="off"] .neos-clock-orbit-dot,#nova-root[data-motion="off"] .neos-storage-track .neos-meter>span::after,#nova-root[data-motion="off"] .neos-storage-track .neos-meter-unlimited>span{animation:none!important;transition:none!important;}
+#nova-root[data-motion="off"] .neos-photo-item img,#nova-root[data-motion="off"] .neos-clock-hour-hand,#nova-root[data-motion="off"] .neos-clock-minute-hand{transition:none!important;}
+#nova-root[data-motion="subtle"] .neos-clock-orbit{animation-duration:56s;opacity:.5;}
+#nova-root[data-motion="subtle"] .neos-storage-track .neos-meter>span::after{animation-duration:11s;opacity:.25;}
+/* In-panel micro-effects: low-contrast movement, never across card headers. */
+#nova-root .neos-storage-orb::after{
+  content:"";position:absolute;inset:3px;border-radius:50%;pointer-events:none;
+  background:conic-gradient(from 0deg,transparent 0 82%,rgba(71,220,250,.35) 88%,transparent 97%);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1px));
+  mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1px));
+  animation:neos-dial-rotate 22s linear infinite;
+}
+#nova-root .neos-home-grid .neos-metric::after{transform:scale(1);animation:neos-metric-tide 8s ease-in-out infinite alternate;}
+#nova-root .neos-home-grid .neos-calendar .neos-event-bar{box-shadow:0 0 10px color-mix(in srgb, var(--event-color,#39c9ff) 16%,transparent);}
+#nova-root .neos-home-grid .neos-item-icon{transition:transform .3s ease,color .3s ease;}
+#nova-root .neos-home-grid .neos-item:hover .neos-item-icon{transform:translateY(-1px) rotate(-3deg);}
+@keyframes neos-metric-tide{50%{transform:translate(-6px,5px) scale(1.16);opacity:.6;}100%{transform:translate(2px,-3px) scale(.95);opacity:.42;}}
+@media(prefers-reduced-motion:reduce){
+  #nova-root .neos-storage-orb::after,#nova-root .neos-home-grid .neos-metric::after{animation:none!important;}
+}
+#nova-root[data-motion="off"] .neos-storage-orb::after,#nova-root[data-motion="off"] .neos-home-grid .neos-metric::after{animation:none!important;}
+#nova-root[data-motion="subtle"] .neos-storage-orb::after{animation-duration:42s;opacity:.4;}
+
+/* ───────────────────────────────────────────────────────────
+   NEOS 0.5.7 · File Manager Pro (keeps approved Flat Cyber design)
+   ─────────────────────────────────────────────────────────── */
+#nova-root .neos-files-selectionbar {
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  padding:11px 13px;border:1px solid var(--line);border-radius:13px;
+  background:linear-gradient(90deg,rgba(14,36,58,.9),rgba(16,26,48,.82));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+  transition:border-color .23s ease,background .23s ease,box-shadow .23s ease;
+}
+#nova-root .neos-files-selectionbar.has-selection {
+  background:linear-gradient(90deg,rgba(14,82,93,.24),rgba(17,29,53,.9));
+  border-color:color-mix(in srgb,var(--accent) 42%,var(--line));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 10px 25px rgba(2,10,23,.12);
+}
+#nova-root .neos-files-selectionbar.is-busy {opacity:.8;cursor:progress;}
+#nova-root .neos-selection-count {display:flex;align-items:center;gap:10px;min-width:0;}
+#nova-root .neos-selection-count strong {font-size:12px;white-space:nowrap;}
+#nova-root .neos-selection-count small {font-size:11px;color:var(--muted);white-space:nowrap;}
+#nova-root .neos-selection-dot {width:8px;height:8px;border-radius:50%;background:#387e95;border:1px solid #4d9ca6;flex:none;}
+#nova-root .has-selection .neos-selection-dot {background:var(--accent);box-shadow:0 0 13px color-mix(in srgb,var(--accent) 55%,transparent);}
+#nova-root .neos-selection-actions {display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap;min-width:0;}
+#nova-root .neos-selection-actions .neos-btn-small {font-size:11px;min-height:33px;padding:6px 10px;white-space:nowrap;border-radius:9px;gap:6px;}
+#nova-root .neos-selection-actions .neos-clipboard-paste {background:color-mix(in srgb,var(--accent) 19%,var(--panel));color:var(--text);border-color:color-mix(in srgb,var(--accent) 45%,var(--line));}
+#nova-root .neos-selection-actions .neos-danger-soft {color:#ffadb7;border-color:rgba(255,106,132,.25);}
+#nova-root .neos-selection-actions .neos-danger-soft:hover {background:rgba(255,80,102,.13);border-color:rgba(255,106,132,.5);}
+#nova-root .neos-selection-actions .neos-iconbtn {width:32px;height:32px;min-height:32px;border-radius:9px;}
+#nova-root .neos-selection-actions button:disabled {opacity:.4;cursor:not-allowed;}
+
+#nova-root .neos-file-row {grid-template-columns:32px minmax(0,1fr) auto;position:relative;}
+#nova-root .neos-file-row.is-selected {background:rgba(21,171,185,.105);border-color:rgba(26,218,223,.45);}
+#nova-root .neos-file-row.is-selected:hover {background:rgba(21,171,185,.17);}
+#nova-root .neos-file-row.is-selected .neos-file-label strong {color:#c8ffff;}
+#nova-root .neos-file-select {width:32px;min-width:32px;min-height:48px;display:grid;place-items:center;cursor:pointer;position:relative;}
+#nova-root .neos-file-select input {width:17px;height:17px;margin:0;accent-color:#15e3db;cursor:pointer;position:relative;z-index:1;}
+#nova-root .neos-file-select input:focus-visible {outline:2px solid #66fcfa;outline-offset:3px;}
+#nova-root .neos-file-row:not(.is-selected) .neos-file-select {opacity:.56;}
+#nova-root .neos-file-row:hover .neos-file-select,#nova-root .neos-file-row:focus-within .neos-file-select {opacity:1;}
+#nova-root .neos-file-list.is-grid .neos-file-row {display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr;align-items:start;}
+#nova-root .neos-file-list.is-grid .neos-file-select {grid-column:1;grid-row:1;min-height:25px;justify-self:start;}
+#nova-root .neos-file-list.is-grid .neos-file-main {grid-column:1/-1;grid-row:2;}
+#nova-root .neos-file-list.is-grid .neos-file-actions {grid-column:2;grid-row:1;margin:0;padding:0;align-self:center;}
+#nova-root .neos-file-row[draggable="true"] {cursor:grab;}
+#nova-root .neos-file-row.neos-file-dragging {opacity:.44;transform:scale(.985);}
+#nova-root .neos-file-drop-target {outline:2px dashed var(--accent)!important;outline-offset:-4px;background:rgba(10,195,209,.12)!important;box-shadow:inset 0 0 28px rgba(31,239,236,.09)!important;}
+#nova-root .neos-breadcrumb-items.neos-file-drop-target {outline-offset:2px!important;border-radius:8px;}
+#nova-root .neos-drop-zone {transition:outline-color .15s ease,background .15s ease;}
+#nova-root .neos-files-workspace .neos-browser-tools {gap:12px;}
+#nova-root .neos-files-workspace .neos-browser-actions {row-gap:9px;}
+@media(max-width:850px) {
+  #nova-root .neos-files-selectionbar {align-items:stretch;}
+  #nova-root .neos-selection-count {justify-content:space-between;flex-wrap:wrap;}
+  #nova-root .neos-selection-actions {justify-content:flex-start;}
+  #nova-root .neos-selection-actions .neos-btn-small {flex:0 0 auto;}
+}
+@media(max-width:480px) {
+  #nova-root .neos-selection-count small {display:none;}
+  #nova-root .neos-file-row {grid-template-columns:24px minmax(0,1fr) auto;}
+  #nova-root .neos-file-select {width:24px;min-width:24px;}
+  #nova-root .neos-file-select input {width:15px;height:15px;}
+  #nova-root .neos-selection-actions .neos-btn-small {font-size:10px;min-height:32px;padding:6px 8px;}
+}
+@media(prefers-reduced-motion:reduce){
+  #nova-root .neos-files-selectionbar,#nova-root .neos-drop-zone {transition:none!important;}
+}
+
+/* NEOS 0.5.8 — productivity panels, native progress, subtle animated banner */
+#nova-root .neos-destination-dialog{
+  width:min(710px,100%);max-height:min(86vh,790px);overflow:hidden;
+  background:linear-gradient(155deg,rgba(19,37,60,.98),rgba(10,23,41,.99));
+  border:1px solid color-mix(in srgb,var(--accent) 25%,var(--line));
+  border-radius:20px;box-shadow:0 25px 90px rgba(0,0,0,.46);
+  display:grid;grid-template-rows:auto minmax(0,1fr) auto;
+}
+#nova-root .neos-destination-header{display:flex;align-items:start;justify-content:space-between;gap:14px;padding:19px 21px;border-bottom:1px solid var(--line)}
+#nova-root .neos-destination-header>div{display:grid;gap:5px}
+#nova-root .neos-destination-header small{font-size:10px;font-weight:800;letter-spacing:.13em;color:var(--accent)}
+#nova-root .neos-destination-header h2{font-size:20px;font-weight:780;line-height:1.15;margin:0;letter-spacing:-.035em}
+#nova-root .neos-destination-header span{font-size:12px;color:var(--muted)}
+#nova-root .neos-destination-body{display:grid;grid-template-rows:auto auto minmax(120px,1fr);min-height:0;padding:14px 18px 8px;gap:12px}
+#nova-root .neos-destination-path{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-height:42px;overflow:auto hidden}
+#nova-root .neos-destination-path .neos-iconbtn{width:32px;height:32px;min-height:32px}
+#nova-root .neos-destination-path .neos-path-root,#nova-root .neos-destination-path .neos-path-part{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 10px;color:var(--text);background:var(--panel-2);border:1px solid var(--line);border-radius:9px}
+#nova-root .neos-path-separator{color:var(--muted)}
+#nova-root .neos-destination-search{display:flex;align-items:center;gap:10px;padding:0 12px;height:41px;border:1px solid var(--line);background:var(--panel-2);border-radius:10px;color:var(--muted)}
+#nova-root .neos-destination-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);height:100%;font-size:12px}
+#nova-root .neos-destination-list{display:grid;align-content:start;gap:5px;min-height:120px;overflow:auto;scrollbar-width:thin;padding:3px 2px 11px}
+#nova-root .neos-destination-folder{display:flex;align-items:center;gap:11px;padding:12px 13px;background:rgba(255,255,255,.025);color:var(--text);border:1px solid transparent;border-radius:11px;text-align:left;transition:background .2s,border-color .2s,transform .2s}
+#nova-root .neos-destination-folder svg:first-child{color:var(--accent)}
+#nova-root .neos-destination-folder span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#nova-root .neos-destination-folder:hover{background:rgba(65,204,245,.08);border-color:rgba(65,204,245,.24);transform:translateX(2px)}
+#nova-root .neos-destination-empty{display:grid;place-items:center;min-height:130px;color:var(--muted);font-size:12px}
+#nova-root .neos-destination-error{color:#ffb2c2}
+#nova-root .neos-destination-footer{display:flex;gap:10px;align-items:center;justify-content:flex-end;padding:16px 20px;border-top:1px solid var(--line)}
+#nova-root .neos-destination-current{display:grid;gap:2px;min-width:0;flex:1}
+#nova-root .neos-destination-current span{font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+#nova-root .neos-destination-current strong{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#nova-root .neos-target-action{border-color:rgba(62,205,236,.27);color:#9feaf9}
+#nova-root #neos-upload-host{position:fixed;right:22px;bottom:22px;z-index:150;width:min(360px,calc(100vw - 28px));pointer-events:none}
+#nova-root .neos-upload-panel{pointer-events:auto;padding:17px;background:linear-gradient(135deg,rgba(16,38,62,.98),rgba(12,22,40,.99));border:1px solid rgba(65,203,238,.35);border-radius:18px;box-shadow:0 18px 70px rgba(0,0,0,.36);backdrop-filter:blur(16px)}
+#nova-root .neos-upload-panel>header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+#nova-root .neos-upload-panel>header>div{flex:1;display:grid;gap:2px;min-width:0}
+#nova-root .neos-upload-panel>header strong{font-size:13px;font-weight:750}
+#nova-root .neos-upload-panel>header small{font-size:10px;color:var(--muted)}
+#nova-root .neos-upload-indicator{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:rgba(39,205,221,.12);color:var(--accent)}
+#nova-root .neos-upload-panel .neos-iconbtn{min-height:32px;width:32px;height:32px}
+#nova-root .neos-upload-meter{height:8px;background:rgba(124,159,195,.13);border-radius:999px;overflow:hidden;border:1px solid rgba(149,190,218,.08)}
+#nova-root .neos-upload-meter>div{height:100%;background:linear-gradient(90deg,#14d8c4,#38bcf6,#aaa1ff);border-radius:inherit;transition:width .13s linear;box-shadow:0 0 15px rgba(45,219,223,.36)}
+#nova-root .neos-upload-totals{display:flex;justify-content:space-between;gap:10px;margin-top:8px;color:var(--muted);font-size:11px}
+#nova-root .neos-upload-totals strong{color:#b7ecff}
+#nova-root .neos-upload-current{margin-top:13px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#nova-root .neos-upload-current small{color:var(--muted);margin-left:6px}
+#nova-root .neos-hero-motion{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;opacity:.8}
+#nova-root .neos-hero-motion span{position:absolute;display:block;pointer-events:none}
+#nova-root .neos-hero-arc{border:1px solid rgba(52,227,230,.23);border-radius:50%;width:360px;height:360px;right:17%;top:-280px;transform-origin:center center}
+#nova-root .neos-hero-arc-one{border-top-color:rgba(65,218,236,.66);border-left-color:rgba(65,218,236,.08);animation:neos-hero-orbit 22s linear infinite}
+#nova-root .neos-hero-arc-two{width:295px;height:295px;right:19%;top:-228px;border-top-color:rgba(169,137,255,.42);animation:neos-hero-orbit-rev 17s linear infinite}
+#nova-root .neos-hero-diagonal{width:42%;height:1px;background:linear-gradient(90deg,transparent,rgba(48,203,232,.35),transparent);left:19%;transform:rotate(-20deg)}
+#nova-root .neos-hero-diagonal-one{top:26px;animation:neos-hero-trace 12s ease-in-out infinite alternate}
+#nova-root .neos-hero-diagonal-two{top:56px;opacity:.6;animation:neos-hero-trace 17s ease-in-out infinite alternate-reverse}
+#nova-root .neos-hero-pulse{width:7px;height:7px;right:7%;top:17%;border-radius:50%;background:#34eff1;box-shadow:0 0 16px #1de8f9;animation:neos-hero-blink 3.5s ease-in-out infinite}
+@keyframes neos-hero-orbit{to{transform:rotate(360deg)}}
+@keyframes neos-hero-orbit-rev{to{transform:rotate(-360deg)}}
+@keyframes neos-hero-trace{from{translate:-16px -3px;opacity:.36}to{translate:20px 6px;opacity:1}}
+@keyframes neos-hero-blink{0%,100%{opacity:.35;scale:.86}55%{opacity:1;scale:1.1}}
+#nova-root[data-motion="off"] .neos-hero-motion *,#nova-root[data-motion="off"] .neos-hero::after{animation:none!important}
+#nova-root[data-motion="subtle"] .neos-hero-motion{opacity:.38}
+@media(max-width:700px){
+ #nova-root .neos-destination-layer{padding:12px;place-items:center}
+ #nova-root .neos-destination-dialog{max-height:85dvh;border-radius:15px}
+ #nova-root .neos-destination-footer{flex-wrap:wrap}
+ #nova-root .neos-destination-current{flex-basis:100%}
+ #nova-root #neos-upload-host{right:12px;bottom:12px}
+ #nova-root .neos-hero-motion .neos-hero-arc{right:-105px}
+}
+@media(prefers-reduced-motion:reduce){#nova-root .neos-hero-motion *{animation:none!important;transition:none!important}#nova-root .neos-destination-folder{transition:none!important}}
+
+/* Neos 0.5.9 · scoped search palette and truthful storage capacity indicators */
+#nova-root .neos-storage-volume{
+  margin-top:15px;padding:12px 13px;border-radius:12px;
+  border:1px solid rgba(83,172,206,.22);
+  background:linear-gradient(110deg,rgba(24,143,179,.095),rgba(97,91,201,.055));
+}
+#nova-root .neos-volume-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+#nova-root .neos-volume-heading strong{font-size:12px;letter-spacing:.02em;font-weight:720;}
+#nova-root .neos-volume-heading span{font-size:12px;color:var(--muted);white-space:nowrap;}
+#nova-root .neos-volume-progress{height:6px;overflow:hidden;background:rgba(42,78,122,.4);border-radius:999px;margin-bottom:8px;}
+#nova-root .neos-volume-progress span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#24c8d9,#5998ff,#bc87ff);transition:width .65s ease;}
+#nova-root .neos-storage-volume small{font-size:10px;color:var(--muted);line-height:1.4;display:block;}
+#nova-root .neos-global-search-trigger{flex:0 0 auto;}
+#nova-root .neos-search-dialog{
+  width:min(720px,100%);max-height:min(86vh,860px);display:grid;grid-template-rows:auto auto minmax(80px,1fr) auto;
+  padding:20px;background:var(--panel);border:1px solid var(--line);
+  box-shadow:0 30px 110px rgba(0,0,0,.5);border-radius:20px;
+}
+#nova-root .neos-search-dialog>header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:14px;}
+#nova-root .neos-search-dialog>header strong{font-size:16px;font-weight:750;}
+#nova-root .neos-search-dialog>header p{font-size:12px;color:var(--muted);margin:5px 0 0;line-height:1.5;}
+#nova-root .neos-search-dialog-input{display:flex;align-items:center;gap:10px;padding:0 13px;border:1px solid rgba(94,180,222,.38);background:var(--panel-2);color:var(--muted);border-radius:12px;min-height:46px;}
+#nova-root .neos-search-dialog-input:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(33,216,219,.08);}
+#nova-root .neos-search-dialog-input input{width:100%;background:transparent;border:none;outline:none;color:var(--text);font:inherit;font-size:14px;padding:10px 0;}
+#nova-root .neos-search-dialog-results{min-height:120px;overflow:auto;overscroll-behavior:contain;padding-top:12px;}
+#nova-root .neos-search-status{display:flex;justify-content:center;align-items:center;gap:10px;min-height:150px;color:var(--muted);font-size:13px;text-align:center;}
+#nova-root .neos-search-results-list{display:grid;gap:5px;}
+#nova-root .neos-search-result{display:flex;gap:12px;align-items:center;width:100%;min-width:0;text-align:left;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--text);padding:10px;transition:background .2s,border-color .2s,transform .2s;}
+#nova-root .neos-search-result:hover{background:var(--panel-3);border-color:var(--line);transform:translateX(2px);}
+#nova-root .neos-search-result-icon{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border-radius:11px;background:rgba(27,197,214,.1);color:var(--accent);}
+#nova-root .neos-search-result-name{display:grid;gap:3px;flex:1;min-width:0;}
+#nova-root .neos-search-result-name strong{font-size:12px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
+#nova-root .neos-search-result-name small{font-size:11px;color:var(--muted);text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
+#nova-root .neos-search-limited{padding:12px 6px 6px;font-size:12px;color:#e6c38f;}
+#nova-root .neos-search-dialog>footer{padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.5;}
+@media(max-width:680px){
+  #nova-root .neos-search-dialog{max-height:92vh;padding:14px;}
+  #nova-root .neos-global-search-trigger{flex:1 1 100%;justify-content:center;}
+  #nova-root .neos-storage-volume{padding:10px;}
+}
+@media(prefers-reduced-motion:reduce){
+  #nova-root .neos-volume-progress span,#nova-root .neos-search-result{transition:none!important;}
+}
+
+/* v0.6.0 — Native Nextcloud favorites, search filters, recently viewed files */
+#nova-root .neos-favorite-toggle.is-on{color:#ffd18a!important;}
+#nova-root .neos-favorite-toggle.is-on svg{fill:rgba(255,205,126,.23);filter:drop-shadow(0 0 5px rgba(255,190,90,.18));}
+#nova-root .neos-quick-trigger{padding-inline:12px;gap:6px;white-space:nowrap;}
+#nova-root .neos-search-v060{width:min(790px,100%);max-height:min(88vh,900px);display:flex;flex-direction:column;gap:0;min-height:0;}
+#nova-root .neos-search-tabs{display:flex;gap:5px;padding:4px;margin:0 0 12px;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;flex:0 0 auto;}
+#nova-root .neos-search-tabs button{display:flex;gap:7px;align-items:center;justify-content:center;flex:1 1 0;min-width:0;min-height:38px;padding:6px 10px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--muted);font:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s,color .2s,border-color .2s;}
+#nova-root .neos-search-tabs button:hover{color:var(--text);background:var(--panel-3);}
+#nova-root .neos-search-tabs button.is-active{color:var(--accent);background:var(--panel-3);border-color:var(--line-strong);box-shadow:inset 0 1px rgba(255,255,255,.045);}
+#nova-root .neos-search-filter-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:10px;flex:0 0 auto;}
+#nova-root .neos-search-filter{display:flex;flex-direction:column;gap:5px;min-width:0;}
+#nova-root .neos-search-filter>span{font-size:10px;color:var(--muted);font-weight:750;letter-spacing:.035em;}
+#nova-root .neos-search-filter select{width:100%;min-width:0;max-width:100%;height:35px;border:1px solid var(--line);border-radius:9px;background:var(--panel-2);color:var(--text);font:inherit;font-size:11px;padding:0 8px;outline:0;}
+#nova-root .neos-search-filter select:focus-visible{border-color:var(--accent);}
+#nova-root .neos-search-v060 .neos-search-dialog-results{flex:1 1 auto;min-height:90px;overflow:auto;}
+#nova-root .neos-search-quick-row{display:flex;align-items:center;gap:5px;border-radius:12px;min-width:0;}
+#nova-root .neos-search-quick-row>.neos-search-result{min-width:0;flex:1 1 auto;}
+#nova-root .neos-search-quick-row>.neos-iconbtn{flex:0 0 34px;min-width:34px;height:34px;}
+#nova-root .neos-search-quick-row>.neos-iconbtn:hover{background:var(--panel-3);}
+#nova-root .neos-search-v060>footer{flex:0 0 auto;margin-top:6px;}
+@media(max-width:770px){
+  #nova-root .neos-search-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  #nova-root .neos-search-v060{max-height:92vh;}
+  #nova-root .neos-quick-trigger{justify-content:center;}
+}
+@media(max-width:460px){
+  #nova-root .neos-search-tabs button{padding:5px 4px;font-size:11px;gap:4px;}
+  #nova-root .neos-search-tabs button svg{width:14px;height:14px;}
+  #nova-root .neos-search-filter-grid{gap:6px;}
+  #nova-root .neos-search-filter select{font-size:10px;}
+  #nova-root .neos-search-v060{padding:12px;}
+}
+@media(prefers-reduced-motion:reduce){#nova-root .neos-search-tabs button{transition:none;}}
+
+#nova-root .neos-search-v060>footer:has(.neos-search-clear){display:flex;align-items:center;justify-content:space-between;gap:12px;}
+#nova-root .neos-search-clear{border:1px solid var(--line);border-radius:8px;background:var(--panel-2);color:var(--muted);padding:5px 9px;font:inherit;font-size:11px;cursor:pointer;white-space:nowrap;}
+#nova-root .neos-search-clear:hover{color:var(--accent);border-color:var(--accent);}
+
+/* Neos 0.6.1 — content-forward media, Markdown and workspace quick actions. */
+#nova-root .neos-media-preview{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:17px;width:100%;padding:24px 12px;min-width:0;text-align:center;color:var(--text)}
+#nova-root .neos-media-preview strong{max-width:100%;overflow-wrap:anywhere;font-size:14px}
+#nova-root .neos-media-preview small{color:var(--muted);font-size:11px}
+#nova-root .neos-media-emblem{display:grid;place-items:center;width:90px;height:90px;border-radius:50%;color:#6ce7f1;background:radial-gradient(circle at 38% 30%,rgba(76,227,243,.18),rgba(49,102,154,.04));border:1px solid rgba(71,217,237,.35);box-shadow:0 0 34px rgba(41,194,240,.12)}
+#nova-root .neos-media-preview audio{display:block;width:min(100%,440px);min-width:0;accent-color:var(--accent)}
+#nova-root .neos-video-preview{padding:10px 5px}
+#nova-root .neos-video-preview video{display:block;width:100%;max-height:min(58vh,520px);border:1px solid var(--line-strong);border-radius:12px;background:#050916;object-fit:contain}
+#nova-root .neos-markdown-preview{display:block;width:100%;height:100%;padding:20px;overflow:auto;overflow-wrap:anywhere;color:var(--text);font-size:13px;line-height:1.75;text-align:left}
+#nova-root .neos-markdown-preview h1,#nova-root .neos-markdown-preview h2,#nova-root .neos-markdown-preview h3,#nova-root .neos-markdown-preview h4{margin:14px 0 9px;line-height:1.3;color:var(--text)}
+#nova-root .neos-markdown-preview h1{font-size:23px}#nova-root .neos-markdown-preview h2{font-size:19px}#nova-root .neos-markdown-preview h3{font-size:16px}
+#nova-root .neos-markdown-preview p{margin:0 0 11px}#nova-root .neos-markdown-preview ul{padding-left:23px;margin:0 0 12px;list-style:disc}
+#nova-root .neos-markdown-preview li{margin:5px 0}
+#nova-root .neos-markdown-preview code{padding:2px 5px;border-radius:4px;background:rgba(61,160,198,.12);font:12px/1.5 ui-monospace,Consolas,monospace;color:#a3edf1}
+#nova-root .neos-markdown-preview pre{padding:14px;border:1px solid var(--line);border-radius:9px;background:rgba(4,14,28,.55);white-space:pre-wrap;overflow-wrap:anywhere}
+#nova-root .neos-markdown-preview pre code{padding:0;background:transparent}
+#nova-root .neos-note-titleline{display:flex;align-items:center;gap:8px;min-width:0;padding-right:12px;border-bottom:1px solid #2b4357}
+#nova-root .neos-note-titleline .neos-note-title-input{flex:1;min-width:0;border-bottom:0}
+#nova-root .neos-note-titleline button{flex-shrink:0}
+#nova-root .neos-note-rendered{min-height:260px;background:#0b182a}
+#nova-root .neos-note-bottom [data-note-count]{margin-left:auto;margin-right:12px;white-space:nowrap;color:var(--muted)}
+#nova-root .neos-deck-card{text-align:left;color:var(--text);font:inherit;cursor:pointer;transition:border-color .2s ease,background .2s ease,transform .2s ease}
+#nova-root .neos-deck-card:hover,#nova-root .neos-deck-card:focus-visible{background:#19364a;border-color:rgba(71,226,233,.56);transform:translateY(-1px)}
+#nova-root .neos-deck-dialog{width:min(620px,calc(100vw - 28px));max-height:min(90vh,780px);display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(63,201,226,.38);border-radius:19px;background:var(--panel);box-shadow:0 30px 100px rgba(0,0,0,.58)}
+#nova-root .neos-deck-dialog>header{display:flex;align-items:center;justify-content:space-between;padding:21px 24px;border-bottom:1px solid var(--line)}
+#nova-root .neos-deck-dialog>header small{font-size:10px;letter-spacing:2px;color:var(--accent)}
+#nova-root .neos-deck-dialog>header h2{font-size:20px;margin:4px 0 0}
+#nova-root .neos-deck-fields{padding:23px 24px;display:grid;gap:18px;overflow:auto}
+#nova-root .neos-deck-fields label{display:grid;gap:8px;font-weight:650;font-size:12px;color:var(--text)}
+#nova-root .neos-deck-fields input,#nova-root .neos-deck-fields textarea{display:block;width:100%;border:1px solid var(--line-strong);border-radius:10px;background:var(--panel-2);color:var(--text);padding:12px 14px;resize:vertical;font-size:13px;line-height:1.5}
+#nova-root .neos-deck-fields small{color:var(--muted);font-size:11px}
+#nova-root .neos-deck-error{padding:11px;border:1px solid rgba(241,110,102,.4);border-radius:8px;color:#f6aaaa;font-size:12px}
+#nova-root .neos-deck-dialog>footer{padding:15px 24px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:9px}
+#nova-root .neos-quick-actions{display:flex;gap:3px;align-items:center;flex:0 0 auto;min-width:0}
+#nova-root .neos-quick-actions .neos-iconbtn{width:32px;height:32px;min-width:32px;border-radius:8px}
+@media(max-width:620px){#nova-root .neos-search-quick-row{flex-wrap:wrap;padding:5px 6px}#nova-root .neos-quick-actions{width:100%;justify-content:flex-end;padding-right:4px}#nova-root .neos-deck-dialog>header,#nova-root .neos-deck-fields{padding:16px}#nova-root .neos-note-title-input{font-size:16px;padding:14px}}
+@media(prefers-reduced-motion:reduce){#nova-root .neos-deck-card{transition:none}#nova-root .neos-deck-card:hover{transform:none}}
+
+/* v0.6.1 — liens de repli PDF (sans assouplir la CSP). */
+#nova-root .neos-pdf-fallback{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 4px 0;font-size:12px;color:var(--neos-muted,#9cb4c9)}
+#nova-root .neos-pdf-fallback a{color:#56dfff;border:1px solid rgba(80,212,244,.25);border-radius:9px;padding:5px 10px;text-decoration:none;background:rgba(7,35,50,.5)}
+#nova-root .neos-pdf-fallback a:hover{border-color:rgba(80,212,244,.65);background:rgba(22,94,121,.25)}
+
+
+/* Neos 0.6.2 — Deck: functional column targets, status/due date and keyboard-friendly editor */
+#nova-root .neos-deck-instructions{color:var(--muted);font-size:12px;margin:-6px 0 14px;line-height:1.55}
+#nova-root .neos-stack{transition:border-color .2s ease,background .2s ease,box-shadow .2s ease}
+#nova-root .neos-stack.neos-deck-drop-target{border-color:var(--accent);background:rgba(18,70,82,.64);box-shadow:0 0 0 2px rgba(62,224,241,.17) inset,0 0 24px rgba(0,214,235,.12)}
+#nova-root .neos-deck-card[draggable=true]{cursor:grab}
+#nova-root .neos-deck-card[draggable=true]:active{cursor:grabbing}
+#nova-root .neos-deck-card.neos-deck-dragging{opacity:.4;border-style:dashed}
+#nova-root .neos-deck-card.is-done{border-color:rgba(59,205,164,.28);background:rgba(20,58,65,.65)}
+#nova-root .neos-deck-card.is-done .neos-deck-card-title{color:#a7ebd7}
+#nova-root .neos-deck-card-title{display:flex;gap:8px;align-items:center;overflow-wrap:anywhere}
+#nova-root .neos-deck-card-title svg{color:#50e1b2}
+#nova-root .neos-deck-fields select{display:block;width:100%;border:1px solid var(--line-strong);border-radius:10px;background:var(--panel-2);color:var(--text);padding:12px 14px;font-size:13px}
+#nova-root .neos-deck-fields .neos-deck-check{display:flex;flex-direction:row;align-items:center;gap:12px;padding:10px 0}
+#nova-root .neos-deck-fields .neos-deck-check input{width:17px;height:17px;min-width:17px;accent-color:#22d8d2}
+#nova-root .neos-deck-fields input[type=date]{color-scheme:dark}
+#nova-root.neos-light .neos-deck-fields input[type=date]{color-scheme:light}
+#nova-root.neos-light .neos-stack.neos-deck-drop-target{background:rgba(59,212,229,.13)}
+@media(prefers-reduced-motion:reduce){#nova-root .neos-stack{transition:none}}
+
+/* Neos 0.6.3 — Calendar & Tasks native CalDAV editor */
+#nova-root .neos-gw-list{display:grid;gap:10px;max-width:1080px;margin:0 auto}
+#nova-root .neos-gw-entry{display:flex;align-items:center;gap:14px;min-height:74px;padding:13px 15px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(115deg,rgba(43,65,103,.22),rgba(19,32,58,.26));transition:border-color .18s,transform .18s,background .18s}
+#nova-root .neos-gw-entry:hover{border-color:color-mix(in srgb,var(--accent) 42%,var(--line));transform:translateY(-1px)}
+#nova-root .neos-gw-entry .neos-gw-dot{width:8px;height:29px;border-radius:9px;background:linear-gradient(var(--accent),var(--accent-2));box-shadow:0 0 15px color-mix(in srgb,var(--accent) 25%,transparent)}
+#nova-root .neos-gw-detail{min-width:0;flex:1;display:grid;gap:4px}
+#nova-root .neos-gw-detail strong{font-size:14px;overflow-wrap:anywhere}
+#nova-root .neos-gw-detail small{color:var(--muted);font-size:11px;overflow-wrap:anywhere}
+#nova-root .neos-gw-entry time{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12px;white-space:nowrap}
+#nova-root .neos-gw-check{width:33px;height:33px;flex:0 0 33px;display:grid;place-items:center;border:1px solid var(--line-strong);border-radius:11px;background:var(--panel-2);color:var(--accent);cursor:pointer}
+#nova-root .neos-gw-check:hover{border-color:var(--accent);box-shadow:0 0 15px var(--accent-soft)}
+#nova-root .neos-gw-done{opacity:.58}
+#nova-root .neos-gw-done strong{text-decoration:line-through}
+#nova-root .neos-gw-hint{font-size:11px;color:var(--muted);text-align:center}
+#nova-root .neos-groupware-dialog{position:relative;width:min(620px,calc(100vw - 28px));max-height:min(92dvh,860px);overflow:auto;border:1px solid var(--line-strong);border-radius:20px;background:var(--panel);box-shadow:0 30px 100px rgba(0,0,0,.54);padding:22px;display:grid;gap:18px}
+#nova-root .neos-groupware-dialog>header,#nova-root .neos-groupware-dialog>footer{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#nova-root .neos-groupware-dialog>header strong{font-size:18px}
+#nova-root .neos-groupware-dialog>footer{justify-content:flex-end}
+#nova-root .neos-gw-form{display:grid;gap:14px}
+#nova-root .neos-gw-form label{display:grid;gap:6px;font-size:12px;font-weight:650;color:var(--muted)}
+#nova-root .neos-gw-form input,#nova-root .neos-gw-form select,#nova-root .neos-gw-form textarea{width:100%;color:var(--text);background:var(--panel-2);border:1px solid var(--line-strong);border-radius:10px;padding:11px 12px;outline:none}
+#nova-root .neos-gw-form textarea{resize:vertical}
+#nova-root .neos-gw-form input:focus,#nova-root .neos-gw-form select:focus,#nova-root .neos-gw-form textarea:focus{border-color:var(--accent)}
+#nova-root .neos-gw-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#nova-root .neos-gw-form .neos-gw-checkline{display:flex;flex-direction:row;align-items:center;gap:10px}
+#nova-root .neos-gw-form .neos-gw-checkline input{width:auto;accent-color:var(--accent)}
+#nova-root .neos-gw-status{font-size:12px;color:#ffb4bb;margin:0;min-height:17px}
+@media(max-width:620px){#nova-root .neos-gw-form-grid{grid-template-columns:1fr}#nova-root .neos-gw-entry time{max-width:90px;white-space:normal;text-align:right}#nova-root .neos-groupware-dialog{padding:16px}}
+@media(prefers-reduced-motion:reduce){#nova-root .neos-gw-entry{transition:none}}
+
+/* Neos 0.6.4 — month/week calendar, accessible day actions and Tasks diagnostic. */
+#nova-root .neos-calendar-workspace{display:grid;gap:14px;min-width:0;max-width:1500px;margin:0 auto}
+#nova-root .neos-calendar-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;min-width:0}
+#nova-root .neos-calendar-nav{display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-width:0}
+#nova-root .neos-calendar-nav>strong{font-size:17px;line-height:1.3;font-weight:750;text-transform:capitalize;color:var(--text);margin-left:10px}
+#nova-root .neos-calendar-nav .neos-iconbtn:first-child svg{transform:rotate(180deg)}
+#nova-root .neos-calendar-views,#nova-root .neos-task-filters{display:flex;align-items:center;gap:4px;padding:4px;border-radius:12px;border:1px solid var(--line);background:var(--panel-2);width:max-content;max-width:100%}
+#nova-root .neos-calendar-views button,#nova-root .neos-task-filters button{padding:7px 12px;border-radius:8px;background:transparent;color:var(--muted);border:1px solid transparent;cursor:pointer;font-size:12px;font-weight:700;white-space:nowrap}
+#nova-root .neos-calendar-views button:hover,#nova-root .neos-task-filters button:hover{color:var(--text)}
+#nova-root .neos-calendar-views button.is-active,#nova-root .neos-task-filters button.is-active{color:var(--accent);background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 25%,transparent)}
+#nova-root .neos-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;min-width:0}
+#nova-root .neos-cal-weekday{padding:6px;text-align:center;color:var(--muted);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px}
+#nova-root .neos-cal-day{display:flex;flex-direction:column;gap:7px;min-width:0;min-height:111px;padding:8px;border-radius:11px;background:linear-gradient(145deg,rgba(33,58,87,.56),rgba(13,24,45,.56));border:1px solid var(--line);transition:border-color .16s,background .16s}
+#nova-root .neos-cal-day.is-today{border-color:color-mix(in srgb,var(--accent) 60%,var(--line));background:linear-gradient(145deg,rgba(25,93,118,.46),rgba(13,25,52,.65))}
+#nova-root .neos-cal-day.is-other{opacity:.52}
+#nova-root .neos-cal-day:hover{border-color:var(--accent)}
+#nova-root .neos-cal-day-number{align-self:flex-start;display:flex;align-items:center;gap:8px;max-width:100%;min-width:26px;border:0;border-radius:9px;background:transparent;color:var(--text);padding:2px 6px;font-size:12px;font-weight:800;cursor:pointer}
+#nova-root .neos-cal-day-number:hover,#nova-root .neos-cal-day-number:focus-visible{background:var(--accent-soft);outline:1px solid var(--accent)}
+#nova-root .neos-cal-today-label{color:var(--accent);font-size:10px;font-weight:650}
+#nova-root .neos-cal-events{display:grid;gap:4px;align-content:start;min-width:0}
+#nova-root .neos-cal-event{display:block;text-align:left;min-width:0;width:100%;border:1px solid rgba(58,193,218,.24);border-left:3px solid var(--accent);border-radius:5px;padding:5px 6px;background:rgba(27,104,125,.24);color:var(--text);cursor:pointer;font:inherit;font-size:11px;line-height:1.35}
+#nova-root .neos-cal-event:hover,#nova-root .neos-cal-event:focus-visible{border-color:var(--accent);background:var(--accent-soft)}
+#nova-root .neos-cal-event span{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#nova-root .neos-cal-event small{display:block;font-size:10px;color:var(--muted);margin-top:3px}
+#nova-root .neos-cal-more{color:var(--muted);font-size:10px}
+#nova-root .neos-calendar-grid.is-week .neos-cal-day{min-height:225px}
+#nova-root .neos-calendar-grid.is-week .neos-cal-day-number{font-size:14px}
+#nova-root .neos-cal-detail{display:grid;gap:16px;min-width:0}
+#nova-root .neos-cal-detail>div{display:grid;gap:4px}
+#nova-root .neos-cal-detail>div>span{font-size:11px;color:var(--muted)}
+#nova-root .neos-cal-detail>div>strong{font-size:14px;overflow-wrap:anywhere}
+#nova-root .neos-cal-detail>p{font-size:13px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;border-top:1px solid var(--line);padding-top:14px;margin:0}
+#nova-root .neos-gw-info{display:grid;gap:8px;max-width:700px;margin:20px auto;padding:19px;border:1px solid var(--line-strong);border-radius:14px;background:var(--panel-2);color:var(--text)}
+#nova-root .neos-gw-info strong{color:var(--accent)}
+#nova-root .neos-gw-info p{font-size:12px;line-height:1.65;color:var(--muted);margin:0}
+#nova-root .neos-gw-info-inline{margin:10px 0 14px;padding:10px 14px;font-size:11px;line-height:1.5;color:var(--muted)}
+#nova-root .neos-gw-warning{border:1px solid rgba(249,166,76,.4);border-radius:10px;padding:10px;color:#ffd3a1;font-size:12px}
+#nova-root .neos-task-filters{margin:0 0 16px}
+@media(max-width:760px){
+  #nova-root .neos-calendar-grid{gap:3px}
+  #nova-root .neos-cal-day{min-height:92px;padding:4px;gap:3px;border-radius:6px}
+  #nova-root .neos-cal-day-number{padding:3px;font-size:11px}
+  #nova-root .neos-cal-today-label{display:none}
+  #nova-root .neos-cal-event{font-size:9px;padding:3px 2px;border-left-width:2px}
+  #nova-root .neos-cal-event small{display:none}
+  #nova-root .neos-cal-weekday{font-size:9px;letter-spacing:0;padding:3px}
+  #nova-root .neos-calendar-grid.is-week .neos-cal-day{min-height:190px}
+  #nova-root .neos-calendar-nav>strong{font-size:14px;margin-left:2px}
+  #nova-root .neos-calendar-toolbar{gap:10px}
+}
+@media(max-width:390px){
+  #nova-root .neos-calendar-grid{gap:2px}
+  #nova-root .neos-cal-day{min-height:83px;padding:3px}
+  #nova-root .neos-calendar-views button{padding:6px 10px}
+}
+@media(prefers-reduced-motion:reduce){#nova-root .neos-cal-day{transition:none}}
+
+
+/* Neos 0.6.5 — Planning unified timeline */
+#nova-root .neos-plan-container{width:100%;max-width:1130px;margin:0 auto;display:grid;gap:18px;min-width:0}
+#nova-root .neos-plan-toolbar{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:center}
+#nova-root .neos-plan-toolbar .neos-calendar-views{width:auto;flex-wrap:wrap}
+#nova-root .neos-plan-toolbar .neos-calendar-views button span{opacity:.7;margin-left:4px}
+#nova-root .neos-plan-timeline{display:grid;gap:7px;position:relative;padding-left:18px;border-left:1px solid rgba(76,212,252,.27);min-width:0}
+#nova-root .neos-plan-day{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:capitalize;color:var(--accent);margin:20px 0 8px;position:relative}
+#nova-root .neos-plan-day:before{content:'';position:absolute;width:9px;height:9px;border-radius:50%;border:2px solid var(--accent);background:#0d2239;left:-24px;top:4px;box-shadow:0 0 12px var(--accent-soft)}
+#nova-root .neos-plan-item{width:100%;display:flex;align-items:center;gap:13px;padding:14px;border-radius:13px;border:1px solid var(--line);background:linear-gradient(110deg,rgba(34,70,104,.31),rgba(17,34,60,.22));color:var(--text);font:inherit;text-align:left;cursor:pointer;min-width:0;transition:transform .18s,border-color .18s,background .18s}
+#nova-root .neos-plan-item:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));transform:translateX(3px);background:linear-gradient(110deg,rgba(36,90,129,.34),rgba(23,38,70,.34))}
+#nova-root .neos-plan-kind{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex:none;background:rgba(26,176,215,.10);color:#43d7ed;border:1px solid rgba(51,217,230,.23)}
+#nova-root .neos-plan-task .neos-plan-kind{background:rgba(141,116,251,.12);color:#b8a5ff;border-color:rgba(141,116,251,.30)}
+#nova-root .neos-plan-deck .neos-plan-kind{background:rgba(244,172,91,.12);color:#ffd39b;border-color:rgba(244,172,91,.26)}
+#nova-root .neos-plan-item-info{min-width:0;display:grid;gap:5px;flex:1}
+#nova-root .neos-plan-item-info strong{font-size:14px;overflow-wrap:anywhere}
+#nova-root .neos-plan-item-info small{font-size:11px;color:var(--muted);overflow-wrap:anywhere}
+#nova-root .neos-plan-time{color:var(--muted);font-size:11px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+#nova-root .neos-plan-loading{font-size:12px;color:var(--accent)}
+@media(max-width:600px){#nova-root .neos-plan-item{padding:11px;gap:9px}#nova-root .neos-plan-item-info strong{font-size:12px}#nova-root .neos-plan-kind{width:30px;height:30px}#nova-root .neos-plan-time{font-size:10px}#nova-root .neos-plan-toolbar{display:grid;gap:7px}#nova-root .neos-plan-toolbar .neos-calendar-views{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){#nova-root .neos-plan-item{transition:none}}
+
+
+/* Neos 0.6.6 — Planning task summary and unscheduled tasks, Flat Cyber preserved */
+#nova-root .neos-plan-summary{display:flex;flex-wrap:wrap;gap:9px}
+#nova-root .neos-plan-summary>span{display:flex;align-items:center;gap:7px;padding:9px 13px;background:rgba(33,71,109,.25);border:1px solid var(--line);border-radius:10px;font-size:12px;color:var(--muted)}
+#nova-root .neos-plan-summary strong{font-variant-numeric:tabular-nums;color:var(--text)}
+#nova-root .neos-plan-summary .is-alert{color:#ffc49b;border-color:rgba(245,151,95,.35)}
+#nova-root .neos-plan-undated{border:1px solid var(--line);border-radius:15px;padding:14px;display:grid;gap:12px;background:rgba(24,51,82,.3)}
+#nova-root .neos-plan-undated>header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+#nova-root .neos-plan-undated>header>div{display:grid;gap:3px}
+#nova-root .neos-plan-undated>header strong{font-size:14px}
+#nova-root .neos-plan-undated>header span{font-size:11px;color:var(--muted)}
+#nova-root .neos-plan-undated-list{display:grid;gap:6px}
+#nova-root .neos-plan-undated-row{display:flex;gap:9px;align-items:center;padding:7px 9px;border:1px solid var(--line);border-radius:10px;min-width:0}
+#nova-root .neos-plan-undated-open{flex:1;min-width:0;display:flex;align-items:center;gap:8px;text-align:left;border:0;background:transparent;color:var(--text);font:inherit;cursor:pointer}
+#nova-root .neos-plan-undated-open strong{font-size:12px;overflow-wrap:anywhere;flex:1}
+#nova-root .neos-plan-undated-open small{color:var(--muted);font-size:11px}
+#nova-root .neos-plan-undated-open:hover strong{text-decoration:underline}
+@media(max-width:600px){#nova-root .neos-plan-summary>span{flex:1;padding:8px;font-size:11px}#nova-root .neos-plan-undated-open small{display:none}}
+/* Neos 0.6.7: distinguish Deck read-only CalDAV projections from editable tasks. */
+#nova-root .neos-source{display:inline-flex;align-items:center;gap:4px;border-radius:6px;padding:1px 6px;font-size:10px;line-height:1.6;font-weight:800;letter-spacing:.035em;vertical-align:baseline}
+#nova-root .neos-source-deck{color:#6de9f0;background:rgba(36,201,211,.12);border:1px solid rgba(36,201,211,.28)}
+#nova-root .neos-plan-undated-deck .neos-gw-check{border-color:rgba(36,201,211,.4);color:#6de9f0}
+#nova-root .neos-gw-check:disabled{cursor:not-allowed;opacity:.4}
+#nova-root .neos-plan-summary{flex-wrap:wrap}
+
+@media(max-width:600px){
+  #nova-root .neos-plan-undated-open{flex-wrap:wrap;gap:3px 8px}
+  #nova-root .neos-plan-undated-open strong{flex:1 1 calc(100% - 30px)}
+  #nova-root .neos-plan-undated-open small{display:block;order:3;flex-basis:100%;margin:0 0 1px}
+  #nova-root .neos-plan-undated-open>svg{margin-left:auto}
+}
+
+/* Neos 0.6.8 — Planning discovery and urgent-only control (Flat Cyber) */
+#nova-root .neos-plan-discovery{display:flex;align-items:center;flex-wrap:wrap;gap:10px;min-width:0}
+#nova-root .neos-plan-search{display:flex;align-items:center;gap:8px;flex:1 1 260px;min-width:190px;border:1px solid var(--line);border-radius:11px;padding:0 12px;background:rgba(12,30,51,.65);color:var(--accent)}
+#nova-root .neos-plan-search:focus-within{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+#nova-root .neos-plan-search input{flex:1;min-width:0;width:100%;border:0;background:transparent;color:var(--text);font:inherit;font-size:13px;height:41px;outline:0}
+#nova-root .neos-plan-search input::placeholder{color:var(--muted)}
+#nova-root .neos-plan-urgent{display:flex;align-items:center;gap:7px;border:1px solid rgba(234,151,110,.32);border-radius:10px;padding:10px 13px;background:rgba(107,64,54,.13);color:#ffd6ba;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+#nova-root .neos-plan-urgent span{padding:1px 6px;background:rgba(247,165,104,.12);border-radius:6px}
+#nova-root .neos-plan-urgent.is-active{background:rgba(180,94,42,.3);border-color:#ffb278;box-shadow:inset 0 0 0 1px rgba(252,173,113,.24)}
+#nova-root .neos-plan-clear{border:0;background:transparent;color:var(--accent);font:inherit;font-size:12px;cursor:pointer;text-decoration:underline}
+@media(max-width:600px){#nova-root .neos-plan-search{flex-basis:100%}#nova-root .neos-plan-search input{font-size:12px}}
+
+/* v0.6.9 : espaces connectés Talk, Activité, Contacts et Mail — Flat Cyber */
+#nova-root .neos-integr-module{min-height:500px}
+#nova-root .neos-integr-lead{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:22px 24px;border:1px solid var(--line);border-radius:17px;background:linear-gradient(110deg,rgba(33,87,142,.23),rgba(88,60,133,.11));margin-bottom:19px}
+#nova-root .neos-integr-eyebrow{font-size:10px;font-weight:800;letter-spacing:.2em;color:var(--accent)}
+#nova-root .neos-integr-lead h3{font-size:27px;line-height:1.12;letter-spacing:-.045em;margin:8px 0 4px}
+#nova-root .neos-integr-lead p{color:var(--muted);margin:0;font-size:13px}
+#nova-root .neos-integr-counter{display:flex;flex-direction:column;align-items:center;min-width:90px;border-left:1px solid var(--line);padding-left:23px}
+#nova-root .neos-integr-counter strong{font-size:31px;font-weight:780;line-height:1.2;color:var(--accent)}
+#nova-root .neos-integr-counter span{white-space:nowrap;font-size:10px;color:var(--muted)}
+#nova-root .neos-integr-toolbar{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:12px;color:var(--muted);font-size:12px}
+#nova-root .neos-integr-search{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:rgba(9,19,36,.28);width:min(460px,100%);color:var(--muted)}
+#nova-root .neos-integr-search input{min-width:0;width:100%;background:transparent;border:0;outline:0;color:var(--text)}
+#nova-root .neos-integr-list{display:flex;flex-direction:column;gap:8px}
+#nova-root .neos-integr-row{display:flex;align-items:center;gap:15px;min-height:77px;padding:12px 16px;border:1px solid var(--line);border-radius:13px;background:rgba(19,31,54,.62);transition:background .17s,border-color .17s}
+#nova-root .neos-integr-row:hover{border-color:var(--line-strong);background:var(--panel-3)}
+#nova-root .neos-integr-avatar{flex:0 0 43px;width:43px;height:43px;display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--integr-color) 36%,var(--line));border-radius:13px;background:color-mix(in srgb,var(--integr-color) 12%,transparent);color:var(--integr-color)}
+#nova-root .neos-integr-item{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px}
+#nova-root .neos-integr-item strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+#nova-root .neos-integr-item small{color:var(--muted);font-size:11px}
+#nova-root .neos-integr-summary{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:12px}
+#nova-root .neos-integr-badge{font-size:10px;font-style:normal;font-weight:700;border:1px solid rgba(83,197,235,.28);background:rgba(61,174,206,.13);color:#9de9ff;border-radius:7px;padding:4px 8px;white-space:nowrap}
+#nova-root .neos-integr-next{color:var(--muted)}
+#nova-root .neos-integr-unavailable{display:flex;align-items:flex-start;gap:14px;padding:22px;color:var(--muted);border:1px solid var(--line);border-radius:12px;background:var(--panel-2)}
+#nova-root .neos-integr-unavailable strong{color:var(--text)}
+#nova-root .neos-integr-unavailable p{margin:6px 0}
+#nova-root .neos-integr-hint{font-size:11px;color:var(--muted);margin:18px 2px 0}
+@media(max-width:640px){#nova-root .neos-integr-module .neos-module-body{padding:14px}#nova-root .neos-integr-lead{padding:17px}#nova-root .neos-integr-lead h3{font-size:22px}#nova-root .neos-integr-counter{min-width:68px;padding-left:12px}#nova-root .neos-integr-counter strong{font-size:26px}#nova-root .neos-integr-row{padding:11px;gap:10px}#nova-root .neos-integr-avatar{flex-basis:36px;width:36px;height:36px}#nova-root .neos-integr-badge{padding:3px 5px}#nova-root .neos-integr-toolbar{align-items:flex-start;flex-direction:column}}
+
+
+/* Neos 0.6.10 — custom workspace ordering + Planning hub artwork */
+#nova-root .neos-hub-icons .neos-app-visual .neos-hub-planning {object-fit:contain;}
+#nova-root .neos-tabs-arranging .neos-workspace-tab {cursor:grab!important;}
+#nova-root .neos-tabs-arranging .neos-workspace-tab:active {cursor:grabbing!important;}
+#nova-root .neos-tabs-arranging .neos-workspace-tab::before {content:"";position:absolute;left:2px;right:2px;bottom:2px;top:2px;border:1px dashed rgba(255,167,64,.20);border-radius:11px;pointer-events:none;}
+#nova-root .neos-tab-drag-indicator {display:grid;place-items:center;opacity:.55;color:#ffad46;}
+#nova-root .neos-tab-dragging {opacity:.33;}
+#nova-root .neos-tabs-arranging .neos-workspace-tab.neos-tab-drop-before::before,#nova-root .neos-tabs-arranging .neos-workspace-tab.neos-tab-drop-after::before {content:""!important;position:absolute;top:4px;bottom:4px;width:3px!important;background:#ffae4a;border-radius:4px;z-index:3;pointer-events:none;}
+#nova-root .neos-tabs-arranging .neos-workspace-tab.neos-tab-drop-before::before {left:-4px!important;right:auto!important;}
+#nova-root .neos-tabs-arranging .neos-workspace-tab.neos-tab-drop-after::before {right:-4px!important;left:auto!important;}
+#nova-root .neos-tab-order-list {display:flex;flex-direction:column;gap:5px;margin:12px 0 10px;}
+#nova-root .neos-tab-order-row {display:flex;align-items:center;gap:11px;min-height:44px;padding:5px 7px;border:1px solid var(--line);background:var(--panel-2);border-radius:10px;cursor:grab;transition:border-color .15s,background .15s;}
+#nova-root .neos-tab-order-row:active {cursor:grabbing;}
+#nova-root .neos-tab-order-row:hover,#nova-root .neos-tab-order-over {border-color:rgba(255,171,65,.58);background:color-mix(in srgb,var(--panel-2) 86%,#c96e15);}
+#nova-root .neos-tab-order-dragging {opacity:.4;}
+#nova-root .neos-tab-order-grip {color:#ffad46;opacity:.8;display:grid;place-items:center;}
+#nova-root .neos-tab-order-row .neos-tab-flat-icon {height:22px!important;width:22px!important;flex:none;}
+#nova-root .neos-tab-order-name {font-weight:650;flex:1;min-width:0;}
+#nova-root .neos-tab-order-buttons {display:flex;gap:4px;}
+#nova-root .neos-tab-order-buttons .neos-iconbtn {width:31px;height:31px;min-height:31px;transform:none;}
+#nova-root .neos-tab-order-buttons .neos-iconbtn:first-child svg {transform:rotate(90deg);}
+#nova-root .neos-tab-order-buttons .neos-iconbtn:last-child svg {transform:rotate(90deg);}
+#nova-root .neos-tab-order-reset {font-size:12px;}
+#nova-root .neos-activity-filters {display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 13px;}
+#nova-root .neos-activity-filters button {border:1px solid var(--line);border-radius:8px;padding:7px 12px;background:var(--panel-2);color:var(--muted);font-weight:650;font-size:12px;}
+#nova-root .neos-activity-filters button.is-active,#nova-root .neos-activity-filters button:hover {color:var(--accent);border-color:var(--accent);background:var(--accent-soft);}
+#nova-root .neos-activity-more {margin:12px auto 0;display:flex;}
+#nova-root .neos-activity-more small {color:var(--muted);font-weight:500;}
+@media(max-width:760px){#nova-root .neos-tab-order-row {gap:8px;min-height:42px;}#nova-root .neos-tab-order-name {font-size:12px;}}
+@media(prefers-reduced-motion:reduce){#nova-root .neos-tab-order-row {transition:none;}}
+
+/* Neos v0.6.11 — Talk and Contacts native panels */
+#nova-root button.neos-integr-row{font:inherit;color:inherit;text-align:left;width:100%;cursor:pointer}
+#nova-root .neos-talk-chat{display:flex;flex-direction:column;gap:16px;max-width:1050px;margin:0 auto}
+#nova-root .neos-talk-chat-head{display:flex;align-items:center;gap:14px;border:1px solid var(--line);background:var(--panel-2);padding:14px;border-radius:14px}
+#nova-root .neos-talk-chat-head>div{flex:1;min-width:0}
+#nova-root .neos-talk-chat-head h4{margin:0 0 4px;font-size:17px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+#nova-root .neos-talk-chat-head small{font-size:11px;color:var(--muted)}
+#nova-root .neos-talk-messages{display:flex;flex-direction:column;align-items:flex-start;gap:13px;min-height:180px;max-height:51vh;overflow:auto;border:1px solid var(--line);background:rgba(6,14,29,.36);border-radius:16px;padding:20px}
+#nova-root .neos-talk-message{max-width:min(82%,650px);padding:12px 15px;border:1px solid var(--line);border-radius:14px 14px 14px 3px;background:var(--panel-2);overflow-wrap:anywhere}
+#nova-root .neos-talk-message.is-own{align-self:flex-end;border-color:color-mix(in srgb,var(--accent) 40%,var(--line));background:color-mix(in srgb,var(--accent) 11%,var(--panel-2));border-radius:14px 14px 3px 14px}
+#nova-root .neos-talk-message.is-system{align-self:center;max-width:90%;opacity:.75}
+#nova-root .neos-talk-message-meta{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:7px}
+#nova-root .neos-talk-message-meta strong{font-size:12px}
+#nova-root .neos-talk-message-meta small{color:var(--muted);font-size:10px;white-space:nowrap}
+#nova-root .neos-talk-message p{margin:0;white-space:pre-wrap;font-size:13px}
+#nova-root .neos-talk-older{align-self:center}
+#nova-root .neos-talk-error{border:1px solid rgba(230,108,102,.5);border-radius:10px;padding:12px 15px;color:#ffaba2;background:rgba(220,73,70,.11);margin:0}
+#nova-root .neos-talk-composer{display:flex;flex-direction:column;gap:8px}
+#nova-root .neos-talk-composer label{font-size:12px;font-weight:700;color:var(--muted)}
+#nova-root .neos-talk-composer textarea{width:100%;border-radius:12px;border:1px solid var(--line-strong);background:var(--panel-2);color:var(--text);padding:14px;resize:vertical;min-height:82px;max-height:240px}
+#nova-root .neos-talk-composer>div{display:flex;gap:14px;justify-content:space-between;align-items:center}
+#nova-root .neos-talk-composer small{color:var(--muted);font-size:11px}
+#nova-root .neos-contact-detail{max-width:750px;margin:auto;display:flex;flex-direction:column;align-items:flex-start;gap:20px}
+#nova-root .neos-contact-identity{display:flex;align-items:center;gap:18px;width:100%;border:1px solid var(--line);background:var(--panel-2);border-radius:16px;padding:23px}
+#nova-root .neos-contact-identity>span{display:grid;place-items:center;width:66px;height:66px;flex:0 0 66px;background:rgba(73,202,250,.12);border-radius:18px;color:var(--accent)}
+#nova-root .neos-contact-identity h4{margin:0;font-size:25px}
+#nova-root .neos-contact-identity small{color:var(--muted)}
+#nova-root .neos-contact-detail dl{margin:0;width:100%;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+#nova-root .neos-contact-detail dl div{display:grid;grid-template-columns:minmax(100px,170px) 1fr;gap:15px;padding:15px 21px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+#nova-root .neos-contact-detail dl div:last-child{border-bottom:0}
+#nova-root .neos-contact-detail dt{font-size:12px;color:var(--muted)}
+#nova-root .neos-contact-detail dd{margin:0;font-weight:600}
+@media(max-width:640px){
+  #nova-root .neos-talk-chat-head{flex-wrap:wrap}
+  #nova-root .neos-talk-message{max-width:95%}
+  #nova-root .neos-talk-messages{padding:13px;max-height:46vh}
+  #nova-root .neos-talk-composer>div{flex-direction:column;align-items:stretch}
+  #nova-root .neos-contact-identity h4{font-size:20px}
+  #nova-root .neos-contact-detail dl div{grid-template-columns:1fr;gap:4px}
+}
+
+/* Neos v0.6.12 — Contact form, CardDAV safe edit */
+#nova-root .neos-contact-editor{max-width:790px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+#nova-root .neos-contact-editor-head{display:flex;align-items:center;gap:20px;padding-bottom:8px}
+#nova-root .neos-contact-editor-head>div{min-width:0}
+#nova-root .neos-contact-editor-head h4{margin:0;font-size:23px;letter-spacing:-.025em}
+#nova-root .neos-contact-editor-head small{font-size:12px;color:var(--muted)}
+#nova-root .neos-contact-form{display:flex;flex-direction:column;gap:19px;padding:25px;border:1px solid var(--line);border-radius:17px;background:var(--panel-2)}
+#nova-root .neos-contact-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+#nova-root .neos-contact-field{display:flex;flex-direction:column;gap:8px;color:var(--muted);font-size:12px;font-weight:650}
+#nova-root .neos-contact-field input,#nova-root .neos-contact-field select{width:100%;min-height:44px;padding:11px 12px;border:1px solid var(--line-strong);border-radius:10px;background:var(--panel);color:var(--text);font-size:14px}
+#nova-root .neos-contact-field input:focus,#nova-root .neos-contact-field select:focus{border-color:var(--accent)}
+#nova-root .neos-contact-book{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}
+#nova-root .neos-contact-form-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:11px;border-top:1px solid var(--line);padding-top:19px}
+#nova-root .neos-contact-actions{display:flex;flex-wrap:wrap;gap:10px}
+@media(max-width:680px){#nova-root .neos-contact-form{padding:17px}#nova-root .neos-contact-form-grid{grid-template-columns:1fr}#nova-root .neos-contact-editor-head{flex-wrap:wrap}#nova-root .neos-contact-form-actions>*{flex:1}}
+
+/* v0.6.13 : secure mail reader; mail HTML is never inserted into the page. */
+#nova-root .neos-mail-reader{max-width:1020px;margin:0 auto;display:grid;gap:16px}
+#nova-root .neos-mail-reader-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+#nova-root .neos-mail-reader-head{border:1px solid var(--line);border-radius:16px;background:var(--panel-2);padding:24px;display:grid;gap:10px}
+#nova-root .neos-mail-reader-head h4{font-size:clamp(20px,2.4vw,30px);margin:0;color:var(--text);line-height:1.2}
+#nova-root .neos-mail-reader-head>div{display:flex;align-items:center;gap:10px;color:var(--text)}
+#nova-root .neos-mail-reader-head small{color:var(--muted)}
+#nova-root .neos-mail-plain{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;font-size:14px;line-height:1.8;color:var(--text);border:1px solid var(--line);border-radius:16px;background:var(--panel);min-height:220px;padding:clamp(18px,3vw,32px);user-select:text}
+#nova-root .neos-mail-attachments{border:1px dashed var(--line-strong);border-radius:12px;padding:16px;color:var(--muted)}
+#nova-root .neos-mail-attachments strong{color:var(--text)}
+@media(max-width:600px){#nova-root .neos-mail-reader-head{padding:16px}#nova-root .neos-mail-reader-toolbar{align-items:stretch}#nova-root .neos-mail-reader-toolbar>*{flex:1}}
+
+/* v0.6.14 : Mail mailbox diagnostics and responsive account selection */
+#nova-root .neos-mail-controls{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin:10px 0 16px}
+#nova-root .neos-mail-controls .neos-activity-filters{margin:0}
+#nova-root .neos-mail-folder-label{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:13px}
+#nova-root .neos-mail-folder-label select{max-width:min(400px,75vw);min-height:40px;padding:8px 12px;border-radius:10px;background:var(--panel-2);border:1px solid var(--line-strong);color:var(--text);font:inherit}
+#nova-root .neos-mail-folder-label select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#nova-root .neos-mail-warnings{padding:15px 17px;border:1px solid var(--line-strong);border-radius:12px;background:var(--panel-2);color:var(--muted);margin-top:15px}
+#nova-root .neos-mail-warnings strong{display:flex;align-items:center;gap:9px;color:var(--text)}
+#nova-root .neos-mail-warnings p{margin:7px 0 0;overflow-wrap:anywhere}
+@media(max-width:620px){#nova-root .neos-mail-controls,#nova-root .neos-mail-folder-label{width:100%}#nova-root .neos-mail-folder-label select{flex:1;min-width:0;max-width:100%}}
+
+
+/* Neos v0.6.15 — Mail HTML allow-list renderer & message navigation */
+#nova-root .neos-mail-reader-options{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+#nova-root .neos-mail-view-switch{display:inline-flex;gap:3px;border:1px solid var(--line-strong);padding:4px;border-radius:11px;background:var(--panel-2)}
+#nova-root .neos-mail-view-switch button{border:0;background:transparent;color:var(--muted);padding:8px 13px;font-size:12px;font-weight:700;border-radius:8px}
+#nova-root .neos-mail-view-switch button.is-active{background:var(--accent-soft);color:var(--accent)}
+#nova-root .neos-mail-reader-navigation{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#nova-root .neos-mail-reader-navigation .neos-btn{font-size:12px}
+#nova-root .neos-mail-formatted{min-height:220px;min-width:0;overflow-wrap:anywhere;overflow-x:auto;padding:clamp(18px,3vw,32px);border:1px solid var(--line);border-radius:16px;background:#fff;color:#242b3d;color-scheme:light;font:15px/1.65 system-ui,Arial,sans-serif;user-select:text}
+#nova-root .neos-mail-formatted h1,#nova-root .neos-mail-formatted h2,#nova-root .neos-mail-formatted h3,#nova-root .neos-mail-formatted h4{color:#202c46;line-height:1.3;margin:1.1em 0 .5em}
+#nova-root .neos-mail-formatted p{margin:.75em 0}
+#nova-root .neos-mail-formatted a{color:#0067af;text-decoration:underline;overflow-wrap:anywhere}
+#nova-root .neos-mail-formatted ul,#nova-root .neos-mail-formatted ol{padding-left:25px;margin:1em 0}
+#nova-root .neos-mail-formatted blockquote{margin:1em 0;border-left:3px solid #8ca7be;padding:6px 16px;background:#f4f7fa}
+#nova-root .neos-mail-formatted table{border-collapse:collapse;width:auto;max-width:100%;min-width:180px;margin:1em 0}
+#nova-root .neos-mail-formatted th,#nova-root .neos-mail-formatted td{border:1px solid #cbd4df;padding:8px 12px;vertical-align:top;text-align:left}
+#nova-root .neos-mail-formatted pre{white-space:pre-wrap;background:#f1f4f8;padding:13px;overflow:auto}
+#nova-root .neos-mail-formatted hr{border:0;border-top:1px solid #d5dce6}
+@media(max-width:640px){#nova-root .neos-mail-reader-options{flex-direction:column;align-items:stretch}#nova-root .neos-mail-view-switch{justify-content:center}#nova-root .neos-mail-reader-navigation{width:100%;justify-content:space-between}#nova-root .neos-mail-formatted{padding:16px;font-size:14px}}
+
+/* Neos v0.6.16 — Mail composer Flat Cyber */
+#nova-root .neos-mail-composer{display:grid;gap:16px;background:linear-gradient(155deg,rgba(17,34,55,.94),rgba(10,20,38,.92));border:1px solid var(--line);border-radius:16px;padding:clamp(15px,2.4vw,26px);margin-top:12px}
+#nova-root .neos-mail-compose-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+#nova-root .neos-mail-compose-head h4{font-size:24px;margin:6px 0 4px;color:var(--text)}
+#nova-root .neos-mail-compose-head p{color:var(--muted);margin:0}
+#nova-root .neos-mail-composer form{display:grid;gap:17px}
+#nova-root .neos-mail-compose-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+#nova-root .neos-mail-compose-grid .neos-mail-compose-field:last-child{grid-column:1/-1}
+#nova-root .neos-mail-compose-field{display:flex;flex-direction:column;gap:8px;color:var(--text);font-weight:600;font-size:13px}
+#nova-root .neos-mail-compose-field input,#nova-root .neos-mail-compose-field select,#nova-root .neos-mail-compose-field textarea{width:100%;border:1px solid var(--line-strong);border-radius:10px;background:rgba(7,16,31,.78);color:var(--text);padding:12px 14px;outline:none;min-width:0}
+#nova-root .neos-mail-compose-field input:focus,#nova-root .neos-mail-compose-field select:focus,#nova-root .neos-mail-compose-field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+#nova-root .neos-mail-compose-field textarea{resize:vertical;min-height:230px;line-height:1.65;white-space:pre-wrap}
+#nova-root .neos-mail-compose-actions{display:flex;justify-content:space-between;align-items:center;gap:16px;border-top:1px solid var(--line);padding-top:17px}
+#nova-root .neos-mail-compose-actions small{color:var(--muted);max-width:57%;line-height:1.5}
+#nova-root .neos-mail-compose-actions>div{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+#nova-root .neos-mail-compose-ok{background:rgba(30,160,115,.12);border:1px solid rgba(50,205,155,.38);padding:12px 14px;border-radius:10px;color:#7ff2bd}
+#nova-root .neos-mail-compose-warning{background:rgba(221,145,54,.10);border:1px solid rgba(244,182,66,.4);padding:12px 14px;border-radius:10px;color:#ffcf7b}
+@media(max-width:680px){#nova-root .neos-mail-compose-grid{grid-template-columns:1fr}#nova-root .neos-mail-compose-actions{align-items:stretch;flex-direction:column}#nova-root .neos-mail-compose-actions small{max-width:none}#nova-root .neos-mail-compose-actions>div{justify-content:stretch}#nova-root .neos-mail-compose-actions>div>*{flex:1;justify-content:center}#nova-root .neos-mail-compose-head h4{font-size:20px}}
+
+/* v0.6.17 — Mail sync clarity */
+#nova-root .neos-mail-refresh{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+#nova-root .neos-mail-refresh svg{transition:transform .22s ease}
+#nova-root .neos-mail-refresh:hover svg{transform:rotate(38deg)}
+#nova-root .neos-mail-sync-stamp{display:flex;align-items:center;gap:7px;margin:12px 0 4px;font-size:12px;color:var(--muted);line-height:1.55}
+#nova-root .neos-mail-sync-stamp svg{color:var(--accent)}
+@media(max-width:620px){#nova-root .neos-mail-refresh{font-size:12px}}
+/* Neos 0.6.19 — IMAP drafts, Talk unread filtering */
+#nova-root .neos-mail-compose-actions{align-items:flex-start;gap:14px}
+#nova-root .neos-mail-compose-actions-buttons{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px}
+#nova-root .neos-mail-draft-state{display:inline-flex;gap:7px;align-items:center;margin-top:12px;font-size:12px;color:var(--accent);font-weight:650}
+#nova-root .neos-mail-outbox{display:grid;gap:18px}
+#nova-root .neos-mail-outbox-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+#nova-root .neos-mail-outbox-toolbar small{color:var(--muted)}
+#nova-root .neos-mail-outbox-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--line);padding:16px;border-radius:14px;background:var(--panel-2)}
+#nova-root .neos-mail-outbox-row>div{display:grid;gap:4px;min-width:0}
+#nova-root .neos-mail-outbox-row strong{overflow-wrap:anywhere;font-size:14px}
+#nova-root .neos-mail-outbox-row small{color:var(--muted)}
+#nova-root .neos-mail-outbox-state{font-size:12px;color:var(--accent)}
+#nova-root .neos-mail-outbox-indicator{display:grid;place-items:center;width:36px;height:36px;color:var(--accent);border-radius:10px;background:var(--accent-soft)}
+@media(max-width:760px){
+#nova-root .neos-mail-compose-actions{display:grid;gap:12px}
+#nova-root .neos-mail-compose-actions-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#nova-root .neos-mail-compose-actions-buttons>*{justify-content:center;min-height:42px}
+#nova-root .neos-mail-outbox-row{grid-template-columns:34px minmax(0,1fr);gap:10px}
+#nova-root .neos-mail-outbox-row>a{grid-column:1/-1;justify-content:center}
+}
+
+/* v0.6.20 — read-only IMAP draft browser */
+#nova-root .neos-mail-drafts{display:grid;gap:16px;margin-top:12px}
+#nova-root .neos-mail-drafts-head{display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap;border:1px solid var(--line);border-radius:15px;padding:17px;background:linear-gradient(135deg,var(--panel-2),var(--panel))}
+#nova-root .neos-mail-drafts-head h4{font-size:20px;color:var(--text);margin:0 0 3px}
+#nova-root .neos-mail-drafts-head small{color:var(--muted)}
+#nova-root .neos-mail-draft-detail{display:grid;gap:14px;padding:22px;border:1px solid var(--line);border-radius:15px;background:var(--panel-2)}
+#nova-root .neos-mail-draft-detail h4{font-size:22px;margin:0;overflow-wrap:anywhere}
+#nova-root .neos-mail-draft-detail p{color:var(--muted);margin:0;overflow-wrap:anywhere}
+#nova-root .neos-mail-draft-detail>.neos-btn{justify-self:start}
+#nova-root .neos-mail-draft-detail .neos-mail-plain{min-height:180px;white-space:pre-wrap;overflow-wrap:anywhere}
+#nova-root .neos-contact-form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:680px){#nova-root .neos-mail-drafts-head{align-items:stretch}#nova-root .neos-mail-drafts-head .neos-btn{justify-content:center}#nova-root .neos-mail-draft-detail{padding:16px}#nova-root .neos-contact-form-grid{grid-template-columns:1fr}}
+
+/* v0.6.21 — browse IMAP Drafts even when provider folder labels differ */
+#nova-root .neos-mail-draft-selector{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:14px 18px;background:var(--panel-2);border:1px solid var(--line);border-radius:14px;color:var(--text);font-weight:650}
+#nova-root .neos-mail-draft-selector select{flex:1;min-width:220px;max-width:650px;padding:10px 12px;border-radius:10px;border:1px solid var(--line-strong);background:var(--panel);color:var(--text)}
+#nova-root .neos-contact-delete-panel{padding:20px;border:1px solid color-mix(in srgb,#ff6d74 40%,var(--line));border-radius:14px;background:color-mix(in srgb,#ff6d74 7%,var(--panel));display:grid;gap:10px}
+#nova-root .neos-contact-delete-panel strong{display:flex;align-items:center;gap:9px;color:#ffb5b5;font-size:15px}
+#nova-root .neos-contact-delete-panel p{margin:0;color:var(--muted)}
+#nova-root .neos-contact-delete-panel>div{display:flex;gap:12px;flex-wrap:wrap}
+#nova-root .neos-btn-danger{border:1px solid #8d4b56!important;color:#ffd0d2!important;background:rgba(158,38,56,.1)!important}
+#nova-root .neos-btn-danger:hover{background:rgba(158,38,56,.23)!important}
+
+/* v0.6.22 — safe draft reprise / Talk confirmed read marker */
+#nova-root .neos-mail-draft-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0 12px}
+#nova-root .neos-talk-read-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:12px 0;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel-2)}
+#nova-root .neos-talk-read-controls span{color:var(--muted);font-size:12px}
+@media(max-width:620px){#nova-root .neos-mail-draft-actions .neos-btn{width:100%;justify-content:center}#nova-root .neos-talk-read-controls .neos-btn{width:100%;justify-content:center}}
+
+/* Neos 0.6.24 — mail read retry, independent from inbox sync. */
+#nova-root .neos-mail-read-retry{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:12px 15px;border:1px solid var(--line-strong);border-radius:12px;background:var(--panel-2)}
+#nova-root .neos-mail-read-retry .neos-talk-error{flex:1 1 280px;margin:0}
+#nova-root .neos-mail-read-retry .neos-btn{flex:0 0 auto}
+@media(max-width:620px){#nova-root .neos-mail-read-retry .neos-btn{width:100%;justify-content:center}}
+
+/* Neos 0.6.25 — Contacts: keyboard-accessible filters and progressive results. */
+#nova-root .neos-contact-list-controls{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:12px 0 15px;padding:12px 16px;border:1px solid var(--line);border-radius:13px;background:var(--panel-2)}
+#nova-root .neos-contact-book-picker{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);font-weight:650}
+#nova-root .neos-contact-book-picker select{min-width:170px;max-width:min(460px,70vw);padding:10px 12px;border:1px solid var(--line-strong);border-radius:10px;background:var(--panel);color:var(--text);font:inherit}
+#nova-root .neos-contact-book-picker select:focus-visible,#nova-root .neos-contact-more:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+#nova-root .neos-contact-list-controls>span{color:var(--muted);font-size:12px}
+#nova-root .neos-contact-more{display:flex;align-items:center;justify-content:center;gap:9px;margin:16px auto 8px;max-width:100%}
+#nova-root .neos-contact-more small{color:var(--muted)}
+@media(max-width:640px){#nova-root .neos-contact-list-controls{align-items:stretch;flex-direction:column}#nova-root .neos-contact-book-picker{align-items:stretch;flex-wrap:wrap}#nova-root .neos-contact-book-picker select{width:100%;max-width:none}#nova-root .neos-contact-more{width:100%}}
+
+/* Neos 0.6.26 — accessible Activity progress/pagination and period filter. */
+#nova-root .neos-activity-controls{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+#nova-root .neos-activity-controls .neos-activity-filters{margin:6px 0 12px}
+#nova-root .neos-activity-period{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px;font-weight:650;margin-bottom:12px}
+#nova-root .neos-activity-period select{min-height:36px;padding:6px 27px 6px 9px;background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:8px;max-width:100%}
+#nova-root .neos-activity-progress{font-size:12px;color:var(--muted);padding:0 0 9px;margin:0}
+#nova-root .neos-integr-activity :is(button,select,a,input):focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:640px){#nova-root .neos-activity-controls{align-items:flex-start;flex-direction:column;gap:2px}#nova-root .neos-activity-controls .neos-activity-filters{margin-bottom:4px}#nova-root .neos-activity-period{margin-bottom:12px}}
+
+/* Neos v0.6.27 — concise module headings, preserves the workspace hero. */
+#nova-root .neos-integr-overview{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 17px;margin-bottom:15px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(105deg,rgba(33,87,142,.13),rgba(88,60,133,.05))}
+#nova-root .neos-integr-overview p{margin:0;max-width:70ch;color:var(--muted);font-size:12px;line-height:1.5}
+#nova-root .neos-integr-count{display:flex;align-items:baseline;justify-content:flex-end;gap:7px;white-space:nowrap;color:var(--muted);font-size:11px}
+#nova-root .neos-integr-count strong{color:var(--accent);font-size:20px;font-weight:780;line-height:1.2}
+#nova-root .neos-integr-module .neos-module-header{min-height:79px;padding-top:16px;padding-bottom:16px}
+#nova-root .neos-integr-module .neos-module-header h2{font-size:21px}
+#nova-root .neos-integr-module .neos-module-eyebrow{font-size:9px;letter-spacing:.12em}
+@media(max-width:640px){#nova-root .neos-integr-overview{gap:9px;padding:11px 12px;align-items:flex-start;flex-direction:column}#nova-root .neos-integr-count{justify-content:flex-start}#nova-root .neos-integr-module .neos-module-header{padding:15px;gap:12px}}
+
+/* Neos 0.6.29 — clavier / recherche / navigation accessible */
+#nova-root .neos-skip-link{position:absolute;top:-120px;left:16px;z-index:100;display:inline-flex;align-items:center;min-height:42px;padding:10px 16px;border:2px solid var(--accent);border-radius:10px;background:var(--panel);color:var(--text);font-weight:750;box-shadow:0 14px 30px rgba(0,0,0,.3);text-decoration:none}
+#nova-root .neos-skip-link:focus,#nova-root .neos-skip-link:focus-visible{top:8px;outline:3px solid var(--accent);outline-offset:3px}
+#nova-root .neos-workspace-stage:focus{outline:none}
+#nova-root .neos-integr-search:focus-within{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+#nova-root .neos-integr-search .neos-integr-keyhint{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 4px;font-weight:600;font-size:11px;line-height:1.2;font-family:inherit;color:var(--muted);background:rgba(255,255,255,.035);border:1px solid var(--line-strong);border-radius:6px;pointer-events:none}
+#nova-root .neos-integr-search:focus-within .neos-integr-keyhint{border-color:var(--accent);color:var(--accent)}
+@media(max-width:480px){#nova-root .neos-integr-search .neos-integr-keyhint{min-width:20px;height:20px}}
+@media(prefers-reduced-motion:reduce){#nova-root .neos-skip-link{transition:none!important}}
+
+/* v0.6.30 — consistent visible keyboard focus in existing modal panels. */
+#neos-pop-host [role="dialog"] :is(button,a,input,textarea,select,[tabindex]):focus-visible,
+#neos-editor-host [role="dialog"] :is(button,a,input,textarea,select,[tabindex]):focus-visible,
+.neos-contact-delete-panel button:focus-visible {
+  outline: 2px solid #43e8eb;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(67,232,235,.13);
+}
+@media (prefers-reduced-motion: reduce) {
+  #neos-pop-host [role="dialog"] :focus-visible,
+  #neos-editor-host [role="dialog"] :focus-visible { scroll-behavior: auto; }
+}
+
+/* v0.6.31: Live announcements stay available to assistive technologies
+   without adding duplicate titles or result counters to the visual UI. */
+#nova-root .neos-sr-only {
+  position:absolute !important; width:1px !important; height:1px !important;
+  padding:0 !important; margin:-1px !important; overflow:hidden !important;
+  clip-path:inset(50%) !important; white-space:nowrap !important; border:0 !important;
+}
+#nova-root .neos-modal-progress {
+  flex:1 1 auto; color:var(--muted); font-size:12px; min-height:1.3em;
+}
+#nova-root .neos-modal-progress:empty { min-height:0; }
+
+/* v0.6.33: mixed CalDAV / Deck Tasks in the home widget */
+#nova-root .neos-home-task-item{cursor:pointer}
+#nova-root .neos-home-task-item:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#nova-root .neos-home-task-item>.neos-icon{flex-shrink:0;color:var(--muted)}
+#nova-root .neos-task-widget-status{margin:7px 8px 2px;color:var(--muted);font-size:10.5px}
+#nova-root .neos-task-widget-footer{display:flex;justify-content:flex-end;align-items:center;padding-top:13px;margin-top:11px;border-top:1px solid var(--line)}
+
+/* v0.6.34: task loading errors on the home page */
+#nova-root .neos-task-widget-error{color:#ffd3a1}
+
+/* v0.6.36: legible Neos wordmark in both dashboard themes */
+#nova-root .neos-brand{min-width:190px;max-width:190px}
+#nova-root .neos-brand-mark{width:190px}
+#nova-root .neos-wordmark-light{display:none}
+#nova-root.neos-light .neos-wordmark-dark{display:none}
+#nova-root.neos-light .neos-wordmark-light{display:block}
+@media(max-width:1160px){
+  #nova-root .neos-brand{min-width:175px;max-width:175px}
+  #nova-root .neos-brand-mark{width:175px}
+}
+@media(max-width:760px){
+  #nova-root .neos-brand{min-width:150px;max-width:150px}
+  #nova-root .neos-brand-mark{width:150px;height:42px}
+}
+
+/* v0.6.37: custom cyber wordmark sized for the dashboard header */
+#nova-root .neos-brand{min-width:205px;max-width:205px}
+#nova-root .neos-brand-mark{width:205px;height:52px}
+@media(max-width:1160px){
+  #nova-root .neos-brand{min-width:180px;max-width:180px}
+  #nova-root .neos-brand-mark{width:180px;height:48px}
+}
+@media(max-width:760px){
+  #nova-root .neos-brand{min-width:150px;max-width:150px}
+  #nova-root .neos-brand-mark{width:150px;height:42px}
+}
+
+/* v0.6.38: display the chosen generated logo with its transparent margins cropped by layout */
+#nova-root .neos-brand-mark{position:relative;width:205px;height:52px;overflow:hidden}
+#nova-root .neos-brand-mark img.neos-wordmark-approved{position:absolute;display:block;width:222px;height:74px;max-width:none;left:-10px;top:-13px;object-fit:fill}
+#nova-root.neos-light .neos-brand-mark{background:#0B1C2E!important;border-radius:11px!important;box-shadow:inset 0 0 0 1px rgba(37,228,220,.38)!important}
+@media(max-width:1160px){
+  #nova-root .neos-brand-mark{width:180px;height:48px}
+  #nova-root .neos-brand-mark img.neos-wordmark-approved{width:207px;height:69px;left:-15px;top:-12px}
+}
+@media(max-width:760px){
+  #nova-root .neos-brand-mark{width:150px;height:42px}
+  #nova-root .neos-brand-mark img.neos-wordmark-approved{width:174px;height:58px;left:-12px;top:-9px}
+}
+
+/* v0.6.39: Dashboard subtitle and restrained cyber scan on the chosen logo */
+#nova-root .neos-brand-mark{--neos-logo-scan-distance:72px;--neos-logo-scan-strength:.62;isolation:isolate}
+#nova-root .neos-logo-subtitle{position:absolute;z-index:3;left:68px;top:42px;color:#A5D6E4;font:700 10px/9px Arial,Helvetica,sans-serif;letter-spacing:.2em;white-space:nowrap;pointer-events:none}
+#nova-root .neos-brand-mark::after{content:"";position:absolute;z-index:2;top:0;left:-10px;width:11px;height:100%;background:linear-gradient(90deg,transparent,rgba(76,245,240,.82),transparent);filter:blur(1px);mix-blend-mode:screen;pointer-events:none;opacity:0;animation:neos-logo-scan 5.8s linear infinite}
+@keyframes neos-logo-scan{0%,72%{transform:translateX(0);opacity:0}76%{opacity:var(--neos-logo-scan-strength)}88%{transform:translateX(var(--neos-logo-scan-distance));opacity:var(--neos-logo-scan-strength)}94%,100%{transform:translateX(var(--neos-logo-scan-distance));opacity:0}}
+#nova-root[data-motion="subtle"] .neos-brand-mark{--neos-logo-scan-strength:.28}
+#nova-root[data-motion="subtle"] .neos-brand-mark::after{animation-duration:9s}
+#nova-root[data-motion="off"] .neos-brand-mark::after{animation:none;opacity:0}
+@media(max-width:1160px){
+  #nova-root .neos-brand-mark{--neos-logo-scan-distance:61px}
+  #nova-root .neos-logo-subtitle{left:57px;top:39px;font-size:9px;line-height:8px}
+}
+@media(max-width:760px){
+  #nova-root .neos-brand-mark{--neos-logo-scan-distance:52px}
+  #nova-root .neos-logo-subtitle{left:49px;top:34px;font-size:8px;line-height:8px;letter-spacing:.16em}
+}
+@media(prefers-reduced-motion:reduce){
+  #nova-root .neos-brand-mark::after{animation:none!important;opacity:0!important}
+}
+
+/* v0.6.40: 10% smaller approved logo and a double energy pulse around its N */
+#nova-root .neos-brand-mark img.neos-wordmark-approved{width:200px;height:67px;left:-5px;top:-9px}
+#nova-root .neos-logo-subtitle{left:65px}
+#nova-root .neos-brand-mark::after{animation:none;opacity:0}
+#nova-root .neos-brand-mark{--neos-pulse-level:.82;--neos-pulse-soft:.35;--neos-pulse-mid:.5;--neos-pulse-duration:5.4s}
+#nova-root .neos-logo-pulse{position:absolute;z-index:2;inset:0;pointer-events:none}
+#nova-root .neos-logo-pulse::before{content:"";position:absolute;left:1px;top:-3px;width:66px;height:58px;background:radial-gradient(ellipse at center,rgba(103,255,248,.48) 0%,rgba(0,204,235,.2) 36%,transparent 72%);filter:blur(4px);mix-blend-mode:screen;opacity:0;transform:scale(.83);animation:neos-logo-charge var(--neos-pulse-duration) ease-in-out infinite}
+#nova-root .neos-logo-pulse svg{position:absolute;left:7px;top:1px;width:53px;height:50px;overflow:visible;fill:none;stroke:#67fff3;stroke-width:1.25;vector-effect:non-scaling-stroke}
+#nova-root .neos-logo-wave{transform-box:fill-box;transform-origin:center;opacity:0;filter:drop-shadow(0 0 3px #4bf8ec);animation:neos-logo-wave var(--neos-pulse-duration) ease-out infinite}
+#nova-root .neos-logo-wave-two{animation-delay:.24s;stroke:#a7fff7;stroke-width:.8}
+@keyframes neos-logo-charge{0%,14%,55%,100%{opacity:0;transform:scale(.83)}25%{opacity:var(--neos-pulse-soft);transform:scale(1)}31%{opacity:var(--neos-pulse-level);transform:scale(1.12)}38%{opacity:var(--neos-pulse-soft);transform:scale(1.03)}44%{opacity:var(--neos-pulse-mid);transform:scale(1.13)}}
+@keyframes neos-logo-wave{0%,17%,57%,100%{opacity:0;transform:scale(.9)}24%{opacity:var(--neos-pulse-soft);transform:scale(.96)}31%{opacity:var(--neos-pulse-level);transform:scale(1.01)}45%{opacity:var(--neos-pulse-mid);transform:scale(1.16)}54%{opacity:0;transform:scale(1.25)}}
+#nova-root[data-motion="subtle"] .neos-brand-mark{--neos-pulse-level:.32;--neos-pulse-soft:.14;--neos-pulse-mid:.2;--neos-pulse-duration:8s}
+#nova-root[data-motion="off"] .neos-logo-pulse{display:none}
+@media(max-width:1160px){
+  #nova-root .neos-brand-mark img.neos-wordmark-approved{width:186px;height:62px;left:-9px;top:-8px}
+  #nova-root .neos-logo-subtitle{left:56px}
+  #nova-root .neos-logo-pulse{transform:translateX(-4px) scale(.94);transform-origin:12px 18px}
+}
+@media(max-width:760px){
+  #nova-root .neos-brand-mark img.neos-wordmark-approved{width:157px;height:52px;left:-7px;top:-6px}
+  #nova-root .neos-logo-subtitle{left:48px}
+  #nova-root .neos-logo-pulse{transform:translateX(-4px) scale(.8);transform-origin:12px 18px}
+}
+@media(prefers-reduced-motion:reduce){
+  #nova-root .neos-logo-pulse{display:none!important}
+}
+
+/* v0.6.41: concept 05 symbol with the existing dashboard wordmark and layout */
+#nova-root .neos-brand-mark img.neos-wordmark-approved{clip-path:inset(0 0 0 66px)}
+#nova-root .neos-symbol-crop{position:absolute;left:7px;top:1px;width:54px;height:49px;overflow:hidden;z-index:2;pointer-events:none}
+#nova-root .neos-symbol-crop img.neos-symbol-five{position:absolute;display:block;width:217px;height:72px;max-width:none;left:-30px;top:-11px;animation:neos-symbol-five-charge 5.4s ease-in-out infinite}
+@keyframes neos-symbol-five-charge{0%,17%,56%,100%{filter:brightness(1)}30%{filter:brightness(1.28) drop-shadow(0 0 2px #58f9ec)}41%{filter:brightness(1.12) drop-shadow(0 0 1px #58f9ec)}47%{filter:brightness(1.22) drop-shadow(0 0 2px #58f9ec)}}
+#nova-root[data-motion="subtle"] .neos-symbol-crop img.neos-symbol-five{animation-duration:8s;animation-name:neos-symbol-five-subtle}
+@keyframes neos-symbol-five-subtle{0%,17%,56%,100%{filter:brightness(1)}30%,47%{filter:brightness(1.08)}}
+#nova-root[data-motion="off"] .neos-symbol-crop img.neos-symbol-five{animation:none}
+@media(max-width:1160px){
+  #nova-root .neos-brand-mark img.neos-wordmark-approved{clip-path:inset(0 0 0 62px)}
+  #nova-root .neos-symbol-crop{left:5px;top:1px;width:49px;height:46px}
+  #nova-root .neos-symbol-crop img.neos-symbol-five{width:195px;height:65px;left:-27px;top:-10px}
+}
+@media(max-width:760px){
+  #nova-root .neos-brand-mark img.neos-wordmark-approved{clip-path:inset(0 0 0 52px)}
+  #nova-root .neos-symbol-crop{left:6px;top:2px;width:42px;height:39px}
+  #nova-root .neos-symbol-crop img.neos-symbol-five{width:169px;height:56px;left:-23px;top:-8px}
+}
+@media(prefers-reduced-motion:reduce){
+  #nova-root .neos-symbol-crop img.neos-symbol-five{animation:none!important}
+}
+
+/* v0.6.42: steady energy halo and fine grid behind the dashboard logo */
+#nova-root .neos-brand-mark::before{content:"";position:absolute;z-index:0;inset:0;pointer-events:none;background-image:radial-gradient(ellipse 72% 105% at 38% 52%,rgba(0,226,230,.21),rgba(18,94,144,.10) 48%,transparent 78%),linear-gradient(rgba(94,214,237,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(94,214,237,.13) 1px,transparent 1px);background-size:100% 100%,14px 14px,14px 14px;background-position:0 0,3px 3px,3px 3px;mask-image:radial-gradient(ellipse 85% 105% at 38% 52%,#000 32%,transparent 100%);opacity:.9}
+#nova-root .neos-brand-mark img.neos-wordmark-approved{z-index:1}
+
+/* v0.6.43: elliptical edge fade and gentle breathing for the logo background */
+#nova-root .neos-brand-mark{--neos-halo-min:.72;--neos-halo-max:.94;--neos-halo-expand:1.035;--neos-halo-time:11s}
+#nova-root .neos-brand-mark::before{-webkit-mask-image:radial-gradient(ellipse 53% 45% at 44% 50%,#000 0%,rgba(0,0,0,.88) 30%,rgba(0,0,0,.35) 66%,transparent 100%);mask-image:radial-gradient(ellipse 53% 45% at 44% 50%,#000 0%,rgba(0,0,0,.88) 30%,rgba(0,0,0,.35) 66%,transparent 100%);transform-origin:44% 50%;animation:neos-logo-halo-breathe var(--neos-halo-time) ease-in-out infinite}
+@keyframes neos-logo-halo-breathe{0%,100%{opacity:var(--neos-halo-min);transform:scale(.985)}50%{opacity:var(--neos-halo-max);transform:scale(var(--neos-halo-expand))}}
+#nova-root[data-motion="subtle"] .neos-brand-mark{--neos-halo-min:.76;--neos-halo-max:.86;--neos-halo-expand:1.015;--neos-halo-time:16s}
+#nova-root[data-motion="off"] .neos-brand-mark::before{animation:none;opacity:.82;transform:none}
+@media(prefers-reduced-motion:reduce){
+  #nova-root .neos-brand-mark::before{animation:none!important;opacity:.82!important;transform:none!important}
+}
+
+/* v0.6.44: expose the left orbit and strengthen the elliptical halo */
+#nova-root .neos-symbol-crop{left:0;width:63px}
+#nova-root .neos-symbol-crop img.neos-symbol-five{left:-23px}
+#nova-root .neos-brand-mark{--neos-halo-min:.88;--neos-halo-max:1}
+#nova-root .neos-brand-mark::before{background-image:radial-gradient(ellipse 72% 105% at 38% 52%,rgba(0,226,230,.38),rgba(18,94,144,.19) 48%,transparent 78%),linear-gradient(rgba(94,214,237,.26) 1px,transparent 1px),linear-gradient(90deg,rgba(94,214,237,.26) 1px,transparent 1px)}
+#nova-root[data-motion="subtle"] .neos-brand-mark{--neos-halo-min:.86;--neos-halo-max:.96}
+#nova-root[data-motion="off"] .neos-brand-mark::before{opacity:.94}
+@media(max-width:1160px){
+  #nova-root .neos-symbol-crop{left:0;width:55px}
+  #nova-root .neos-symbol-crop img.neos-symbol-five{left:-22px}
+}
+@media(max-width:760px){
+  #nova-root .neos-symbol-crop{left:0;width:47px}
+  #nova-root .neos-symbol-crop img.neos-symbol-five{left:-17px}
+}
+@media(prefers-reduced-motion:reduce){
+  #nova-root .neos-brand-mark::before{opacity:.94!important}
+}
+
+/* v0.6.46: deadline views */
+#nova-root .neos-task-filters{flex-wrap:wrap;gap:6px}
+#nova-root .neos-task-count{display:inline-block;min-width:1.4em;margin-left:4px;opacity:.8;font-variant-numeric:tabular-nums}
+
+/* v0.6.47: task search */
+#nova-root .neos-task-searchbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+#nova-root .neos-task-search{flex:1;min-width:160px}
+#nova-root .neos-task-search input{width:100%;min-height:40px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2);color:var(--text);font:inherit}
+#nova-root .neos-task-search-summary{color:var(--muted);font-size:12px;margin:0 0 10px}
+
+#nova-root .neos-deck-filters{display:flex;align-items:end;flex-wrap:wrap;gap:10px;margin:14px 0 5px}
+#nova-root .neos-deck-filters label{display:grid;gap:4px;color:var(--muted);font-size:12px;font-weight:650;min-width:0}
+#nova-root .neos-deck-filters .neos-deck-search{flex:1 1 220px}
+#nova-root .neos-deck-filters input,#nova-root .neos-deck-filters select{width:100%;min-height:40px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2);color:var(--text);font:inherit}
+#nova-root .neos-deck-filter-count,#nova-root .neos-deck-stack-empty{color:var(--muted);font-size:12px}
+#nova-root .neos-deck-stack-empty{padding:8px 4px;pointer-events:none}
+
+#nova-root .neos-home-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#nova-root .neos-home-summary-metric,#nova-root .neos-home-summary-event{display:grid;justify-items:start;gap:4px;padding:10px 12px;text-align:left;color:var(--text);border:1px solid var(--line);border-radius:10px;background:var(--panel-2)}
+#nova-root .neos-home-summary-metric:hover,#nova-root .neos-home-summary-event:hover{border-color:var(--accent)}
+#nova-root .neos-home-summary-metric strong{font-size:1.45rem;line-height:1.15}
+#nova-root .neos-home-summary-metric span,#nova-root .neos-home-summary-event span,#nova-root .neos-home-summary-event small,#nova-root .neos-home-summary-status{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+#nova-root .neos-home-summary-event{width:100%;margin-top:9px}
+#nova-root .neos-home-summary-event strong{overflow-wrap:anywhere;max-width:100%}
+#nova-root .neos-home-summary-event small:last-child{display:flex;align-items:center;gap:4px}
+#nova-root [data-home-note-status]{color:var(--muted);font-size:12px}
+
+#nova-root .neos-note-search{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+#nova-root .neos-note-search input{flex:1 1 110px;min-width:0;min-height:38px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--panel-2);color:var(--text);font:inherit}
+#nova-root .neos-note-search button[hidden]{display:none}
+#nova-root .neos-note-search-count{margin:5px 6px;color:var(--muted);font-size:12px}
+
+/* Neos 0.7 — compact navigation */
+#nova-root .neos-workspace-tabs {flex-wrap:wrap;overflow:visible;}
+#nova-root .neos-workspace-tab:focus-visible {outline:2px solid var(--accent,#24d9d1);outline-offset:-2px;}
+#nova-root .neos-gw-form-grid[hidden] {display:none;}
+#nova-root .neos-mail-attachment-list {overflow-wrap:anywhere;}
+@media (max-width:1300px) {
+  #nova-root .neos-workspace-tabs {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(min(44px,100%),1fr));
+    align-items:stretch;
+  }
+  #nova-root .neos-workspace-tabs .neos-tab-slider,
+  #nova-root .neos-workspace-tabs .neos-workspace-label,
+  #nova-root .neos-workspace-tabs .neos-tab-drag-indicator {display:none;}
+  #nova-root .neos-workspace-tab {min-width:0;max-width:none;min-height:44px;padding:0;gap:0;}
+  #nova-root .neos-workspace-tab.is-active {
+    background:linear-gradient(110deg,rgba(21,108,118,.68),rgba(16,66,86,.82))!important;
+    border-color:rgba(23,224,225,.78)!important;
+  }
+}

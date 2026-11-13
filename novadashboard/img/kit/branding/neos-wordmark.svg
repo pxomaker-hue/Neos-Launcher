@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 357 100" width="357" height="100" role="img" aria-label="Neos">
+  <defs>
+    <linearGradient id="neos-rail" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#25E4DC"/>
+      <stop offset="1" stop-color="#2EAFDA"/>
+    </linearGradient>
+  </defs>
+  <path d="M29 6H71L94 29V71L71 94H29L6 71V29Z" fill="#0B1C2E" stroke="url(#neos-rail)" stroke-width="4"/>
+  <path d="M26 68V32H36V68Z" fill="#EAF7FF"/>
+  <path d="M36 32L68 68H55L26 32Z" fill="#22DED6"/>
+  <path d="M60 32H70V68H60Z" fill="#EAF7FF"/>
+  <path d="M77 9H81L91 19V23H85V21L79 15H77Z" fill="#FFBA4A"/>
+  <g fill="#F0F6FF">
+    <path d="M116 26H127L153 56V26H164V74H153L127 44V74H116Z"/>
+    <path d="M175 26H220V36H186V45H214V55H186V64H220V74H175Z"/>
+    <path fill-rule="evenodd" d="M241 26H271L281 36V64L271 74H241L231 64V36ZM246 37L242 41V59L246 63H266L270 59V41L266 37Z"/>
+    <path d="M301 26H346V36H306L302 40V45H336L346 55V64L336 74H291V64H331L335 60V56H301L291 46V36Z"/>
+  </g>
+</svg>
