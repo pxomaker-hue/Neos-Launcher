@@ -1,0 +1,12 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');const js=fs.readFileSync(process.argv[2],'utf8');
+const start=js.indexOf('  function taskMatchesQuery('),end=js.indexOf('  function updateTaskSearch(',start);
+assert.ok(start>=0&&end>start);const match=new Function(js.slice(start,end)+'return taskMatchesQuery;')();
+const task={title:'Préparer le résumé',description:'Réunion lundi',calendar:'Équipe'};
+assert.equal(match(task,'PREPARER equipe'),true);assert.equal(match(task,'réunion'),true);
+assert.equal(match(task,'  '),true);assert.equal(match({},'test'),false);
+assert.equal(match(task,'réunion mardi'),false);assert.equal(match(task,'<script>'),false);
+const dateStart=js.indexOf('  function taskMatchesView('),dateEnd=js.indexOf('  function groupwareModule(',dateStart);
+const view=new Function(js.slice(dateStart,dateEnd)+'return taskMatchesView;')();
+const tasks=[{...task,dueDate:'2026-11-13'},{title:'Autre',dueDate:'2026-11-13'},{...task,done:true,dueDate:'2026-11-13'}];
+assert.equal(tasks.filter(t=>match(t,'equipe')&&view(t,'today',new Date(2026,10,13,12))).length,1);
+console.log('Task search: accents, terms, empty fields and deadline combination passed');
