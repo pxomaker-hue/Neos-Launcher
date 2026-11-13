@@ -580,7 +580,25 @@
     const asset=id==='home'?kitFile('icons/ui/accueil.svg'):flatIconAsset('glyphs',id);
     return asset?`<img class="neos-tab-flat-icon" src="${safeUrl(asset)}" alt="" loading="eager" width="21" height="21">`:`<span class="neos-tab-flat-icon">${appGlyph(id,20)}</span>`;
   }
-  function tabBar(){return `<nav class="neos-workspace-tabs ${editing?'neos-tabs-arranging':''}" aria-label="Espaces de travail"><span class="neos-tab-slider" aria-hidden="true"></span>${installedTabs().map(id=>`<button type="button" data-action="workspace" data-workspace="${id}" data-drag-tab="${id}" ${editing?'draggable="true"':''} title="${esc(appName(id))}" class="neos-workspace-tab ${activeWorkspace===id?'is-active':''}" aria-current="${activeWorkspace===id?'page':'false'}" aria-label="Onglet ${esc(appName(id))}${editing?' — déplacer par glisser-déposer':''}">${flatTabIcon(id)}<span class="neos-workspace-label">${esc(appName(id))}</span>${editing?`<span class="neos-tab-drag-indicator">${icon('grip',13)}</span>`:''}</button>`).join('')}</nav>`;}
+  const tabUnread={mail:demo?1:null,talk:demo?3:null};
+  const unreadCount=value=>typeof value==='number'&&Number.isSafeInteger(value)&&value>=0?value:null;
+  const tabUnreadText=id=>tabUnread[id]>0?`${tabUnread[id]} ${id==='mail'?'courriel':'message'}${tabUnread[id]===1?' non lu':'s non lus'}${id==='mail'?' dans les boîtes de réception':''}`:'';
+  function tabLabel(id){
+    const status=tabUnreadText(id);
+    return `Onglet ${appName(id)}${status?' — '+status:''}${editing?' — déplacer par glisser-déposer':''}`;
+  }
+  function tabBar(){return `<nav class="neos-workspace-tabs ${editing?'neos-tabs-arranging':''}" aria-label="Espaces de travail"><span class="neos-tab-slider" aria-hidden="true"></span>${installedTabs().map(id=>`<button type="button" data-action="workspace" data-workspace="${id}" data-drag-tab="${id}" ${editing?'draggable="true"':''} title="${esc(appName(id)+(tabUnreadText(id)?' — '+tabUnreadText(id):''))}" class="neos-workspace-tab ${activeWorkspace===id?'is-active':''}" aria-current="${activeWorkspace===id?'page':'false'}" aria-label="${esc(tabLabel(id))}">${flatTabIcon(id)}<span class="neos-workspace-label">${esc(appName(id))}</span>${Object.hasOwn(tabUnread,id)?`<span class="neos-tab-unread" data-tab-unread aria-hidden="true" ${tabUnread[id]>0?'':'hidden'}>${tabUnread[id]>99?'99+':tabUnread[id]||''}</span>`:''}${editing?`<span class="neos-tab-drag-indicator">${icon('grip',13)}</span>`:''}</button>`).join('')}</nav>`;}
+  function setTabUnread(id,count){
+    if(count===tabUnread[id])return;
+    tabUnread[id]=count;
+    const button=surface.querySelector(`.neos-workspace-tab[data-workspace="${id}"]`);
+    const badge=button?.querySelector('[data-tab-unread]');
+    if(!badge)return;
+    badge.hidden=!(count>0);
+    badge.textContent=count>99?'99+':count||'';
+    button.setAttribute('aria-label',tabLabel(id));
+    button.title=appName(id)+(tabUnreadText(id)?' — '+tabUnreadText(id):'');
+  }
   let pillFrame=0;
   function positionTabSlider(from=null){
     const nav=surface.querySelector('.neos-workspace-tabs');
@@ -2155,6 +2173,7 @@
       }
       // Update the badge locally only after the server confirmed the read marker.
       if(talkChat.token===token){
+        if(demo)setTabUnread('talk',Math.max(0,(tabUnread.talk||0)-(room.unreadCount||0)));
         room.unreadCount=0;room.badge='';room.subtitle=String(room.subtitle||'').replace(/^\d+(?: messages?)? non lu(?:s|\(s\))? · /,'Lu · ');
         toast('Conversation marquée comme lue','success');
       }
@@ -2494,6 +2513,59 @@
       }
     };walk(list);return [...new Map(found.map(m=>[mailMailboxId(m),m])).values()];
   }
+  const talkRoomsPath='apps/spreed/api/v4/room?noStatusUpdate=1';
+  function talkUnreadTotal(rooms){
+    const counts=rooms.map(room=>unreadCount(room?.unreadMessages));
+    return counts.includes(null)?null:counts.reduce((sum,count)=>sum+count,0);
+  }
+  function mailInbox(account,folders){
+    const targetId=String(account?.inboxMailboxId??'');
+    return folders.find(box=>targetId&&mailMailboxId(box)===targetId)
+      ||folders.find(box=>[].concat(box.specialRole||box.specialUse||box.role||[]).some(role=>/^\\?inbox$/i.test(role)))
+      ||folders.find(box=>/^(inbox|boîte de réception|boite de reception|réception|reception)$/i.test(String(box.name||box.displayName||'')));
+  }
+  async function mailAccountFolders(account){
+    const result=await moduleRequest(mailNative(`/api/mailboxes?accountId=${encodeURIComponent(account.id)}`));
+    return mailFolders(result?.mailboxes||result?.data?.mailboxes||result?.data||result);
+  }
+  async function mailUnreadTotal(accounts){
+    const ids=new Set();
+    for(const account of accounts){
+      if(!/^\d+$/.test(String(account?.id??'')))continue;
+      const configured=mailMailboxId({id:account.inboxMailboxId});
+      const inboxId=configured||mailMailboxId(mailInbox(account,await mailAccountFolders(account)));
+      if(inboxId)ids.add(inboxId);
+    }
+    let total=0;
+    for(const id of ids){
+      const stats=await moduleRequest(mailNative(`/api/mailboxes/${encodeURIComponent(id)}/stats`));
+      const count=unreadCount(stats?.data?.unread??stats?.unread);
+      if(count===null)throw Error('Compteur Mail indisponible');
+      total+=count;
+    }
+    return total;
+  }
+  const unreadPending={talk:false,mail:false};
+  let talkUnreadRevision=0;
+  let unreadUserGeneration=0;
+  async function refreshTabUnread(id){
+    if(demo||document.hidden||unreadPending[id])return;
+    if(!availableApps().has(id)){setTabUnread(id,null);return;}
+    const generation=unreadUserGeneration;
+    const revision=talkUnreadRevision;
+    unreadPending[id]=true;
+    try{
+      const count=id==='talk'
+        ?talkUnreadTotal(integrationArray(await ocsIntegrationGet(talkRoomsPath)))
+        :await mailUnreadTotal(integrationArray(await moduleRequest(mailNative('/api/accounts'))));
+      if(generation===unreadUserGeneration&&availableApps().has(id)&&(id!=='talk'||revision===talkUnreadRevision))setTabUnread(id,count);
+    }catch{/* Keep the last confirmed count during a transient failure. */}
+    finally{unreadPending[id]=false;}
+  }
+  function refreshUnreadTabs(){
+    void refreshTabUnread('talk');
+    void refreshTabUnread('mail');
+  }
   function mailEnvelopeList(response){
     if(Array.isArray(response))return response;
     for(const values of [response?.messages,response?.envelopes,response?.items,response?.data,response?.threads,response?.data?.messages,response?.data?.envelopes])if(Array.isArray(values))return values;
@@ -2587,12 +2659,8 @@
       validAccounts++;
       const accountName=String(account?.email||account?.name||`Compte ${account.id}`);
       try{
-        const boxResponse=await moduleRequest(mailNative(`/api/mailboxes?accountId=${encodeURIComponent(account.id)}`));
-        const folders=mailFolders(boxResponse?.mailboxes||boxResponse?.data?.mailboxes||boxResponse);
-        const targetId=String(account?.inboxMailboxId??'');
-        const inbox=folders.find(box=>mailMailboxId(box)===targetId&&targetId!=='')
-          ||folders.find(box=>String(box.specialRole||box.specialUse||box.role||'').toLowerCase()==='inbox')
-          ||folders.find(box=>/^(inbox|boîte de réception|boite de reception|réception|reception)$/i.test(String(box.name||box.displayName||'')));
+        const folders=await mailAccountFolders(account);
+        const inbox=mailInbox(account,folders);
         if(!inbox){warnings.push(`${accountName} : aucun dossier Réception reconnu (${folders.length} dossier(s) reçu(s)).`);continue;}
         const boxId=mailMailboxId(inbox);
         const key=`${account.id}:${boxId}`;
@@ -2642,7 +2710,8 @@
         if(id==='mail')fixtures.mail=fixtures.mail.map((m,i)=>({...m,folderKey:i===2?'2:11':'1:7'}));
         result={items:fixtures[id],meta:{note:'Données fictives de présentation, sans connexion à un compte.',...(id==='activity'?{hasNext:true,cursor:50}:{}),...(id==='contacts'?{books:[{url:'demo-book',name:'Équipe'},{url:'demo-personal',name:'Personnel'}]}:{}),...(id==='mail'?{accounts:[{id:'1',email:'projet@example.test'},{id:'2',email:'perso@example.test'}],mailboxes:[{key:'1:7',label:'projet@example.test · Réception'},{key:'2:11',label:'perso@example.test · Réception'}],warnings:[],syncedAt:Date.now(),note:'Démo · Le bouton Synchroniser ne contacte aucun serveur. Sur le NAS, Neos synchronise via l’API Mail puis recharge les messages.'}: {})}};
       }else if(id==='talk'){
-        const rooms=integrationArray(await ocsIntegrationGet('apps/spreed/api/v4/room?noStatusUpdate=1'));
+        const rooms=integrationArray(await ocsIntegrationGet(talkRoomsPath));
+        if(gen===state.generation){talkUnreadRevision++;setTabUnread('talk',talkUnreadTotal(rooms));}
         result={items:rooms.slice(0,75).map(room=>({title:room.displayName||room.name||'Conversation',token:String(room.token||''),subtitle:`${Number(room.unreadMessages)||0} non lu(s) · ${room.type===1?'Discussion directe':'Salon'}`,summary:room.lastMessage?.message||'',badge:Number(room.unreadMessages)>0?String(room.unreadMessages):'',unreadCount:Number(room.unreadMessages)||0,url:nativePath('talk',`call/${encodeURIComponent(room.token||'')}`)})),meta:{note:'Lire et envoyer des messages texte directement dans Neos. Pour les appels et les pièces jointes, utilise Talk natif.'}};
       }else if(id==='activity'){
         const page=await activityPage();
@@ -2651,6 +2720,7 @@
       else result=await fetchMail();
       if(gen!==state.generation)return;
       state.items=result.items;state.meta=result.meta||{};state.updatedAt=Date.now();state.status='ready';
+      if(id==='mail')void refreshTabUnread('mail');
       if(id==='contacts'){contactDetail=-1;contactDelete.open=false;if(!contactEditor.open)contactEditor.error='';}
       if(id==='mail'&&mailReader.item){mailReader.generation++;mailReader.item=null;mailReader.index=-1;mailReader.body='';mailReader.html='';}
       if(id==='talk'&&talkChat.token&&!state.items.some(item=>item.token===talkChat.token)){talkChat.token='';talkChat.generation++;}
@@ -3431,7 +3501,7 @@
         ${(activeWorkspace==='files'||activeWorkspace==='home')&&warnings.length?`<div class="neos-warning">${icon('info',16)} ${esc(warnings[0])}</div>`:''}
         ${activeWorkspace==='home'?homeWorkspace(widgets):activeWorkspace==='files'?filesWorkspace():currentModule()}
       </div>
-      <footer class="neos-footer"><span>NEOS 0.7.0</span><span>Nextcloud 35</span></footer>
+      <footer class="neos-footer"><span>NEOS 0.7.1</span><span>Nextcloud 35</span></footer>
     </div></main>`;
     updateClock();
     positionTabSlider(pillFrom);
@@ -4242,6 +4312,8 @@
       root.dataset.displayName = data.user?.name || 'toi';
       if(root.dataset.currentUid!==String(data.user?.uid||'demo')){
         root.dataset.currentUid=String(data.user?.uid||'demo');
+        unreadUserGeneration++;
+        if(!demo){setTabUnread('mail',null);setTabUnread('talk',null);}
         readRecent();favoriteState.status='idle';favoriteState.items=[];favoritePaths.clear();
       }
       render();
@@ -4251,6 +4323,7 @@
       if(activeWorkspace==='planning'&&planningDeck.status==='idle')void loadPlanningDeck();
     if(activeWorkspace==='home'&&homeHasTasks()&&groupware.status==='idle')void loadGroupware();
       if(integrations[activeWorkspace]&&integrations[activeWorkspace].status==='idle')void loadIntegration(activeWorkspace);
+      refreshUnreadTabs();
       if (silent) toast('Actualisé','success');
     } catch (error) {
       console.error('[Neos] chargement impossible', error);
@@ -4934,7 +5007,10 @@
     void loadTalkChat(false,true);
   };
   setInterval(autoRefreshTalk,60000);
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')autoSyncMail();});
+  setInterval(refreshUnreadTabs,90000);
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible'){autoSyncMail();refreshUnreadTabs();}
+  });
   void load();
   launchDatafield();
 })();

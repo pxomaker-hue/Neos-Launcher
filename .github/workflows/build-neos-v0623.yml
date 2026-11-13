@@ -2,10 +2,6 @@ name: Publish Neos v0.6.23 ZIP
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - '.github/workflows/build-neos-v0623.yml'
-      - '.neos-build/rebuild-v0623.py'
 
 permissions:
   contents: write
@@ -24,7 +20,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add neos-nextcloud35-v0.6.23.zip
+          git add archive/releases/v0.6/neos-nextcloud35-v0.6.23.zip
           git diff --cached --quiet && exit 0
           git commit -m 'Publish Neos v0.6.23 ZIP'
           git push origin HEAD:main

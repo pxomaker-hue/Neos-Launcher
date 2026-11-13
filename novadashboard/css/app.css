@@ -1846,6 +1846,13 @@
 #nova-root .neos-note-search-count{margin:5px 6px;color:var(--muted);font-size:12px}
 
 /* Neos 0.7 — compact navigation */
+#nova-root .neos-tab-unread {
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:1.35rem;height:1.15rem;padding:0 .25rem;border-radius:1rem;
+  background:#55e8de;color:#052023;font-size:.65rem;font-weight:800;
+  line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+#nova-root .neos-tab-unread[hidden] {display:none;}
 #nova-root .neos-workspace-tabs {flex-wrap:wrap;overflow:visible;}
 #nova-root .neos-workspace-tab:focus-visible {outline:2px solid var(--accent,#24d9d1);outline-offset:-2px;}
 #nova-root .neos-gw-form-grid[hidden] {display:none;}
@@ -1860,6 +1867,7 @@
   #nova-root .neos-workspace-tabs .neos-workspace-label,
   #nova-root .neos-workspace-tabs .neos-tab-drag-indicator {display:none;}
   #nova-root .neos-workspace-tab {min-width:0;max-width:none;min-height:44px;padding:0;gap:0;}
+  #nova-root .neos-tab-unread {position:absolute;inset-block-start:2px;inset-inline-end:2px;}
   #nova-root .neos-workspace-tab.is-active {
     background:linear-gradient(110deg,rgba(21,108,118,.68),rgba(16,66,86,.82))!important;
     border-color:rgba(23,224,225,.78)!important;

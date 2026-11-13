@@ -1,3 +1,8 @@
+## 0.7.1
+
+- Mail and Talk show unread counts in the dashboard navigation, including in compact icon mode.
+- The Mail count covers inboxes using the statistics returned by Nextcloud Mail.
+
 ## 0.7.0
 
 - Compact, wrapping icon navigation on narrow screens.

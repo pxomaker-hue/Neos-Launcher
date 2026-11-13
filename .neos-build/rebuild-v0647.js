@@ -4,8 +4,8 @@ const zlib = require('node:zlib');
 const {execFileSync} = require('node:child_process');
 
 const root = path.resolve(__dirname, '..');
-const inputPath = path.join(root, 'neos-nextcloud35-v0.6.46.zip');
-const outputPath = path.join(root, 'neos-nextcloud35-v0.6.47.zip');
+const inputPath = path.join(root, 'archive/releases/v0.6/neos-nextcloud35-v0.6.46.zip');
+const outputPath = path.join(root, 'archive/releases/v0.6/neos-nextcloud35-v0.6.47.zip');
 const changed = new Set([
   'novadashboard/js/app.js',
   'novadashboard/css/app.css',

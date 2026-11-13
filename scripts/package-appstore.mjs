@@ -9,13 +9,14 @@ const source = join(root, appId);
 const info = readFileSync(join(source, 'appinfo', 'info.xml'), 'utf8');
 const version = /<version>(\d+\.\d+\.\d+)<\/version>/.exec(info)?.[1];
 if (!version || !info.includes(`<id>${appId}</id>`)) throw new Error('Identifiant ou version Nextcloud invalide.');
+const zip = process.argv[2] === '--zip';
 
 const dist = join(root, 'dist');
 mkdirSync(dist, {recursive: true});
 const stagePrefix = join(dist, 'neos-appstore-');
 const stage = mkdtempSync(stagePrefix);
 const target = join(stage, appId);
-const archiveName = `${appId}-${version}-unsigned.tar.gz`;
+const archiveName = zip ? `neos-nextcloud35-v${version}.zip` : `${appId}-${version}-unsigned.tar.gz`;
 const candidate = join(stage, archiveName);
 const output = join(dist, archiveName);
 
@@ -31,9 +32,9 @@ try {
     copyFileSync(join(source, name), join(target, name));
   }
   copyFileSync(join(root, 'LICENSE'), join(target, 'COPYING'));
-  execFileSync('tar', ['-czf', candidate, '-C', stage, appId]);
+  execFileSync('tar', [zip ? '-acf' : '-czf', candidate, '-C', stage, appId]);
 
-  const entries = execFileSync('tar', ['-tzf', candidate], {encoding: 'utf8'}).trim().split(/\r?\n/);
+  const entries = execFileSync('tar', ['-tf', candidate], {encoding: 'utf8'}).trim().split(/\r?\n/);
   if (entries.some(name => !name.startsWith(`${appId}/`) || name.split('/').includes('.git')) ||
       !entries.includes(`${appId}/appinfo/info.xml`) || !entries.includes(`${appId}/COPYING`) ||
       statSync(candidate).size > 20 * 1024 * 1024) {

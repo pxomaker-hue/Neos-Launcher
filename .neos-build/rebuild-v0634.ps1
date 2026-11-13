@@ -2,8 +2,8 @@ $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 $repo = Split-Path -Parent $PSScriptRoot
-$source = Join-Path $repo 'neos-nextcloud35-v0.6.33.zip'
-$output = Join-Path $repo 'neos-nextcloud35-v0.6.34.zip'
+$source = Join-Path $repo 'archive/releases/v0.6/neos-nextcloud35-v0.6.33.zip'
+$output = Join-Path $repo 'archive/releases/v0.6/neos-nextcloud35-v0.6.34.zip'
 $tempRoot = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath())
 $work = Join-Path $tempRoot ('neos-v0634-' + [guid]::NewGuid().ToString('N'))
 $work = [System.IO.Path]::GetFullPath($work)

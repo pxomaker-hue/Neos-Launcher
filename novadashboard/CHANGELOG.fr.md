@@ -1,3 +1,8 @@
+## 0.7.1
+
+- Les onglets Mail et Talk affichent les non-lus, y compris en mode icônes.
+- Le compteur Mail couvre les boîtes de réception d’après les statistiques renvoyées par Nextcloud Mail.
+
 ## 0.7.0
 
 - La barre de navigation affiche uniquement les icônes sur écran réduit et passe à la ligne selon l’espace disponible.

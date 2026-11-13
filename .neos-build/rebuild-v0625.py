@@ -10,8 +10,8 @@ import json
 import zlib
 
 root = Path(__file__).resolve().parent.parent
-source = root / "neos-nextcloud35-v0.6.24.zip"
-output = root / "neos-nextcloud35-v0.6.25.zip"
+source = root / "archive/releases/v0.6/neos-nextcloud35-v0.6.24.zip"
+output = root / "archive/releases/v0.6/neos-nextcloud35-v0.6.25.zip"
 diff_path = root / ".neos-build" / "neos-v0.6.25.delta.b64"
 EXPECTED_OLD = "ded2b92842e94d09f292344e4b22d5af25022c8d150215c45e51fda17e152be3"
 EXPECTED_NEW = "bab8afa77165b0462176af656c7d5cc7a2ca7f1a42127ce2d8960615a2ec3f71"

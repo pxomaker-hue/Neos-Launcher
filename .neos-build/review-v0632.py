@@ -5,7 +5,7 @@ from zipfile import ZipFile
 from difflib import unified_diff
 import json,hashlib,base64,zlib
 root=Path(__file__).resolve().parent.parent
-with ZipFile(root/"neos-nextcloud35-v0.6.31.zip") as a, ZipFile(root/"neos-nextcloud35-v0.6.32.zip") as b:
+with ZipFile(root/"archive/releases/v0.6/neos-nextcloud35-v0.6.31.zip") as a, ZipFile(root/"archive/releases/v0.6/neos-nextcloud35-v0.6.32.zip") as b:
     an={x.filename for x in a.infolist() if not x.is_dir()}
     bn={x.filename for x in b.infolist() if not x.is_dir()}
     changed=[path for path in sorted(an&bn) if a.read(path)!=b.read(path)]

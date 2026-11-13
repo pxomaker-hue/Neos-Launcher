@@ -8,8 +8,8 @@ import zlib
 import zipfile
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE = ROOT / 'neos-nextcloud35-v0.6.21.zip'
-TARGET = ROOT / 'neos-nextcloud35-v0.6.22.zip'
+SOURCE = ROOT / 'archive/releases/v0.6/neos-nextcloud35-v0.6.21.zip'
+TARGET = ROOT / 'archive/releases/v0.6/neos-nextcloud35-v0.6.22.zip'
 DELTA = ROOT / '.neos-build/neos-v0.6.22.delta.b64'
 OLD_SHA256 = '8179553a35508ca31bbd4b592126f60c6b0d7e4c1851db314a3e70861d045dc2'
 NEW_CONTENT_SHA256 = '84dfee01d0f75e0fccb14275cba4078da137705e4d3c9da9cf6401dca529a716'

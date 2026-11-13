@@ -1,6 +1,6 @@
 # Publier Neos dans le catalogue Nextcloud
 
-L’identifiant de l’application est `novadashboard`. Il correspond au répertoire d’installation et à l’identifiant déjà utilisé par les installations manuelles. Neos v0.7.0 cible Nextcloud 35 et nécessite PHP 8.3 ou supérieur.
+L’identifiant de l’application est `novadashboard`. Il correspond au répertoire d’installation et à l’identifiant déjà utilisé par les installations manuelles. Neos v0.7 cible Nextcloud 35 et nécessite PHP 8.3 ou supérieur.
 
 ## 1. Préparer le paquet
 
@@ -10,7 +10,7 @@ Depuis la racine du dépôt, avec Node.js et `tar` disponibles, construis l’ar
 node scripts/package-appstore.mjs
 ```
 
-Le script produit `dist/novadashboard-0.7.0-unsigned.tar.gz`. Il embarque le code et les ressources installables dans le dossier `novadashboard/`, les changelogs du catalogue et la licence AGPL. Les scripts propres au NAS, les anciennes archives, les tests et les maquettes sont exclus.
+Le script produit `dist/novadashboard-<version>-unsigned.tar.gz`. Il embarque le code et les ressources installables dans le dossier `novadashboard/`, les changelogs du catalogue et la licence AGPL. Les scripts propres au NAS, les anciennes archives, les tests et les maquettes sont exclus. Pour construire le ZIP destiné à l’installation manuelle, utilise `node scripts/package-appstore.mjs --zip` avec le `tar` de Windows ou `bsdtar`.
 
 Avant une publication stable, exécute les parcours de la [checklist v0.7](../novadashboard/PLAN-v0.7.md) sur une instance Nextcloud 35.0.3, y compris l’installation et la mise à jour depuis une installation manuelle.
 
@@ -37,9 +37,9 @@ php occ integrity:sign-app \
   --privateKey="$cert_dir/novadashboard.key" \
   --certificate="$cert_dir/novadashboard.crt" \
   --path="$staging_dir/novadashboard"
-tar -czf "$staging_dir/novadashboard-0.7.0.tar.gz" -C "$staging_dir" novadashboard
+tar -czf "$staging_dir/novadashboard-0.7.1.tar.gz" -C "$staging_dir" novadashboard
 openssl dgst -sha512 -sign "$cert_dir/novadashboard.key" \
-  "$staging_dir/novadashboard-0.7.0.tar.gz" | openssl base64 -A
+  "$staging_dir/novadashboard-0.7.1.tar.gz" | openssl base64 -A
 ```
 
 Publie le `.tar.gz` signé comme fichier joint à une release GitHub. Enregistre l’identifiant avec le certificat public sur [apps.nextcloud.com](https://apps.nextcloud.com/), puis soumets le lien HTTPS du fichier et sa signature SHA-512. Le [guide officiel de publication](https://nextcloudappstore.readthedocs.io/en/stable/developer.html#publishing-apps-on-the-app-store) détaille le formulaire.

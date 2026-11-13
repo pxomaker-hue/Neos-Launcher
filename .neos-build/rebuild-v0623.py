@@ -9,8 +9,8 @@ import zipfile
 import xml.etree.ElementTree as ET
 
 BASE = Path(__file__).resolve().parents[1]
-OLD = BASE / 'neos-nextcloud35-v0.6.22.zip'
-OUT = BASE / 'neos-nextcloud35-v0.6.23.zip'
+OLD = BASE / 'archive/releases/v0.6/neos-nextcloud35-v0.6.22.zip'
+OUT = BASE / 'archive/releases/v0.6/neos-nextcloud35-v0.6.23.zip'
 EXPECTED_CONTENT_SHA256 = 'a454246232a69c9dc8c620c29281402b41642bd94d550573a0b4e48f44b802f6'
 
 def replace_once(s, old, new):

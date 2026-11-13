@@ -12,8 +12,8 @@ import tempfile
 from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 
 root=Path(__file__).resolve().parent.parent
-source=root/'neos-nextcloud35-v0.6.32.zip'
-output=root/'neos-nextcloud35-v0.6.33.zip'
+source=root/'archive/releases/v0.6/neos-nextcloud35-v0.6.32.zip'
+output=root/'archive/releases/v0.6/neos-nextcloud35-v0.6.33.zip'
 patch=root/'.neos-build/patch-v0633.py'
 if not source.exists() or not patch.exists():
     raise SystemExit('Missing verified Work v0.6.32 ZIP or patch-v0633.py')
