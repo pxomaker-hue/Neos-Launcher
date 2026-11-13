@@ -1,3 +1,7 @@
+## 0.7.2
+
+- Les badges de non-lus de Mail et Talk adoptent un halo cyan diffus et un quadrillage discret, avec libellés comme en mode icônes.
+
 ## 0.7.1
 
 - Les onglets Mail et Talk affichent les non-lus, y compris en mode icônes.

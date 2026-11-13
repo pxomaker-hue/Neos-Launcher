@@ -1,3 +1,7 @@
+## 0.7.2
+
+- Mail and Talk unread badges use a soft cyan halo with a subtle grid, with and without tab labels.
+
 ## 0.7.1
 
 - Mail and Talk show unread counts in the dashboard navigation, including in compact icon mode.

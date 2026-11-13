@@ -1847,12 +1847,37 @@
 
 /* Neos 0.7 — compact navigation */
 #nova-root .neos-tab-unread {
+  --badge-core:#3ce5db59;
+  --badge-middle:#32bbbc33;
+  --badge-edge:#32bbbc13;
+  --badge-grid:#8df9ef22;
+  position:relative;isolation:isolate;flex:none;
   display:inline-flex;align-items:center;justify-content:center;
-  min-width:1.35rem;height:1.15rem;padding:0 .25rem;border-radius:1rem;
-  background:#55e8de;color:#052023;font-size:.65rem;font-weight:800;
+  min-width:1.35rem;height:1.15rem;padding:0 .25rem;
+  color:#e5ffff;text-shadow:0 1px 2px #031621,0 0 4px #031621;
+  font-size:.6875rem;font-weight:800;
   line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;
 }
 #nova-root .neos-tab-unread[hidden] {display:none;}
+#nova-root .neos-tab-unread::before,
+#nova-root .neos-tab-unread::after {content:"";position:absolute;z-index:-1;pointer-events:none;}
+#nova-root .neos-tab-unread::before {
+  inset:-8px -11px;
+  background:radial-gradient(ellipse closest-side,var(--badge-core),var(--badge-middle) 30%,var(--badge-edge) 63%,transparent);
+}
+#nova-root .neos-tab-unread::after {
+  inset:-5px -7px;
+  background-image:linear-gradient(var(--badge-grid) 1px,transparent 1px),linear-gradient(90deg,var(--badge-grid) 1px,transparent 1px);
+  background-size:4px 4px;background-position:center;
+  mask-image:radial-gradient(ellipse closest-side,#000b,#0006 40%,transparent 93%);
+}
+#nova-root.neos-light .neos-workspace-tab:not(.is-active) .neos-tab-unread {
+  --badge-core:#0aa89744;
+  --badge-middle:#0aa89724;
+  --badge-edge:#0aa8970d;
+  --badge-grid:#146d7226;
+  color:#064752;text-shadow:none;
+}
 #nova-root .neos-workspace-tabs {flex-wrap:wrap;overflow:visible;}
 #nova-root .neos-workspace-tab:focus-visible {outline:2px solid var(--accent,#24d9d1);outline-offset:-2px;}
 #nova-root .neos-gw-form-grid[hidden] {display:none;}
@@ -1868,6 +1893,7 @@
   #nova-root .neos-workspace-tabs .neos-tab-drag-indicator {display:none;}
   #nova-root .neos-workspace-tab {min-width:0;max-width:none;min-height:44px;padding:0;gap:0;}
   #nova-root .neos-tab-unread {position:absolute;inset-block-start:2px;inset-inline-end:2px;}
+  #nova-root .neos-workspace-tab:has(.neos-tab-unread:not([hidden])) .neos-tab-flat-icon {translate:-4px 4px;}
   #nova-root .neos-workspace-tab.is-active {
     background:linear-gradient(110deg,rgba(21,108,118,.68),rgba(16,66,86,.82))!important;
     border-color:rgba(23,224,225,.78)!important;
