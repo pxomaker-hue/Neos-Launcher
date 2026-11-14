@@ -23,7 +23,7 @@ Neos 0.7 targets Nextcloud 35. The application interface is in French. Integrati
 - Navigation compacte par icônes sur écran réduit.
 
 Neos 0.7 cible Nextcloud 35. Les intégrations dépendent des applications activées et des droits du compte connecté.]]></description>
-  <version>0.7.4</version>
+  <version>0.7.5</version>
   <licence>AGPL-3.0-or-later</licence>
   <author>Neos Community Edition</author>
   <namespace>NovaDashboard</namespace>

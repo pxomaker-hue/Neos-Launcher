@@ -9,8 +9,11 @@ use OCP\IConfig;
 final class PreferencesService {
     public const TABS = ['home','files','photos','planning','calendar','tasks','talk','contacts','mail','activity','deck','notes'];
     public const WIDGETS = ['explorer', 'storage', 'shortcuts', 'clock', 'files', 'calendar', 'tasks', 'summary', 'links', 'notes', 'deck'];
-    public const SIZES = [3, 4, 6, 8, 9, 12];
-    public const HEIGHTS = [0,160,220,300,400,520,680];
+    private const MIN_SIZE = 3;
+    private const MAX_SIZE = 12;
+    private const MIN_HEIGHT = 160;
+    private const MAX_HEIGHT = 680;
+    private const HEIGHT_STEP = 20;
     private const MAX_WIDGET_ROW = 500;
     public const ACCENTS = ['indigo', 'cyan', 'emerald', 'rose', 'amber', 'copper'];
 
@@ -80,7 +83,7 @@ final class PreferencesService {
         foreach (self::DEFAULT_SIZES as $widget => $default) {
             $candidate = $submittedSizes[$widget] ?? $default;
             $candidate = is_numeric($candidate) ? (int)$candidate : 0;
-            $sizes[$widget] = in_array($candidate, self::SIZES, true) ? $candidate : $default;
+            $sizes[$widget] = $candidate >= self::MIN_SIZE && $candidate <= self::MAX_SIZE ? $candidate : $default;
         }
 
         $heights = [];
@@ -88,7 +91,8 @@ final class PreferencesService {
         foreach (self::WIDGETS as $widget) {
             $candidate = $submittedHeights[$widget] ?? 0;
             $candidate = is_numeric($candidate) ? (int)$candidate : -1;
-            $heights[$widget] = in_array($candidate, self::HEIGHTS, true) ? $candidate : 0;
+            $validHeight = $candidate >= self::MIN_HEIGHT && $candidate <= self::MAX_HEIGHT && ($candidate - self::MIN_HEIGHT) % self::HEIGHT_STEP === 0;
+            $heights[$widget] = $validHeight ? $candidate : 0;
         }
 
         $positions = [];

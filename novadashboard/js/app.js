@@ -185,9 +185,12 @@
   const widgetIds = Object.keys(widgetLabels);
   const defaultSizes = { explorer:12, storage:3, shortcuts:6, clock:3, files:6, calendar:6, tasks:6, summary:6, links:6, notes:6, deck:6 };
   const adaptiveSizes = { explorer:8, storage:4, shortcuts:8, clock:4, files:6, calendar:6, tasks:6, summary:4, links:6, notes:6, deck:6 };
-  const allowedSizes = [3,4,6,8,9,12];
+  const allowedSizes = Array.from({length:10},(_,index)=>index+3);
   const maxWidgetRow = 500;
-  const allowedHeights = [0,160,220,300,400,520,680];
+  const fixedHeights = Array.from({length:27},(_,index)=>160+index*20);
+  const allowedHeights = [0,...fixedHeights];
+  const tabletWidgetSizes = [6,12];
+  const mobileWidgetSizes = [12];
   const defaultHeights = Object.fromEntries(widgetIds.map(id=>[id,0]));
   let masonryFrame=0;
   let lastMasonryWidth=0;
@@ -457,7 +460,7 @@
     setTimeout(done, Math.round(195*motionFactor()));
   }
 
-  function widgetMinHeight(id){
+  function widgetHeight(id){
     if(settings?.gridMode!=='manual')return 0;
     const value=Number(settings.heights?.[id]||0);
     return allowedHeights.includes(value)?value:0;
@@ -466,21 +469,28 @@
     const requested = Number(settings?.sizes?.[id]);
     return settings?.gridMode==='adaptive' ? (adaptiveSizes[id] || 6) : (allowedSizes.includes(requested) ? requested : defaultSizes[id] || 6);
   }
+  function widgetWidthSteps(){
+    if(window.matchMedia('(max-width:700px)').matches)return mobileWidgetSizes;
+    return window.matchMedia('(max-width:1120px)').matches?tabletWidgetSizes:allowedSizes;
+  }
+  function visibleWidgetSpan(span,steps){
+    return steps.find(size=>size>=span);
+  }
   function widgetPlacementEnabled(){
     return settings?.gridMode==='manual'&&window.matchMedia('(min-width:1121px)').matches;
   }
   function editWidgetTools(id){
     if(!editing||activeWorkspace!=='home')return '';
     const order=settings.order.filter(key=>!settings.hidden.includes(key)&&(key!=='shortcuts'||settings.launcherMode==='widget'));
-    const index=order.indexOf(id);const span=widgetSpan(id);const height=widgetMinHeight(id);
+    const index=order.indexOf(id);const span=widgetSpan(id);const height=widgetHeight(id);
     const positionControl=settings.gridMode==='manual'?`<button type="button" class="neos-mini-action neos-widget-position" data-action="widget-position" data-id="${id}" aria-label="Position de ${esc(widgetLabels[id])}">Position</button>`:'';
-    const minHeightLabel=height?`${height} px`:'Auto';
-    return `<div class="neos-widget-edit-controls"><button type="button" class="neos-mini-action neos-drag-handle" draggable="true" data-drag-widget="${id}" title="Déplacer par glisser-déposer" aria-label="Déplacer ${esc(widgetLabels[id])} par glisser-déposer">${icon('grip',17)}</button><button type="button" class="neos-mini-action" data-action="widget-move" data-id="${id}" data-step="-1" ${index<=0?'disabled':''} aria-label="Déplacer ${esc(widgetLabels[id])} vers le début">${icon('back',14)}</button><button type="button" class="neos-mini-action" data-action="widget-move" data-id="${id}" data-step="1" ${index>=order.length-1?'disabled':''} aria-label="Déplacer ${esc(widgetLabels[id])} vers la fin">${icon('forward',14)}</button><span class="neos-edit-sep"></span><button type="button" class="neos-mini-action" data-action="widget-resize" data-id="${id}" data-step="-1" ${settings.gridMode==='adaptive'?'disabled':''} title="Réduire la largeur">${icon('minus',13)}</button><span class="neos-widget-span" title="Largeur actuelle">${Math.round(span/12*100)}%</span><button type="button" class="neos-mini-action" data-action="widget-resize" data-id="${id}" data-step="1" ${settings.gridMode==='adaptive'?'disabled':''} title="Agrandir la largeur">${icon('plus',13)}</button><span class="neos-edit-sep"></span><button type="button" class="neos-mini-action" data-action="widget-height" data-id="${id}" data-step="-1" ${settings.gridMode==='adaptive'?'disabled':''} title="Réduire la hauteur minimale">${icon('chevrons-down',15)}</button><span class="neos-widget-span neos-height-indicator" title="Hauteur minimale">${minHeightLabel}</span><button type="button" class="neos-mini-action" data-action="widget-height" data-id="${id}" data-step="1" ${settings.gridMode==='adaptive'?'disabled':''} title="Augmenter la hauteur minimale">${icon('chevrons-up',15)}</button>${positionControl}</div>`;
+    const heightLabel=height?`${height} px`:'Auto';
+    return `<div class="neos-widget-edit-controls"><button type="button" class="neos-mini-action neos-drag-handle" draggable="true" data-drag-widget="${id}" title="Déplacer par glisser-déposer" aria-label="Déplacer ${esc(widgetLabels[id])} par glisser-déposer">${icon('grip',17)}</button><button type="button" class="neos-mini-action" data-action="widget-move" data-id="${id}" data-step="-1" ${index<=0?'disabled':''} aria-label="Déplacer ${esc(widgetLabels[id])} vers le début">${icon('back',14)}</button><button type="button" class="neos-mini-action" data-action="widget-move" data-id="${id}" data-step="1" ${index>=order.length-1?'disabled':''} aria-label="Déplacer ${esc(widgetLabels[id])} vers la fin">${icon('forward',14)}</button><span class="neos-edit-sep"></span><button type="button" class="neos-mini-action" data-action="widget-resize" data-id="${id}" data-step="-1" ${settings.gridMode==='adaptive'?'disabled':''} title="Réduire la largeur">${icon('minus',13)}</button><span class="neos-widget-span neos-width-indicator" title="Largeur actuelle">${Math.round(span/12*100)}%</span><button type="button" class="neos-mini-action" data-action="widget-resize" data-id="${id}" data-step="1" ${settings.gridMode==='adaptive'?'disabled':''} title="Agrandir la largeur">${icon('plus',13)}</button><span class="neos-edit-sep"></span><button type="button" class="neos-mini-action" data-action="widget-height" data-id="${id}" data-step="-1" ${settings.gridMode==='adaptive'?'disabled':''} title="Réduire la hauteur">${icon('chevrons-down',15)}</button><span class="neos-widget-span neos-height-indicator" title="Hauteur">${heightLabel}</span><button type="button" class="neos-mini-action" data-action="widget-height" data-id="${id}" data-step="1" ${settings.gridMode==='adaptive'?'disabled':''} title="Augmenter la hauteur">${icon('chevrons-up',15)}</button>${positionControl}</div>`;
   }
   function box(id, body, sub='', tools='') {
     const size=widgetSpan(id);
     const arranging=editing&&activeWorkspace==='home';
-    return `<section class="neos-card neos-${id} ${arranging?'neos-editable-card':''}" data-widget="${id}" data-size="${size}" data-min-height="${widgetMinHeight(id)}" draggable="false">
+    return `<section class="neos-card neos-${id} ${arranging?'neos-editable-card':''}" data-widget="${id}" data-size="${size}" data-height="${widgetHeight(id)}" draggable="false">
       <header class="neos-card-head"><div class="neos-card-name">${icon(widgetIcons[id],18)}<span>${esc(widgetLabels[id])}</span></div>${arranging?`<button type="button" class="neos-mini-action neos-widget-hide" data-action="widget-hide" data-id="${id}" aria-label="Masquer ${esc(widgetLabels[id])}" title="Masquer ce widget">${icon('minus',15)}</button>`:''}<div class="neos-card-actions">${arranging?editWidgetTools(id):tools}<span class="neos-card-sub">${arranging?'':sub}</span></div></header>
       <div class="neos-card-body">${body}</div>
       ${arranging&&settings.gridMode==='manual'?'<span class="neos-widget-resize-handle" data-widget-resize-handle title="Tirer pour redimensionner" aria-hidden="true"></span>':''}
@@ -3501,26 +3511,53 @@
     const pxPerRow=rowHeight+rowGap;
     const precise=widgetPlacementEnabled();
     const dimensions=[];
+    const steps=widgetWidthSteps();
     for(const card of cards){
       card.style.gridColumnStart='';
       card.style.gridColumnEnd='';
       card.style.gridRowStart='';
       delete card.dataset.gridRow;
       delete card.dataset.gridColumn;
-      // Measure content rather than the stretched grid slot.
       card.style.gridRowEnd=narrow?'auto':'span 1';
       card.style.minHeight='';
+      card.style.height='';
       const head=card.querySelector(':scope > .neos-card-head');
       const body=card.querySelector(':scope > .neos-card-body');
       const cs=getComputedStyle(card);
-      const marginHead=head?Number.parseFloat(getComputedStyle(head).marginBottom)||0:0;
-      const natural=(head?.scrollHeight||0)+(body?.scrollHeight||0)+marginHead+
-        (Number.parseFloat(cs.paddingTop)||0)+(Number.parseFloat(cs.paddingBottom)||0)+2;
-      const chosen=Number(card.dataset.minHeight)||0;
-      const height=Math.max(natural, chosen, 112);
+      const marginHead=Number.parseFloat(getComputedStyle(head).marginBottom)||0;
+      const frame=head.offsetHeight+marginHead+Number.parseFloat(cs.paddingTop)+
+        Number.parseFloat(cs.paddingBottom)+Number.parseFloat(cs.borderTopWidth)+Number.parseFloat(cs.borderBottomWidth);
+      const chosen=Number(card.dataset.height)||0;
+      const bodyStyle=getComputedStyle(body);
+      const bodyPadding=Number.parseFloat(bodyStyle.paddingTop)+Number.parseFloat(bodyStyle.paddingBottom);
+      const minimum=Math.ceil(frame+bodyPadding+64);
+      const height=chosen?Math.max(chosen,minimum):Math.max(frame+body.scrollHeight,112);
       const rows=Math.max(1,Math.ceil((height+rowGap)/pxPerRow));
       card.style.gridRowEnd=narrow?'auto':`span ${rows}`;
-      card.style.minHeight=narrow?(chosen?`${chosen}px`:''):`${height}px`;
+      if(chosen)card.style.height=`${height}px`;
+      else if(!narrow)card.style.minHeight=`${height}px`;
+      const scrollable=Boolean(chosen&&body.scrollHeight>body.clientHeight+1);
+      if(scrollable){
+        body.tabIndex=0;
+        body.setAttribute('role','region');
+        body.setAttribute('aria-label',`Contenu · ${widgetLabels[card.dataset.widget]}`);
+      }else{
+        body.removeAttribute('tabindex');
+        body.removeAttribute('role');
+        body.removeAttribute('aria-label');
+      }
+      const indicator=card.querySelector('.neos-height-indicator');
+      if(indicator){
+        indicator.textContent=chosen?`${height} px`:'Auto';
+        indicator.title=chosen&&height>chosen?`Hauteur réglée à ${chosen} px. Les commandes nécessitent ${height} px.`:'Hauteur de la carte';
+      }
+      const span=visibleWidgetSpan(Number(card.dataset.size),steps);
+      const widthIndicator=card.querySelector('.neos-width-indicator');
+      if(widthIndicator){
+        widthIndicator.textContent=`${Math.round(span/12*100)}%`;
+        card.querySelector('[data-action="widget-resize"][data-step="-1"]').disabled=settings.gridMode!=='manual'||span===steps[0];
+        card.querySelector('[data-action="widget-resize"][data-step="1"]').disabled=settings.gridMode!=='manual'||span===12;
+      }
       dimensions.push({id:card.dataset.widget,width:Number(card.dataset.size),height:rows});
     }
     if(!precise)return;
@@ -3557,7 +3594,7 @@
         ${(activeWorkspace==='files'||activeWorkspace==='home')&&warnings.length?`<div class="neos-warning">${icon('info',16)} ${esc(warnings[0])}</div>`:''}
         ${activeWorkspace==='home'?homeWorkspace(widgets):activeWorkspace==='files'?filesWorkspace():currentModule()}
       </div>
-      <footer class="neos-footer"><span>NEOS 0.7.4</span><span>Nextcloud 35</span></footer>
+      <footer class="neos-footer"><span>NEOS 0.7.5</span><span>Nextcloud 35</span></footer>
     </div></main>`;
     updateClock();
     positionTabSlider(pillFrom);
@@ -4094,7 +4131,7 @@
           <div class="neos-tab-order-list" aria-label="Ordre d'affichage des onglets">${installedTabs().map((id,i)=>`<div class="neos-tab-order-row" data-editor-tab="${id}" draggable="true"><span class="neos-tab-order-grip" aria-hidden="true">${icon('grip',16)}</span>${flatTabIcon(id)}<span class="neos-tab-order-name">${esc(appName(id))}</span><div class="neos-tab-order-buttons"><button class="neos-iconbtn" type="button" data-action="tab-order-up" data-tab="${id}" aria-label="Monter ${esc(appName(id))}" ${i===0?'disabled':''}>${icon('back',16)}</button><button class="neos-iconbtn" type="button" data-action="tab-order-down" data-tab="${id}" aria-label="Descendre ${esc(appName(id))}" ${i===installedTabs().length-1?'disabled':''}>${icon('forward',16)}</button></div></div>`).join('')}</div><button type="button" class="neos-btn neos-tab-order-reset" data-action="tab-order-reset">${icon('refresh',15)} Ordre par défaut</button>
         </section>
         <section><h3>Apparence</h3>${radio('theme',[['system','Auto'],['dark','Sombre'],['light','Clair']])}${radio('accent',[['cyan','Cyan'],['indigo','Indigo'],['rose','Violet/Rose'],['emerald','Turquoise'],['amber','Ambre']])}${radio('density',[['comfortable','Aérée'],['compact','Compacte']])}${radio('layout',[['wide','Pleine largeur'],['focused','Centrée']])}${radio('motion',[['full','Animé'],['subtle','Discret'],['off','Off']])}</section>
-        <section><h3>Disposition de l'accueil</h3><div class="neos-pref-hint">Choisis « Libre » pour régler largeur et hauteur minimale. La grille compacte automatiquement les espaces entre les cartes.</div>${radio('gridMode',[['adaptive','Adaptatif'],['manual','Libre']])}<div class="neos-pref-list">${settings.order.filter(id=>id!=='shortcuts').map((id,i)=>`<div class="neos-pref-row"><label class="neos-check"><input type="checkbox" data-toggle="${id}" ${settings.hidden.includes(id)?'':'checked'}><span>${esc(widgetLabels[id])}</span></label><div class="neos-pref-tools"><select data-size="${id}" ${settings.gridMode==='adaptive'?'disabled':''}>${[[3,'25%'],[4,'33%'],[6,'50%'],[8,'67%'],[9,'75%'],[12,'100%']].map(([size,label])=>`<option value="${size}" ${Number(settings.sizes[id])===size?'selected':''}>${label}</option>`).join('')}</select><select data-height="${id}" ${settings.gridMode==='adaptive'?'disabled':''} aria-label="Hauteur minimale de ${esc(widgetLabels[id])}">${[[0,'Auto'],[160,'160 px'],[220,'220 px'],[300,'300 px'],[400,'400 px'],[520,'520 px'],[680,'680 px']].map(([h,label])=>`<option value="${h}" ${widgetMinHeight(id)===h?'selected':''}>${label}</option>`).join('')}</select><button type="button" class="neos-iconbtn" data-action="move-up" data-id="${id}" ${settings.order.indexOf(id)===0?'disabled':''} aria-label="Monter ${esc(widgetLabels[id])}">↑</button><button type="button" class="neos-iconbtn" data-action="move-down" data-id="${id}" ${settings.order.indexOf(id)===settings.order.length-1?'disabled':''} aria-label="Descendre ${esc(widgetLabels[id])}">↓</button></div></div>`).join('')}</div></section>
+        <section><h3>Disposition de l'accueil</h3><div class="neos-pref-hint">Choisis « Libre » pour régler largeur et hauteur. La grille compacte automatiquement les espaces entre les cartes.</div>${radio('gridMode',[['adaptive','Adaptatif'],['manual','Libre']])}<div class="neos-pref-list">${settings.order.filter(id=>id!=='shortcuts').map((id,i)=>`<div class="neos-pref-row"><label class="neos-check"><input type="checkbox" data-toggle="${id}" ${settings.hidden.includes(id)?'':'checked'}><span>${esc(widgetLabels[id])}</span></label><div class="neos-pref-tools"><select data-size="${id}" ${settings.gridMode==='adaptive'?'disabled':''}>${[[3,'25%'],[4,'33%'],[6,'50%'],[8,'67%'],[9,'75%'],[12,'100%']].map(([size,label])=>`<option value="${size}" ${Number(settings.sizes[id])===size?'selected':''}>${label}</option>`).join('')}</select><select data-height="${id}" ${settings.gridMode==='adaptive'?'disabled':''} aria-label="Hauteur de ${esc(widgetLabels[id])}">${[[0,'Auto'],[160,'160 px'],[220,'220 px'],[300,'300 px'],[400,'400 px'],[520,'520 px'],[680,'680 px']].map(([h,label])=>`<option value="${h}" ${widgetHeight(id)===h?'selected':''}>${label}</option>`).join('')}</select><button type="button" class="neos-iconbtn" data-action="move-up" data-id="${id}" ${settings.order.indexOf(id)===0?'disabled':''} aria-label="Monter ${esc(widgetLabels[id])}">↑</button><button type="button" class="neos-iconbtn" data-action="move-down" data-id="${id}" ${settings.order.indexOf(id)===settings.order.length-1?'disabled':''} aria-label="Descendre ${esc(widgetLabels[id])}">↓</button></div></div>`).join('')}</div></section>
         <section><h3>Position du lanceur</h3>${radio('launcherMode',[['topbar','Barre supérieure'],['widget','Widget']])}<div class="neos-app-picks">${settings.launcherMode==='topbar' ? appChoices : ''}</div></section>
         <section><h3>Liens</h3><div class="neos-custom-links">${(settings.links || []).map((entry, i) => `<div class="neos-link-edit"><input data-link-title="${i}" value="${esc(entry.title)}" maxlength="80"><input data-link-url="${i}" value="${esc(entry.url)}" maxlength="600"><button type="button" class="neos-iconbtn" data-action="remove-link" data-index="${i}">${icon('trash',15)}</button></div>`).join('')}</div><button type="button" class="neos-btn" data-action="add-link">${icon('plus',15)} Ajouter</button></section>
       </div>
@@ -4982,28 +5019,38 @@
     return true;
   }
   function applyWidgetDimensions(id,width,height){
-    if(width===widgetSpan(id)&&height===widgetMinHeight(id))return;
+    if(width===widgetSpan(id)&&height===widgetHeight(id))return;
     settings.sizes[id]=width;
     settings.heights[id]=height;
-    layoutAnnounce=`${widgetLabels[id]} : ${Math.round(width/12*100)} % de largeur, hauteur minimale ${height?height+' px':'automatique'}.`;
-    render();queueSave();flashLayoutOrder(id);
+    render();
+    layoutMasonry();
+    const card=surface.querySelector(`.neos-home-grid [data-widget="${id}"]`);
+    const visibleWidth=visibleWidgetSpan(width,widgetWidthSteps());
+    layoutAnnounce=`${widgetLabels[id]} · ${Math.round(visibleWidth/12*100)} % de largeur, hauteur ${height&&card?card.offsetHeight+' px':'automatique'}.`;
+    surface.querySelector('.neos-layout-announce').textContent=layoutAnnounce;
+    queueSave();flashLayoutOrder(id);
   }
   function resizeWidget(id,delta){
     if(settings.gridMode!=='manual')return;
-    const current=widgetSpan(id);const idx=allowedSizes.indexOf(current);
-    const next=allowedSizes[Math.max(0,Math.min(allowedSizes.length-1,idx+delta))];
-    applyWidgetDimensions(id,next,widgetMinHeight(id));
-    surface.querySelector(`[data-action="widget-resize"][data-id="${id}"][data-step="${delta}"]`)?.focus({preventScroll:true});
+    const steps=widgetWidthSteps();
+    const idx=steps.indexOf(visibleWidgetSpan(widgetSpan(id),steps));
+    const next=steps[idx+delta];
+    if(next===undefined)return;
+    applyWidgetDimensions(id,next,widgetHeight(id));
+    const control=surface.querySelector(`[data-action="widget-resize"][data-id="${id}"][data-step="${delta}"]`);
+    const fallback=surface.querySelector(`[data-action="widget-resize"][data-id="${id}"]:not(:disabled)`);
+    (control?.disabled?fallback:control)?.focus({preventScroll:true});
   }
   function resizeWidgetHeight(id,delta){
     if(settings.gridMode!=='manual')return;
-    const current=widgetMinHeight(id);const i=allowedHeights.indexOf(current);
-    let next=allowedHeights[Math.max(0,Math.min(allowedHeights.length-1,i+delta))];
+    const current=widgetHeight(id);const i=allowedHeights.indexOf(current);
+    let next=allowedHeights[i+delta];
     if(delta>0&&current===0){
       const card=surface.querySelector(`.neos-home-grid [data-widget="${id}"]`);
-      const naturalHeight=Math.ceil((card?.getBoundingClientRect().height||160)+20);
-      next=allowedHeights.find(h=>h>=naturalHeight)||allowedHeights[allowedHeights.length-1];
+      const naturalHeight=card?.offsetHeight||160;
+      next=fixedHeights.find(height=>height>naturalHeight)??fixedHeights.at(-1);
     }
+    if(next===undefined)return;
     applyWidgetDimensions(id,widgetSpan(id),next);
     surface.querySelector(`[data-action="widget-height"][data-id="${id}"][data-step="${delta}"]`)?.focus({preventScroll:true});
   }
@@ -5021,13 +5068,11 @@
       if(span!==resize.visualSpan)width=span;
     }
     const height=Math.abs(dy)>6
-      ?nearestWidgetSize(allowedHeights,Math.max(0,resize.startHeight+dy)):resize.initialHeight;
+      ?nearestWidgetSize(fixedHeights,resize.startHeight+dy):resize.initialHeight;
     if(width===resize.width&&height===resize.height)return;
     resize.width=width;resize.height=height;
     resize.card.dataset.size=String(width);
-    resize.card.dataset.minHeight=String(height);
-    resize.card.querySelector('.neos-widget-span').textContent=`${Math.round(width/12*100)}%`;
-    resize.card.querySelector('.neos-height-indicator').textContent=height?`${height} px`:'Auto';
+    resize.card.dataset.height=String(height);
     scheduleMasonry();
   }
   function finishWidgetResize(commit){
@@ -5036,9 +5081,7 @@
     widgetResize=null;
     resize.card.classList.remove('neos-widget-resizing');
     resize.card.dataset.size=String(resize.startWidth);
-    resize.card.dataset.minHeight=String(resize.initialHeight);
-    resize.card.querySelector('.neos-widget-span').textContent=`${Math.round(resize.startWidth/12*100)}%`;
-    resize.card.querySelector('.neos-height-indicator').textContent=resize.initialHeight?`${resize.initialHeight} px`:'Auto';
+    resize.card.dataset.height=String(resize.initialHeight);
     if(resize.handle.hasPointerCapture(resize.pointerId))resize.handle.releasePointerCapture(resize.pointerId);
     scheduleMasonry();
     if(commit)applyWidgetDimensions(resize.card.dataset.widget,resize.width,resize.height);
@@ -5053,9 +5096,9 @@
     const columns=style.gridTemplateColumns.split(' ').length;
     const columnWidth=columns===12?(Number.parseFloat(style.gridTemplateColumns)+gap):0;
     const startWidth=widgetSpan(card.dataset.widget);
-    const initialHeight=widgetMinHeight(card.dataset.widget);
+    const initialHeight=widgetHeight(card.dataset.widget);
     const visualSpan=columnWidth?Math.round((card.offsetWidth+gap)/columnWidth):startWidth;
-    const widthSteps=window.matchMedia('(max-width:1120px)').matches?[6,12]:allowedSizes;
+    const widthSteps=widgetWidthSteps();
     handle.setPointerCapture(event.pointerId);
     widgetResize={handle,card,pointerId:event.pointerId,x:event.clientX,y:event.clientY,columnWidth,visualSpan,widthSteps,
       startWidth,initialHeight,startHeight:card.offsetHeight,width:startWidth,height:initialHeight};

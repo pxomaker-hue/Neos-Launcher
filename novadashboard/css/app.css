@@ -84,8 +84,12 @@
 #nova-root .neos-card:hover::after{opacity:1}
 #nova-root .neos-card[data-size="3"]{grid-column:span 3}
 #nova-root .neos-card[data-size="4"]{grid-column:span 4}
+#nova-root .neos-card[data-size="5"]{grid-column:span 5}
 #nova-root .neos-card[data-size="6"]{grid-column:span 6}
+#nova-root .neos-card[data-size="7"]{grid-column:span 7}
 #nova-root .neos-card[data-size="8"]{grid-column:span 8}
+#nova-root .neos-card[data-size="10"]{grid-column:span 10}
+#nova-root .neos-card[data-size="11"]{grid-column:span 11}
 #nova-root .neos-card[data-size="12"]{grid-column:span 12}
 #nova-root .neos-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px;min-width:0}
 #nova-root .neos-card-name{display:flex;align-items:center;gap:10px;min-width:0;font-weight:720;font-size:15px;letter-spacing:-.015em}
@@ -668,8 +672,8 @@
 @keyframes neos-layout-pulse {50%{box-shadow:0 0 0 9px rgba(34,221,214,0),0 0 24px rgba(34,221,214,.6)}}
 @keyframes neos-card-land {0%{border-color:#37ebde;box-shadow:0 0 0 3px rgba(34,221,214,.3),0 0 40px rgba(34,221,214,.1)}100%{box-shadow:0 0 0 0 rgba(34,221,214,0),0 0 0 rgba(34,221,214,0)}}
 @media (min-width:701px) and (max-width:1120px){
- #nova-root .neos-home-grid .neos-card[data-size="3"],#nova-root .neos-home-grid .neos-card[data-size="4"]{grid-column:span 6}
- #nova-root .neos-home-grid .neos-card[data-size="8"],#nova-root .neos-home-grid .neos-card[data-size="9"]{grid-column:span 12}
+ #nova-root .neos-home-grid .neos-card:is([data-size="3"],[data-size="4"],[data-size="5"]){grid-column:span 6}
+ #nova-root .neos-home-grid .neos-card:is([data-size="7"],[data-size="8"],[data-size="9"],[data-size="10"],[data-size="11"]){grid-column:span 12}
  #nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-card{grid-column:span 6}
  #nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-explorer,#nova-root .neos-home-grid[data-grid-mode="adaptive"] .neos-shortcuts{grid-column:span 12}
 }
@@ -732,7 +736,9 @@
   will-change:auto;
 }
 #nova-root .neos-home-grid > .neos-card > .neos-card-head{flex:0 0 auto}
-#nova-root .neos-home-grid > .neos-card > .neos-card-body{flex:1 1 auto;min-height:0}
+#nova-root .neos-home-grid > .neos-card > .neos-card-body{flex:1 1 auto;min-height:0;container:neos-widget / inline-size;}
+#nova-root .neos-home-grid > .neos-card:not([data-height="0"]) > .neos-card-body {overflow:auto;scrollbar-width:thin;scroll-padding:6px;}
+#nova-root .neos-home-grid > .neos-card > .neos-card-body:focus-visible {outline:2px solid var(--accent);outline-offset:-2px;}
 #nova-root .neos-home-grid .neos-deck[data-size="3"],
 #nova-root .neos-home-grid .neos-deck[data-size="4"]{min-width:0}
 #nova-root .neos-deck-widget-boards{display:grid;gap:8px}
@@ -769,8 +775,8 @@
 @keyframes neos-hero-scan{0%,55%,100%{transform:translateX(-140%);opacity:0}68%{opacity:.72}88%{transform:translateX(140%);opacity:0}}
 @media (max-width:700px){
   #nova-root .neos-home-grid{grid-auto-rows:auto;grid-auto-flow:row;gap:11px}
-  #nova-root .neos-home-grid > .neos-card{grid-row-end:auto!important;height:auto!important}
-  #nova-root .neos-home-grid > .neos-card[data-min-height="0"]{min-height:0!important}
+  #nova-root .neos-home-grid > .neos-card{grid-row-end:auto!important;height:auto}
+  #nova-root .neos-home-grid > .neos-card[data-height="0"]{min-height:0}
   #nova-root .neos-widget-resize-handle,#nova-root .neos-widget-resizing {cursor:ns-resize}
   #nova-root .neos-pref-row .neos-pref-tools{flex-wrap:wrap;justify-content:flex-end}
   #nova-root .neos-widget-edit-controls{gap:4px}
@@ -1865,6 +1871,22 @@
 #nova-root .neos-home-summary-event{width:100%;margin-top:9px}
 #nova-root .neos-home-summary-event strong{overflow-wrap:anywhere;max-width:100%}
 #nova-root .neos-home-summary-event small:last-child{display:flex;align-items:center;gap:4px}
+
+#nova-root .neos-home-grid .neos-home-files-list{grid-template-columns:repeat(auto-fit,minmax(min(100%,205px),1fr))}
+#nova-root .neos-home-grid .neos-card-name span,#nova-root .neos-home-grid .neos-home-file-stats span{overflow-wrap:anywhere;}
+#nova-root .neos-home-grid .neos-card-head .neos-card-name svg{flex-shrink:0;}
+@container neos-widget (max-width: 290px) {
+  #nova-root .neos-holo-clock,#nova-root .neos-storage-console {grid-template-columns:minmax(0,1fr) clamp(48px,36cqi,92px);gap:8px;min-height:0;}
+  #nova-root .neos-clock-dial,#nova-root .neos-storage-orb {width:100%;height:auto;aspect-ratio:1;}
+  #nova-root .neos-clock-details .neos-clock,#nova-root .neos-storage-values .neos-stat-main {font-size:clamp(19px,12cqi,36px);}
+  #nova-root .neos-storage-values .neos-stat-main {white-space:normal;overflow-wrap:anywhere;}
+  #nova-root .neos-home-files-head .neos-btn {white-space:normal;max-width:100%;text-align:start;}
+}
+@container neos-widget (max-width: 165px) {
+  #nova-root .neos-home-summary-grid {grid-template-columns:minmax(0,1fr);}
+  #nova-root .neos-holo-clock,#nova-root .neos-storage-console {grid-template-columns:minmax(0,1fr);}
+  #nova-root .neos-clock-dial,#nova-root .neos-storage-orb {width:min(70px,100%);}
+}
 #nova-root [data-home-note-status]{color:var(--muted);font-size:12px}
 
 #nova-root .neos-note-search{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}

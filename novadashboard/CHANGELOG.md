@@ -1,3 +1,8 @@
+## 0.7.5
+
+- Fixed-height widgets in Free layout scroll internally when needed, with their controls always visible. Compact cards reserve space for their content.
+- Free layout supports single-column width steps on wide screens and 20 px height steps. Clock, Storage, summary, and Files adapt to narrow cards.
+
 ## 0.7.4
 
 - On wide screens, Free layout lets you pin each widget to a row and column of the twelve-column grid. Drag its handle or enter coordinates with the Position button.

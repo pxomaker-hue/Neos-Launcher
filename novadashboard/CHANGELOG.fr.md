@@ -1,3 +1,8 @@
+## 0.7.5
+
+- Les hauteurs réglées en mode Libre sont fixes. Si le contenu dépasse, il défile dans le widget et les commandes restent visibles. Les petites cartes conservent un espace minimal pour leur contenu.
+- Le mode Libre permet des réglages par colonne sur écran large et par paliers de 20 px en hauteur. Horloge, Stockage, À suivre et Fichiers s’adaptent aux cartes étroites.
+
 ## 0.7.4
 
 - En mode Libre, fixe la ligne et la colonne de chaque widget sur la grille à douze colonnes. Déplace la carte avec sa poignée ou utilise le bouton Position.
