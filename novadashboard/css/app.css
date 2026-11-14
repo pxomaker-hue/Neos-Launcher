@@ -646,6 +646,16 @@
 #nova-root .neos-mini-action {display:grid;place-items:center;min-width:27px;height:29px;border:1px solid rgba(105,165,189,.24);border-radius:8px;background:#122b40;color:#bddde8;font-size:17px;line-height:1;transition:background .2s,border-color .2s,transform .2s}
 #nova-root .neos-mini-action:hover:not(:disabled),#nova-root .neos-mini-action:focus-visible {background:#1b4453;border-color:#31d5d5;color:#fff;transform:translateY(-1px)}
 #nova-root .neos-mini-action:disabled {opacity:.27;cursor:default}
+#nova-root .neos-mini-action.neos-widget-position {padding-inline:8px;font-size:11px}
+#nova-root .neos-widget-drop-cell {
+  position:absolute;z-index:3;pointer-events:none;box-sizing:border-box;border-radius:15px;
+  border:2px dashed var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);
+  box-shadow:inset 0 0 22px color-mix(in srgb,var(--accent) 22%,transparent);
+}
+#nova-root .neos-widget-drop-cell.is-blocked {border-color:#ff9f84;background:#ff9f8424;box-shadow:none}
+@media(max-width:1120px) {
+  #nova-root .neos-mini-action.neos-widget-position,#nova-root .neos-widget-drop-cell {display:none}
+}
 #nova-root .neos-drag-handle {cursor:grab;background:linear-gradient(180deg,#15636e,#135060);border-color:#26989b;color:#fff;touch-action:none}
 #nova-root .neos-drag-handle:active {cursor:grabbing}
 #nova-root .neos-widget-span {min-width:48px;white-space:nowrap;text-align:center;color:#92caca;font-size:11px;font-variant-numeric:tabular-nums}

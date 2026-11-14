@@ -11,6 +11,7 @@ final class PreferencesService {
     public const WIDGETS = ['explorer', 'storage', 'shortcuts', 'clock', 'files', 'calendar', 'tasks', 'summary', 'links', 'notes', 'deck'];
     public const SIZES = [3, 4, 6, 8, 9, 12];
     public const HEIGHTS = [0,160,220,300,400,520,680];
+    private const MAX_WIDGET_ROW = 500;
     public const ACCENTS = ['indigo', 'cyan', 'emerald', 'rose', 'amber', 'copper'];
 
     private const DEFAULT_SIZES = [
@@ -90,6 +91,25 @@ final class PreferencesService {
             $heights[$widget] = in_array($candidate, self::HEIGHTS, true) ? $candidate : 0;
         }
 
+        $positions = [];
+        $submittedPositions = is_array($data['positions'] ?? null) ? $data['positions'] : [];
+        foreach (self::WIDGETS as $widget) {
+            $position = $submittedPositions[$widget] ?? null;
+            if (!is_array($position)) {
+                continue;
+            }
+            $row = $position['row'] ?? null;
+            $column = $position['column'] ?? null;
+            if ((!is_int($row) && !is_string($row)) || (!is_int($column) && !is_string($column))) {
+                continue;
+            }
+            $row = filter_var($row, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => self::MAX_WIDGET_ROW]]);
+            $column = filter_var($column, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 12]]);
+            if ($row !== false && $column !== false) {
+                $positions[$widget] = ['row' => $row, 'column' => $column];
+            }
+        }
+
         $links = [];
         $requestedLinks = is_array($data['links'] ?? null) ? $data['links'] : [];
         foreach (array_slice($requestedLinks, 0, 12) as $link) {
@@ -157,7 +177,7 @@ final class PreferencesService {
             }
         }
 
-        return compact('theme', 'density', 'accent', 'layout', 'motion', 'order', 'hidden', 'sizes', 'heights', 'links', 'notes', 'pins', 'topApps', 'tabOrder', 'launcherMode', 'gridMode');
+        return compact('theme', 'density', 'accent', 'layout', 'motion', 'order', 'hidden', 'sizes', 'heights', 'positions', 'links', 'notes', 'pins', 'topApps', 'tabOrder', 'launcherMode', 'gridMode');
     }
 
     private function validUrl(string $url): bool {

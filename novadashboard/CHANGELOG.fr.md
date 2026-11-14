@@ -1,3 +1,9 @@
+## 0.7.4
+
+- En mode Libre, fixe la ligne et la colonne de chaque widget sur la grille à douze colonnes. Déplace la carte avec sa poignée ou utilise le bouton Position.
+- L’aperçu de dépôt signale les emplacements occupés. Les widgets en placement automatique remplissent l’espace autour des widgets fixés.
+- Les positions sont enregistrées par compte. Elles se rétablissent en mode Libre sur écran large après un passage en mode Adaptatif ou sur écran réduit.
+
 ## 0.7.3
 
 - Le mode disposition permet de masquer les widgets directement sur leurs cartes et de les réafficher depuis le tiroir « Widgets masqués ».

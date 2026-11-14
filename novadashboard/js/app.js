@@ -186,11 +186,12 @@
   const defaultSizes = { explorer:12, storage:3, shortcuts:6, clock:3, files:6, calendar:6, tasks:6, summary:6, links:6, notes:6, deck:6 };
   const adaptiveSizes = { explorer:8, storage:4, shortcuts:8, clock:4, files:6, calendar:6, tasks:6, summary:4, links:6, notes:6, deck:6 };
   const allowedSizes = [3,4,6,8,9,12];
+  const maxWidgetRow = 500;
   const allowedHeights = [0,160,220,300,400,520,680];
   const defaultHeights = Object.fromEntries(widgetIds.map(id=>[id,0]));
   let masonryFrame=0;
   let lastMasonryWidth=0;
-  const defaults = () => ({ theme:'dark', density:'comfortable', accent:'cyan', layout:'wide', motion:'full', launcherMode:'topbar', gridMode:'adaptive', order:[...widgetIds], hidden:['links','notes'], sizes:{...defaultSizes}, heights:{...defaultHeights}, links:[], notes:'', pins:[], topApps:['files','calendar','tasks','talk'], tabOrder:['home','files','photos','planning','calendar','tasks','talk','contacts','mail','activity','deck','notes'] });
+  const defaults = () => ({ theme:'dark', density:'comfortable', accent:'cyan', layout:'wide', motion:'full', launcherMode:'topbar', gridMode:'adaptive', order:[...widgetIds], hidden:['links','notes'], sizes:{...defaultSizes}, heights:{...defaultHeights}, positions:{}, links:[], notes:'', pins:[], topApps:['files','calendar','tasks','talk'], tabOrder:['home','files','photos','planning','calendar','tasks','talk','contacts','mail','activity','deck','notes'] });
 
   let overview = null;
   let settings = null;
@@ -199,6 +200,7 @@
   let widgetResize = null;
   let editorOpen = false;
   let dragWidgetId = '';
+  let widgetDragOffset = null;
   let dragTabId = '';
   let dragEditorTabId = '';
   let activityCategory = 'all';
@@ -398,7 +400,7 @@
       surface.inert=true;
       // A prior render may already have focused the title field; preserve it.
       if(!dialog.contains(document.activeElement)){
-        const best=dialog.querySelector('[autofocus], [data-gw-title], [data-deck-title], [data-destination-search]');
+        const best=dialog.querySelector('[autofocus], [data-gw-title], [data-deck-title], [data-destination-search], [data-widget-position-row]');
         const first=(best&&!best.disabled?best:null)||modalElements(dialog)[0];
         if(first)first.focus({preventScroll:true});
         else{dialog.tabIndex=-1;dialog.focus({preventScroll:true});}
@@ -464,12 +466,16 @@
     const requested = Number(settings?.sizes?.[id]);
     return settings?.gridMode==='adaptive' ? (adaptiveSizes[id] || 6) : (allowedSizes.includes(requested) ? requested : defaultSizes[id] || 6);
   }
+  function widgetPlacementEnabled(){
+    return settings?.gridMode==='manual'&&window.matchMedia('(min-width:1121px)').matches;
+  }
   function editWidgetTools(id){
     if(!editing||activeWorkspace!=='home')return '';
     const order=settings.order.filter(key=>!settings.hidden.includes(key)&&(key!=='shortcuts'||settings.launcherMode==='widget'));
     const index=order.indexOf(id);const span=widgetSpan(id);const height=widgetMinHeight(id);
+    const positionControl=settings.gridMode==='manual'?`<button type="button" class="neos-mini-action neos-widget-position" data-action="widget-position" data-id="${id}" aria-label="Position de ${esc(widgetLabels[id])}">Position</button>`:'';
     const minHeightLabel=height?`${height} px`:'Auto';
-    return `<div class="neos-widget-edit-controls"><button type="button" class="neos-mini-action neos-drag-handle" draggable="true" data-drag-widget="${id}" title="Déplacer par glisser-déposer" aria-label="Déplacer ${esc(widgetLabels[id])} par glisser-déposer">${icon('grip',17)}</button><button type="button" class="neos-mini-action" data-action="widget-move" data-id="${id}" data-step="-1" ${index<=0?'disabled':''} aria-label="Déplacer ${esc(widgetLabels[id])} vers le début">${icon('back',14)}</button><button type="button" class="neos-mini-action" data-action="widget-move" data-id="${id}" data-step="1" ${index>=order.length-1?'disabled':''} aria-label="Déplacer ${esc(widgetLabels[id])} vers la fin">${icon('forward',14)}</button><span class="neos-edit-sep"></span><button type="button" class="neos-mini-action" data-action="widget-resize" data-id="${id}" data-step="-1" ${settings.gridMode==='adaptive'?'disabled':''} title="Réduire la largeur">${icon('minus',13)}</button><span class="neos-widget-span" title="Largeur actuelle">${Math.round(span/12*100)}%</span><button type="button" class="neos-mini-action" data-action="widget-resize" data-id="${id}" data-step="1" ${settings.gridMode==='adaptive'?'disabled':''} title="Agrandir la largeur">${icon('plus',13)}</button><span class="neos-edit-sep"></span><button type="button" class="neos-mini-action" data-action="widget-height" data-id="${id}" data-step="-1" ${settings.gridMode==='adaptive'?'disabled':''} title="Réduire la hauteur minimale">${icon('chevrons-down',15)}</button><span class="neos-widget-span neos-height-indicator" title="Hauteur minimale">${minHeightLabel}</span><button type="button" class="neos-mini-action" data-action="widget-height" data-id="${id}" data-step="1" ${settings.gridMode==='adaptive'?'disabled':''} title="Augmenter la hauteur minimale">${icon('chevrons-up',15)}</button></div>`;
+    return `<div class="neos-widget-edit-controls"><button type="button" class="neos-mini-action neos-drag-handle" draggable="true" data-drag-widget="${id}" title="Déplacer par glisser-déposer" aria-label="Déplacer ${esc(widgetLabels[id])} par glisser-déposer">${icon('grip',17)}</button><button type="button" class="neos-mini-action" data-action="widget-move" data-id="${id}" data-step="-1" ${index<=0?'disabled':''} aria-label="Déplacer ${esc(widgetLabels[id])} vers le début">${icon('back',14)}</button><button type="button" class="neos-mini-action" data-action="widget-move" data-id="${id}" data-step="1" ${index>=order.length-1?'disabled':''} aria-label="Déplacer ${esc(widgetLabels[id])} vers la fin">${icon('forward',14)}</button><span class="neos-edit-sep"></span><button type="button" class="neos-mini-action" data-action="widget-resize" data-id="${id}" data-step="-1" ${settings.gridMode==='adaptive'?'disabled':''} title="Réduire la largeur">${icon('minus',13)}</button><span class="neos-widget-span" title="Largeur actuelle">${Math.round(span/12*100)}%</span><button type="button" class="neos-mini-action" data-action="widget-resize" data-id="${id}" data-step="1" ${settings.gridMode==='adaptive'?'disabled':''} title="Agrandir la largeur">${icon('plus',13)}</button><span class="neos-edit-sep"></span><button type="button" class="neos-mini-action" data-action="widget-height" data-id="${id}" data-step="-1" ${settings.gridMode==='adaptive'?'disabled':''} title="Réduire la hauteur minimale">${icon('chevrons-down',15)}</button><span class="neos-widget-span neos-height-indicator" title="Hauteur minimale">${minHeightLabel}</span><button type="button" class="neos-mini-action" data-action="widget-height" data-id="${id}" data-step="1" ${settings.gridMode==='adaptive'?'disabled':''} title="Augmenter la hauteur minimale">${icon('chevrons-up',15)}</button>${positionControl}</div>`;
   }
   function box(id, body, sub='', tools='') {
     const size=widgetSpan(id);
@@ -3447,7 +3453,7 @@
     const visible=candidates.filter(id=>!settings.hidden.includes(id));
     const hidden=candidates.filter(id=>settings.hidden.includes(id));
     const homeWidgets={...widgets,explorer:homeExplorerWidget};
-    const toolbar=editing?`<div class="neos-editbar neos-layout-toolbar"><div class="neos-layout-toolbar-heading"><span class="neos-layout-pulse" aria-hidden="true"></span><strong>Mode disposition</strong><small>${settings.gridMode==='manual'?'Tire le coin inférieur d’une carte pour la redimensionner.':'Déplace les cartes pour réorganiser l’accueil.'}</small></div><div class="neos-layout-toolbar-actions"><button type="button" class="neos-layout-toggle ${settings.gridMode==='adaptive'?'is-active':''}" data-action="grid-mode" data-mode="adaptive" aria-pressed="${settings.gridMode==='adaptive'}">Adaptatif</button><button type="button" class="neos-layout-toggle ${settings.gridMode==='manual'?'is-active':''}" data-action="grid-mode" data-mode="manual" aria-pressed="${settings.gridMode==='manual'}">Libre</button><button type="button" class="neos-btn neos-layout-widgets" data-action="widgets-toggle" aria-expanded="${hiddenWidgetsOpen}" aria-controls="neos-hidden-widgets">${icon('grid',16)} Widgets masqués (${hidden.length})</button><button type="button" class="neos-btn neos-btn-primary" data-action="finish-arrange">${icon('check',16)} Terminer</button></div></div>
+    const toolbar=editing?`<div class="neos-editbar neos-layout-toolbar"><div class="neos-layout-toolbar-heading"><span class="neos-layout-pulse" aria-hidden="true"></span><strong>Mode disposition</strong><small>${settings.gridMode==='manual'?'Déplace les cartes ou tire leur coin inférieur pour les redimensionner.':'Déplace les cartes pour réorganiser l’accueil.'}</small></div><div class="neos-layout-toolbar-actions"><button type="button" class="neos-layout-toggle ${settings.gridMode==='adaptive'?'is-active':''}" data-action="grid-mode" data-mode="adaptive" aria-pressed="${settings.gridMode==='adaptive'}">Adaptatif</button><button type="button" class="neos-layout-toggle ${settings.gridMode==='manual'?'is-active':''}" data-action="grid-mode" data-mode="manual" aria-pressed="${settings.gridMode==='manual'}">Libre</button><button type="button" class="neos-btn neos-layout-widgets" data-action="widgets-toggle" aria-expanded="${hiddenWidgetsOpen}" aria-controls="neos-hidden-widgets">${icon('grid',16)} Widgets masqués (${hidden.length})</button><button type="button" class="neos-btn neos-btn-primary" data-action="finish-arrange">${icon('check',16)} Terminer</button></div></div>
     <div class="neos-hidden-widgets" id="neos-hidden-widgets" ${hiddenWidgetsOpen?'':'hidden'}>${hidden.length?hidden.map(id=>`<button type="button" class="neos-btn" data-action="widget-show" data-id="${id}" aria-label="Réafficher ${esc(widgetLabels[id])}">${icon('plus',15)} ${esc(widgetLabels[id])}</button>`).join(''):'<span>Tous les widgets disponibles sont affichés.</span>'}</div>`:'';
     return `${toolbar}<div class="neos-grid-cards neos-home-grid ${editing?'neos-arranging':''}" data-grid-mode="${esc(settings.gridMode||'adaptive')}">${visible.map(id=>homeWidgets[id]?homeWidgets[id]():'').join('')}</div>${visible.length?'':`<p class="neos-home-empty">Aucun widget affiché.${editing?'':` <button type="button" class="neos-btn" data-action="customize">Personnaliser</button>`}</p>`}${editing?`<div class="neos-layout-announce" role="status" aria-live="polite">${esc(layoutAnnounce||'Déplacement et tailles enregistrés automatiquement.')}</div>`:''}`;
   }
@@ -3458,6 +3464,34 @@
     if(masonryFrame)cancelAnimationFrame(masonryFrame);
     masonryFrame=requestAnimationFrame(()=>{masonryFrame=0;layoutMasonry();});
   }
+
+  function packWidgetPositions(cards, anchors){
+    const occupied=[];
+    const pinned=cards.filter(card=>anchors[card.id]);
+    const automatic=cards.filter(card=>!anchors[card.id]);
+    pinned.sort((a,b)=>anchors[a.id].row-anchors[b.id].row);
+    const fits=(card,row,column)=>occupied.every(other=>
+      column+card.width<=other.column||other.column+other.width<=column||
+      row+card.height<=other.row||other.row+other.height<=row
+    );
+    for(const card of pinned){
+      let {row,column}=anchors[card.id];
+      column=Math.min(13-card.width,column);
+      while(!fits(card,row,column))row++;
+      occupied.push({...card,row,column});
+    }
+    for(const card of automatic){
+      let row=1;
+      let column=1;
+      while(!fits(card,row,column)){
+        column++;
+        if(column>13-card.width){row++;column=1;}
+      }
+      occupied.push({...card,row,column});
+    }
+    return occupied;
+  }
+
   function layoutMasonry(){
     const grid=surface.querySelector('.neos-home-grid');if(!grid)return;
     const cards=[...grid.querySelectorAll(':scope > .neos-card')];
@@ -3465,7 +3499,14 @@
     const style=getComputedStyle(grid);const rowHeight=Number.parseFloat(style.gridAutoRows)||8;
     const rowGap=Number.parseFloat(style.rowGap)||14;
     const pxPerRow=rowHeight+rowGap;
+    const precise=widgetPlacementEnabled();
+    const dimensions=[];
     for(const card of cards){
+      card.style.gridColumnStart='';
+      card.style.gridColumnEnd='';
+      card.style.gridRowStart='';
+      delete card.dataset.gridRow;
+      delete card.dataset.gridColumn;
       // Measure content rather than the stretched grid slot.
       card.style.gridRowEnd=narrow?'auto':'span 1';
       card.style.minHeight='';
@@ -3480,6 +3521,17 @@
       const rows=Math.max(1,Math.ceil((height+rowGap)/pxPerRow));
       card.style.gridRowEnd=narrow?'auto':`span ${rows}`;
       card.style.minHeight=narrow?(chosen?`${chosen}px`:''):`${height}px`;
+      dimensions.push({id:card.dataset.widget,width:Number(card.dataset.size),height:rows});
+    }
+    if(!precise)return;
+    const positions=packWidgetPositions(dimensions,settings.positions||{});
+    for(const position of positions){
+      const card=grid.querySelector(`[data-widget="${position.id}"]`);
+      card.dataset.gridRow=position.row;
+      card.dataset.gridColumn=position.column;
+      card.style.gridRowStart=position.row;
+      card.style.gridColumnStart=position.column;
+      card.style.gridColumnEnd=`span ${position.width}`;
     }
   }
   window.addEventListener('resize',()=>{if(activeWorkspace==='home')scheduleMasonry();positionTabSlider();},{passive:true});
@@ -3505,7 +3557,7 @@
         ${(activeWorkspace==='files'||activeWorkspace==='home')&&warnings.length?`<div class="neos-warning">${icon('info',16)} ${esc(warnings[0])}</div>`:''}
         ${activeWorkspace==='home'?homeWorkspace(widgets):activeWorkspace==='files'?filesWorkspace():currentModule()}
       </div>
-      <footer class="neos-footer"><span>NEOS 0.7.3</span><span>Nextcloud 35</span></footer>
+      <footer class="neos-footer"><span>NEOS 0.7.4</span><span>Nextcloud 35</span></footer>
     </div></main>`;
     updateClock();
     positionTabSlider(pillFrom);
@@ -3992,6 +4044,10 @@
     (settings.hidden.length?settings.hidden:['']).forEach((v,i) => form.append(`settings[hidden][${i}]`, v));
     Object.entries(settings.sizes || {}).forEach(([id,v]) => form.append(`settings[sizes][${id}]`, String(v)));
     Object.entries(settings.heights || {}).forEach(([id,v]) => form.append(`settings[heights][${id}]`, String(v)));
+    Object.entries(settings.positions || {}).forEach(([id,position]) => {
+      form.append(`settings[positions][${id}][row]`, String(position.row));
+      form.append(`settings[positions][${id}][column]`, String(position.column));
+    });
     (settings.links || []).forEach((l,i) => { form.append(`settings[links][${i}][title]`, l.title); form.append(`settings[links][${i}][url]`, l.url); });
     (settings.pins || []).forEach((p,i) => form.append(`settings[pins][${i}]`, p));
     (settings.topApps || []).forEach((id,i) => form.append(`settings[topApps][${i}]`, id));
@@ -4368,6 +4424,7 @@
         (next||surface.querySelector('[data-action="widgets-toggle"]'))?.focus();
       }
     }
+    else if(action==='widget-position'){openWidgetPosition(target.dataset.id);}
     else if(action==='widget-move'){moveWidget(target.dataset.id,Number(target.dataset.step)||0);}
     else if(action==='widget-resize'){resizeWidget(target.dataset.id,Number(target.dataset.step)||0);}
     else if(action==='widget-height'){resizeWidgetHeight(target.dataset.id,Number(target.dataset.step)||0);}
@@ -4730,6 +4787,14 @@
     if(!next)return;
     event.preventDefault();event.stopPropagation();selectSearchPanelTab(next);
   });
+  popHost.addEventListener('submit',event=>{
+    const form=event.target.closest('[data-widget-position-form]');
+    if(!form||popMode!=='widget-position')return;
+    event.preventDefault();
+    const position={row:form.elements.row.valueAsNumber,column:form.elements.column.valueAsNumber};
+    if(setWidgetPosition(form.dataset.widgetPositionForm,position))hidePop();
+    else form.querySelector('[data-widget-position-error]').textContent='Emplacement indisponible. Choisis une case libre ou déplace le widget déjà fixé.';
+  });
   popHost.addEventListener('click', event => {
     const actionEl = event.target.closest('[data-action]');
     if (!actionEl) return;
@@ -4737,6 +4802,7 @@
     if(neosDialogBusy() && ['close-pop','deck-card-close','destination-close'].includes(action))return;
     if(action==='workspace') { const id=actionEl.dataset.workspace; hidePop(); void chooseWorkspace(id); return; }
     if(action==='cal-edit'){const event=groupware.events.find(item=>calendarEventKey(item)===actionEl.dataset.href);if(editableCalendarEvent(event))groupwareEditor('event',event,null,actionEl.dataset.scope||'series');return;}
+    if(action==='widget-position-auto'){if(setWidgetPosition(actionEl.dataset.id,null))hidePop();return;}
     if(action==='gw-save'){void saveGroupware();return;}
     if(action==='deck-card-close'){hidePop();return;}
     if(action==='deck-card-save'){void saveDeckCard();return;}
@@ -4809,6 +4875,74 @@
     if(['menu-preview','menu-download','menu-copy','menu-share','menu-rename','menu-delete','menu-open-folder','menu-duplicate','menu-cut','menu-copy-file','menu-favorite'].includes(action)){const entry=browser.items.find(x=>x.path===contextPath);if(!entry)return;hidePop();if(action==='menu-preview')void selectEntry(contextPath);else if(action==='menu-download')downloadCurrent(entry);else if(action==='menu-favorite')void toggleFavorite(entry);else if(action==='menu-copy')void copyCurrentLink(entry);else if(action==='menu-share')void shareEntry(entry);else if(action==='menu-rename')void renameEntry(entry);else if(action==='menu-delete')void deleteEntry(entry);else if(action==='menu-open-folder')void browse(entry.path);else if(action==='menu-duplicate')void duplicateFiles([entry]);else if(action==='menu-cut')copyOrCutFiles('cut',[entry]);else if(action==='menu-copy-file')copyOrCutFiles('copy',[entry]);return;}
     if(action==='close-pop'){if(event.target===actionEl||actionEl.tagName==='BUTTON'){hidePop();}}
   });
+
+  function widgetGeometry(card){
+    return {
+      id:card.dataset.widget,
+      width:Number(card.dataset.size),
+      height:Number.parseInt(card.style.gridRowEnd.replace('span ',''),10)||1
+    };
+  }
+  function canPlaceWidget(grid,id,position){
+    const cards=[...grid.querySelectorAll(':scope > [data-widget]')].map(widgetGeometry);
+    const anchors={...settings.positions};
+    const otherCards=cards.filter(card=>card.id!==id&&anchors[card.id]);
+    const baseline=new Map(packWidgetPositions(otherCards,anchors).map(card=>[card.id,card]));
+    anchors[id]=position;
+    return packWidgetPositions(cards.filter(card=>anchors[card.id]),anchors)
+      .every(placed=>{
+        if(placed.id===id)return placed.row===position.row&&placed.column===position.column;
+        const previous=baseline.get(placed.id);
+        return placed.row===previous.row&&placed.column===previous.column;
+      });
+  }
+  function setWidgetPosition(id,position){
+    if(!editing||activeWorkspace!=='home'||!widgetPlacementEnabled()||!widgetIds.includes(id))return false;
+    const grid=surface.querySelector('.neos-home-grid');
+    const card=grid?.querySelector(`[data-widget="${id}"]`);
+    if(!card)return false;
+    if(position&&(!Number.isInteger(position.row)||position.row<1||position.row>maxWidgetRow||
+      !Number.isInteger(position.column)||position.column<1||position.column>13-widgetSpan(id)||
+      !canPlaceWidget(grid,id,position)))return false;
+    const positions={...settings.positions};
+    if(position)positions[id]=position;
+    else delete positions[id];
+    settings.positions=positions;
+    layoutAnnounce=position
+      ?`${widgetLabels[id]} placé à la ligne ${position.row}, colonne ${position.column}.`
+      :`${widgetLabels[id]} repassé en placement automatique.`;
+    surface.querySelector('.neos-layout-announce').textContent=layoutAnnounce;
+    layoutMasonry();
+    queueSave();
+    return true;
+  }
+  function openWidgetPosition(id){
+    if(!editing||activeWorkspace!=='home'||!widgetPlacementEnabled()||!widgetIds.includes(id))return;
+    layoutMasonry();
+    const card=surface.querySelector(`.neos-home-grid [data-widget="${id}"]`);
+    if(!card)return;
+    popMode='widget-position';
+    popHost.innerHTML=`
+      <div class="neos-pop-layer" data-action="close-pop">
+        <form class="neos-groupware-dialog neos-framed" data-widget-position-form="${id}" role="dialog" aria-modal="true" aria-labelledby="neos-widget-position-title">
+          <header><strong id="neos-widget-position-title">Position · ${esc(widgetLabels[id])}</strong>
+            <button type="button" class="neos-iconbtn" data-action="close-pop" aria-label="Fermer">${icon('close',18)}</button></header>
+          <div class="neos-gw-form">
+            <p>Les widgets en placement automatique s’organisent autour des widgets fixés.</p>
+            <div class="neos-gw-form-grid">
+              <label>Ligne<input data-widget-position-row name="row" type="number" min="1" max="${maxWidgetRow}" required value="${Math.min(maxWidgetRow,Number(card.dataset.gridRow))}"></label>
+              <label>Colonne<input name="column" type="number" min="1" max="${13-widgetSpan(id)}" required value="${card.dataset.gridColumn}"></label>
+            </div>
+            <p class="neos-gw-status" data-widget-position-error role="alert"></p>
+          </div>
+          <footer>
+            <button type="button" class="neos-btn" data-action="widget-position-auto" data-id="${id}" ${settings.positions?.[id]?'':'disabled'}>Placement automatique</button>
+            <button type="submit" class="neos-btn neos-btn-primary">Fixer ici</button>
+          </footer>
+        </form>
+      </div>`;
+    animateLayerOpen(popHost,'.neos-groupware-dialog','y');
+  }
 
   function flashLayoutOrder(changedId){
     const cards=[...surface.querySelectorAll('.neos-home-grid [data-widget]')];
@@ -4939,7 +5073,50 @@
       if(event.pointerId===widgetResize?.pointerId)finishWidgetResize(false);
     });
   }
-  function clearDropGuide(){surface.querySelectorAll('.neos-drop-before,.neos-drop-after,.neos-is-dragging').forEach(el=>el.classList.remove('neos-drop-before','neos-drop-after','neos-is-dragging'));}
+  function widgetDropTarget(grid,event){
+    const card=grid.querySelector(`[data-widget="${dragWidgetId}"]`);
+    if(!card||!widgetDragOffset)return null;
+    const style=getComputedStyle(grid);
+    const bounds=grid.getBoundingClientRect();
+    const paddingLeft=Number.parseFloat(style.paddingLeft)||0;
+    const paddingTop=Number.parseFloat(style.paddingTop)||0;
+    const paddingRight=Number.parseFloat(style.paddingRight)||0;
+    const columnGap=Number.parseFloat(style.columnGap)||0;
+    const rowGap=Number.parseFloat(style.rowGap)||0;
+    const columnPitch=(grid.clientWidth-paddingLeft-paddingRight+columnGap)/12;
+    const rowPitch=(Number.parseFloat(style.gridAutoRows)||8)+rowGap;
+    const {width,height}=widgetGeometry(card);
+    const x=event.clientX-bounds.left-grid.clientLeft-paddingLeft-widgetDragOffset.x;
+    const y=event.clientY-bounds.top-grid.clientTop-paddingTop-widgetDragOffset.y;
+    const position={
+      column:Math.max(1,Math.min(13-width,Math.round(x/columnPitch)+1)),
+      row:Math.max(1,Math.min(maxWidgetRow,Math.round(y/rowPitch)+1))
+    };
+    return {
+      position,
+      left:paddingLeft+(position.column-1)*columnPitch,
+      top:paddingTop+(position.row-1)*rowPitch,
+      width:width*columnPitch-columnGap,
+      height:height*rowPitch-rowGap
+    };
+  }
+  function showWidgetDropGuide(grid,target){
+    let guide=grid.querySelector('.neos-widget-drop-cell');
+    if(!guide){
+      guide=document.createElement('div');
+      guide.className='neos-widget-drop-cell';
+      guide.setAttribute('aria-hidden','true');
+      grid.append(guide);
+    }
+    const allowed=canPlaceWidget(grid,dragWidgetId,target.position);
+    guide.classList.toggle('is-blocked',!allowed);
+    Object.assign(guide.style,{left:`${target.left}px`,top:`${target.top}px`,width:`${target.width}px`,height:`${target.height}px`});
+    return allowed;
+  }
+  function clearDropGuide(){
+    surface.querySelector('.neos-widget-drop-cell')?.remove();
+    surface.querySelectorAll('.neos-drop-before,.neos-drop-after,.neos-is-dragging').forEach(el=>el.classList.remove('neos-drop-before','neos-drop-after','neos-is-dragging'));
+  }
   function clearDeckDropGuide(){surface.querySelectorAll('.neos-deck-drop-target,.neos-deck-dragging').forEach(el=>el.classList.remove('neos-deck-drop-target','neos-deck-dragging'));}
   surface.addEventListener('dragstart',event=>{
     if(activeWorkspace!=='deck'||deckMoveBusy||deckState.status!=='ready')return;
@@ -5048,12 +5225,23 @@
     const handle=event.target.closest('[data-drag-widget]');
     const id=handle?.dataset.dragWidget;if(!id)return;
     dragWidgetId=id;
+    const bounds=handle.closest('[data-widget]').getBoundingClientRect();
+    widgetDragOffset={x:event.clientX-bounds.left,y:event.clientY-bounds.top};
     event.dataTransfer?.setData('text/plain',id);
     if(event.dataTransfer)event.dataTransfer.effectAllowed='move';
     surface.querySelector(`.neos-home-grid [data-widget="${id}"]`)?.classList.add('neos-is-dragging');
   });
   surface.addEventListener('dragover',event=>{
     if(!editing||!dragWidgetId)return;
+    if(widgetPlacementEnabled()){
+      const grid=event.target.closest('.neos-home-grid');
+      const target=grid&&widgetDropTarget(grid,event);
+      if(!target)return;
+      event.preventDefault();
+      const allowed=showWidgetDropGuide(grid,target);
+      if(event.dataTransfer)event.dataTransfer.dropEffect=allowed?'move':'none';
+      return;
+    }
     const target=event.target.closest('.neos-home-grid [data-widget]');if(!target||target.dataset.widget===dragWidgetId)return;
     event.preventDefault();if(event.dataTransfer)event.dataTransfer.dropEffect='move';
     clearDropGuide();
@@ -5065,6 +5253,14 @@
   });
   surface.addEventListener('drop',event=>{
     if(!editing||!dragWidgetId)return;
+    if(widgetPlacementEnabled()){
+      const grid=event.target.closest('.neos-home-grid');
+      const target=grid&&widgetDropTarget(grid,event);
+      const id=dragWidgetId;
+      dragWidgetId='';widgetDragOffset=null;clearDropGuide();
+      if(target){event.preventDefault();setWidgetPosition(id,target.position);}
+      return;
+    }
     const target=event.target.closest('.neos-home-grid [data-widget]');
     if(!target){clearDropGuide();dragWidgetId='';return;}
     event.preventDefault();
@@ -5072,7 +5268,11 @@
     const after=Math.abs(event.clientX-midpoint)<14 ? settings.order.indexOf(dragWidgetId)<settings.order.indexOf(target.dataset.widget) : event.clientX>midpoint;
     const from=dragWidgetId;dragWidgetId='';clearDropGuide();reorderWidget(from,target.dataset.widget,after);
   });
-  surface.addEventListener('dragend',()=>{dragWidgetId='';clearDropGuide();});
+  surface.addEventListener('dragleave',event=>{
+    const grid=event.target.closest('.neos-home-grid');
+    if(dragWidgetId&&grid&&!grid.contains(event.relatedTarget))grid.querySelector('.neos-widget-drop-cell')?.remove();
+  });
+  surface.addEventListener('dragend',()=>{dragWidgetId='';widgetDragOffset=null;clearDropGuide();});
 
   surface.addEventListener('pointermove', event => {
     if (!motionEnabled() || event.pointerType === 'touch') return;

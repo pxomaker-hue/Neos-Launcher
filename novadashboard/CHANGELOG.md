@@ -1,3 +1,9 @@
+## 0.7.4
+
+- On wide screens, Free layout lets you pin each widget to a row and column of the twelve-column grid. Drag its handle or enter coordinates with the Position button.
+- The drop preview flags blocked placements. Automatically positioned widgets fill available space around pinned widgets.
+- Positions are saved per account and restored when returning to Free layout on a wide screen.
+
 ## 0.7.3
 
 - Hide home widgets from their cards and restore them through the hidden widgets drawer.
