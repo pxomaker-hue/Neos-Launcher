@@ -5,7 +5,7 @@ Pour une instance Nextcloud 35 dans un conteneur LinuxServer.io, utilise le scri
 Depuis le dossier qui contient le ZIP et le script, remplace les valeurs d’exemple par celles de ton instance.
 
 ```powershell
-& .\Deploy-Neos.ps1 -ZipPath .\neos-nextcloud35-v0.7.5.zip `
+& .\Deploy-Neos.ps1 -ZipPath .\neos-nextcloud35-v0.7.6.zip `
     -NasHost 'nas.example.test' -NasUser 'utilisateur' -ContainerName 'nextcloud'
 ```
 

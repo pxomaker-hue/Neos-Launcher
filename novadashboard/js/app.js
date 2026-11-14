@@ -3295,7 +3295,10 @@
   function setHomeNoteStatus(message){
     homeNoteStatus=message;
     const status=surface.querySelector('[data-home-note-status]');
-    if(status)status.textContent=message;
+    if(status){
+      status.textContent=message;
+      scheduleMasonry();
+    }
   }
   function notesWidget(){
     return box('notes', `<textarea id="neos-note" class="neos-note" aria-label="Note rapide" placeholder="Écrire une note rapide…" spellcheck="false">${esc(homeNoteDraft??settings.notes??'')}</textarea><div class="neos-note-tools"><span role="status" data-home-note-status>${esc(homeNoteStatus)}</span><button type="button" data-action="save-note" class="neos-btn">${icon('check',16)} Enregistrer</button></div>`);
@@ -3520,36 +3523,35 @@
       delete card.dataset.gridColumn;
       card.style.gridRowEnd=narrow?'auto':'span 1';
       card.style.minHeight='';
-      card.style.height='';
-      const head=card.querySelector(':scope > .neos-card-head');
+      card.style.height='max-content';
       const body=card.querySelector(':scope > .neos-card-body');
-      const cs=getComputedStyle(card);
-      const marginHead=Number.parseFloat(getComputedStyle(head).marginBottom)||0;
-      const frame=head.offsetHeight+marginHead+Number.parseFloat(cs.paddingTop)+
-        Number.parseFloat(cs.paddingBottom)+Number.parseFloat(cs.borderTopWidth)+Number.parseFloat(cs.borderBottomWidth);
       const chosen=Number(card.dataset.height)||0;
-      const bodyStyle=getComputedStyle(body);
-      const bodyPadding=Number.parseFloat(bodyStyle.paddingTop)+Number.parseFloat(bodyStyle.paddingBottom);
-      const minimum=Math.ceil(frame+bodyPadding+64);
-      const height=chosen?Math.max(chosen,minimum):Math.max(frame+body.scrollHeight,112);
+      const note=body.querySelector('#neos-note');
+      const measure=()=>{
+        if(note&&!CSS.supports('field-sizing','content')){
+          note.style.height='auto';
+          note.style.height=`${note.scrollHeight+note.offsetHeight-note.clientHeight}px`;
+        }
+        return Math.ceil(Number.parseFloat(getComputedStyle(card).height));
+      };
+      card.classList.remove('neos-widget-compact');
+      let natural=measure();
+      if(chosen&&natural>chosen){
+        card.classList.add('neos-widget-compact');
+        natural=measure();
+      }
+      const height=Math.max(chosen,natural,narrow?0:112);
       const rows=Math.max(1,Math.ceil((height+rowGap)/pxPerRow));
       card.style.gridRowEnd=narrow?'auto':`span ${rows}`;
       if(chosen)card.style.height=`${height}px`;
-      else if(!narrow)card.style.minHeight=`${height}px`;
-      const scrollable=Boolean(chosen&&body.scrollHeight>body.clientHeight+1);
-      if(scrollable){
-        body.tabIndex=0;
-        body.setAttribute('role','region');
-        body.setAttribute('aria-label',`Contenu · ${widgetLabels[card.dataset.widget]}`);
-      }else{
-        body.removeAttribute('tabindex');
-        body.removeAttribute('role');
-        body.removeAttribute('aria-label');
+      else {
+        card.style.height='';
+        if(!narrow)card.style.minHeight=`${height}px`;
       }
       const indicator=card.querySelector('.neos-height-indicator');
       if(indicator){
         indicator.textContent=chosen?`${height} px`:'Auto';
-        indicator.title=chosen&&height>chosen?`Hauteur réglée à ${chosen} px. Les commandes nécessitent ${height} px.`:'Hauteur de la carte';
+        indicator.title=chosen&&height>chosen?`Hauteur souhaitée : ${chosen} px. Contenu et commandes : ${height} px nécessaires.`:'Hauteur de la carte';
       }
       const span=visibleWidgetSpan(Number(card.dataset.size),steps);
       const widthIndicator=card.querySelector('.neos-width-indicator');
@@ -3594,7 +3596,7 @@
         ${(activeWorkspace==='files'||activeWorkspace==='home')&&warnings.length?`<div class="neos-warning">${icon('info',16)} ${esc(warnings[0])}</div>`:''}
         ${activeWorkspace==='home'?homeWorkspace(widgets):activeWorkspace==='files'?filesWorkspace():currentModule()}
       </div>
-      <footer class="neos-footer"><span>NEOS 0.7.5</span><span>Nextcloud 35</span></footer>
+      <footer class="neos-footer"><span>NEOS 0.7.6</span><span>Nextcloud 35</span></footer>
     </div></main>`;
     updateClock();
     positionTabSlider(pillFrom);
@@ -5045,10 +5047,10 @@
     if(settings.gridMode!=='manual')return;
     const current=widgetHeight(id);const i=allowedHeights.indexOf(current);
     let next=allowedHeights[i+delta];
-    if(delta>0&&current===0){
+    if(delta>0){
       const card=surface.querySelector(`.neos-home-grid [data-widget="${id}"]`);
-      const naturalHeight=card?.offsetHeight||160;
-      next=fixedHeights.find(height=>height>naturalHeight)??fixedHeights.at(-1);
+      const visibleHeight=card?.offsetHeight||current;
+      next=fixedHeights.find(height=>height>Math.max(current,visibleHeight));
     }
     if(next===undefined)return;
     applyWidgetDimensions(id,widgetSpan(id),next);

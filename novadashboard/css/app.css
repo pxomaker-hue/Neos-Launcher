@@ -737,8 +737,6 @@
 }
 #nova-root .neos-home-grid > .neos-card > .neos-card-head{flex:0 0 auto}
 #nova-root .neos-home-grid > .neos-card > .neos-card-body{flex:1 1 auto;min-height:0;container:neos-widget / inline-size;}
-#nova-root .neos-home-grid > .neos-card:not([data-height="0"]) > .neos-card-body {overflow:auto;scrollbar-width:thin;scroll-padding:6px;}
-#nova-root .neos-home-grid > .neos-card > .neos-card-body:focus-visible {outline:2px solid var(--accent);outline-offset:-2px;}
 #nova-root .neos-home-grid .neos-deck[data-size="3"],
 #nova-root .neos-home-grid .neos-deck[data-size="4"]{min-width:0}
 #nova-root .neos-deck-widget-boards{display:grid;gap:8px}
@@ -1873,8 +1871,36 @@
 #nova-root .neos-home-summary-event small:last-child{display:flex;align-items:center;gap:4px}
 
 #nova-root .neos-home-grid .neos-home-files-list{grid-template-columns:repeat(auto-fit,minmax(min(100%,205px),1fr))}
+#nova-root .neos-home-grid .neos-link-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,155px),1fr))}
+#nova-root .neos-home-grid .neos-hub-icons.is-compact{grid-template-columns:repeat(auto-fill,minmax(min(100%,92px),1fr))}
 #nova-root .neos-home-grid .neos-card-name span,#nova-root .neos-home-grid .neos-home-file-stats span{overflow-wrap:anywhere;}
 #nova-root .neos-home-grid .neos-card-head .neos-card-name svg{flex-shrink:0;}
+#nova-root .neos-home-grid :is(.neos-item-title strong,.neos-item-title small,.neos-home-file strong,.neos-deck-board-row strong,.neos-link-card span){
+  white-space:normal;overflow:visible;overflow-wrap:anywhere;
+}
+#nova-root .neos-home-grid :is(.neos-item-meta,.neos-home-pins button,.neos-app-meta,.neos-volume-heading span,.neos-task-widget-status){
+  min-width:0;white-space:normal;overflow-wrap:anywhere;
+}
+#nova-root .neos-home-grid .neos-home-pins button{text-align:start;max-width:100%}
+#nova-root .neos-home-grid :is(.neos-item,.neos-home-pins button,.neos-deck-board-row,.neos-link-card) svg{flex-shrink:0}
+#nova-root .neos-home-grid .neos-note{display:block;min-height:5em;field-sizing:content;resize:none;}
+#nova-root .neos-home-grid .neos-note-tools{align-items:center;gap:6px 10px;flex-wrap:wrap;overflow-wrap:anywhere}
+#nova-root .neos-home-grid :is(.neos-card-body .neos-btn,.neos-storage-track-hint){white-space:normal;max-width:100%;overflow-wrap:anywhere}
+#nova-root .neos-widget-compact .neos-card-head{margin-block-end:10px}
+#nova-root .neos-widget-compact :is(.neos-item,.neos-deck-board-row,.neos-home-file,.neos-home-summary-metric,.neos-home-summary-event){
+  gap:6px;min-height:0;padding:5px 7px;
+}
+#nova-root .neos-widget-compact :is(.neos-item-icon,.neos-deck-board-symbol,.neos-home-file>span){width:25px;height:25px;flex-basis:25px}
+#nova-root .neos-widget-compact :is(.neos-empty,.neos-widget-state){min-height:0;padding-block:8px}
+#nova-root .neos-widget-compact :is(.neos-deck-widget-footer,.neos-task-widget-footer,.neos-home-files-head){padding-block:6px;margin-block-start:6px}
+#nova-root .neos-widget-compact :is(.neos-holo-clock,.neos-storage-console) {grid-template-columns:minmax(0,1fr) min(30%,80px);min-height:0;}
+#nova-root .neos-widget-compact :is(.neos-clock-dial,.neos-storage-orb) {width:100%;height:auto;aspect-ratio:1;}
+#nova-root .neos-widget-compact .neos-storage-volume{margin-block-start:7px;padding:7px}
+#nova-root .neos-widget-compact .neos-note{min-height:3.5em;padding:7px 9px}
+#nova-root .neos-widget-compact .neos-hub-icons.is-compact{gap:6px}
+#nova-root .neos-widget-compact .neos-hub-icons.is-compact .neos-app{min-height:72px;padding:5px;gap:5px}
+#nova-root .neos-widget-compact .neos-hub-icons.is-compact .neos-app-visual{width:38px;height:38px}
+#nova-root .neos-widget-compact .neos-hub-icons.is-compact .neos-app-visual :is(img,svg){width:34px;height:34px}
 @container neos-widget (max-width: 290px) {
   #nova-root .neos-holo-clock,#nova-root .neos-storage-console {grid-template-columns:minmax(0,1fr) clamp(48px,36cqi,92px);gap:8px;min-height:0;}
   #nova-root .neos-clock-dial,#nova-root .neos-storage-orb {width:100%;height:auto;aspect-ratio:1;}
@@ -1886,6 +1912,8 @@
   #nova-root .neos-home-summary-grid {grid-template-columns:minmax(0,1fr);}
   #nova-root .neos-holo-clock,#nova-root .neos-storage-console {grid-template-columns:minmax(0,1fr);}
   #nova-root .neos-clock-dial,#nova-root .neos-storage-orb {width:min(70px,100%);}
+  #nova-root .neos-home-grid :is(.neos-item,.neos-home-file){flex-wrap:wrap}
+  #nova-root .neos-home-grid :is(.neos-item-meta,.neos-home-file small){flex:1 0 100%;}
 }
 #nova-root [data-home-note-status]{color:var(--muted);font-size:12px}
 

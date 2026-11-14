@@ -1,3 +1,8 @@
+## 0.7.6
+
+- Home widgets compact their content to fit the chosen height and grow if they need more room. Content and controls remain visible without internal scrolling.
+- Long titles wrap and the quick note field grows with its text. Existing size and placement settings are preserved.
+
 ## 0.7.5
 
 - Fixed-height widgets in Free layout scroll internally when needed, with their controls always visible. Compact cards reserve space for their content.

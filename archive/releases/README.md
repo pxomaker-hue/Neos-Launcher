@@ -4,6 +4,7 @@ Versions historiques conservées pour consultation ou restauration. Pour une nou
 
 ## Série v0.7
 
+- [0.7.5](./v0.7/neos-nextcloud35-v0.7.5.zip)
 - [0.7.4](./v0.7/neos-nextcloud35-v0.7.4.zip)
 - [0.7.3](./v0.7/neos-nextcloud35-v0.7.3.zip)
 - [0.7.2](./v0.7/neos-nextcloud35-v0.7.2.zip)

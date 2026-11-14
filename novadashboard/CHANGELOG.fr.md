@@ -1,3 +1,8 @@
+## 0.7.6
+
+- Les widgets de l’accueil se compactent pour tenir dans la hauteur choisie et s’agrandissent si leur contenu a besoin de plus de place. Le contenu et les commandes restent visibles sans défilement interne.
+- Les titres longs reviennent à la ligne et le champ de note rapide grandit avec le texte. Les réglages de taille et de placement existants sont conservés.
+
 ## 0.7.5
 
 - Les hauteurs réglées en mode Libre sont fixes. Si le contenu dépasse, il défile dans le widget et les commandes restent visibles. Les petites cartes conservent un espace minimal pour leur contenu.
