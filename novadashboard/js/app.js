@@ -187,6 +187,8 @@
   const adaptiveSizes = { explorer:8, storage:4, shortcuts:8, clock:4, files:6, calendar:6, tasks:6, summary:4, links:6, notes:6, deck:6 };
   const allowedSizes = Array.from({length:10},(_,index)=>index+3);
   const maxWidgetRow = 500;
+  const widgetRowPitch = 22;
+  const widgetVerticalGap = 14;
   const fixedHeights = Array.from({length:27},(_,index)=>160+index*20);
   const allowedHeights = [0,...fixedHeights];
   const tabletWidgetSizes = [6,12];
@@ -3189,10 +3191,71 @@
     }
     toast('Ce fichier n’est plus disponible dans l’aperçu.','info');
   }
+  const widgetPages = new WeakMap();
+  const widgetPageStart = new Map();
+
+  function widgetList(id,className,items){
+    return `<div class="${className}" id="neos-widget-list-${id}" data-widget-list>${items}</div>
+      <div class="neos-widget-pager" data-widget-pager hidden>
+        <button type="button" class="neos-mini-action" data-action="widget-page" data-step="-1" aria-label="Page précédente · ${esc(widgetLabels[id])}" aria-controls="neos-widget-list-${id}">${icon('back',15)}</button>
+        <span role="status" data-widget-page-count></span>
+        <button type="button" class="neos-mini-action" data-action="widget-page" data-step="1" aria-label="Page suivante · ${esc(widgetLabels[id])}" aria-controls="neos-widget-list-${id}">${icon('forward',15)}</button>
+      </div>`;
+  }
+  function showWidgetPage(pages,index){
+    const {items,pager,pageSize}=pages;
+    const total=Math.ceil(items.length/pageSize);
+    const page=Math.min(total-1,Math.max(0,index));
+    items.forEach((item,i)=>{item.hidden=Math.floor(i/pageSize)!==page;});
+    pager.hidden=total<2;
+    pager.querySelector('[data-widget-page-count]').textContent=`Page ${page+1} / ${total}`;
+    pager.querySelector('[data-step="-1"]').disabled=page===0;
+    pager.querySelector('[data-step="1"]').disabled=page===total-1;
+    pages.index=page;
+  }
+  function measureWidgetPages(card,chosen,measure){
+    const list=card.querySelector('[data-widget-list]');
+    const pages={items:[...list.children],pager:card.querySelector('[data-widget-pager]'),pageSize:list.children.length};
+    const id=card.dataset.widget;
+    const active=document.activeElement;
+    const focused=pages.items.indexOf(active);
+    const start=focused>=0?focused:widgetPageStart.get(id)||0;
+    showWidgetPage(pages,0);
+    let height=measure();
+    if(chosen&&height>chosen){
+      // Check every page so a longer name can't resize the card during navigation.
+      for(let count=pages.items.length-1;count>=1;count--){
+        pages.pageSize=count;
+        height=0;
+        for(let index=0;index<Math.ceil(pages.items.length/count);index++){
+          showWidgetPage(pages,index);
+          height=Math.max(height,measure());
+          if(height>chosen&&count>1)break;
+        }
+        if(height<=chosen)break;
+      }
+    }
+    showWidgetPage(pages,Math.floor(start/pages.pageSize));
+    if(focused>=0&&document.activeElement!==pages.items[focused])pages.items[focused].focus({preventScroll:true});
+    if(pages.pager.contains(active)&&document.activeElement!==active){
+      const control=pages.pager.hidden?pages.items[0]:(active.disabled?pages.pager.querySelector('button:not(:disabled)'):active);
+      control?.focus({preventScroll:true});
+    }
+    widgetPages.set(card,pages);
+    return height;
+  }
+  function changeWidgetPage(button){
+    const card=button.closest('[data-widget]');
+    const pages=widgetPages.get(card);
+    if(!pages)return;
+    showWidgetPage(pages,pages.index+Number(button.dataset.step));
+    widgetPageStart.set(card.dataset.widget,pages.index*pages.pageSize);
+    if(button.disabled)pages.pager.querySelector('button:not(:disabled)')?.focus();
+  }
   function homeExplorerWidget(){
     const recent=(overview?.files||[]).slice(0,5);
     const pins=(settings.pins||[]).slice(0,4);
-    const content=`<div class="neos-home-files-head"><div class="neos-home-file-stats"><strong>${browser.loading||browser.error?'—':number(browser.total)}</strong><span>${browser.loading?'Chargement du dossier…':browser.error?'Dossier indisponible':`éléments dans ${browser.path==='/'?'la racine':esc(browser.path)}`}</span></div><button type="button" class="neos-btn neos-btn-primary" data-action="workspace" data-workspace="files">${icon('arrow',16)} Ouvrir Fichiers</button></div>${pins.length?`<div class="neos-home-pins">${pins.map(path=>`<button type="button" data-action="home-open-folder" data-path="${esc(path)}">${icon('folder',15)} ${esc(path.split('/').pop())}</button>`).join('')}</div>`:''}<div class="neos-home-files-list">${recent.length?recent.map(f=>`<button type="button" class="neos-home-file" ${recentFileAttributes(f)}><span>${icon(String(f.mime||'').startsWith('image/')?'image':'file',17)}</span><strong title="${esc(f.name)}">${esc(f.name)}</strong><small>${humanSize(f.size)}</small>${icon('chevron',14)}</button>`).join(''):'<div class="neos-empty">Aucun fichier récent.</div>'}</div>`;
+    const content=`<div class="neos-home-files-head"><div class="neos-home-file-stats"><strong>${browser.loading||browser.error?'—':number(browser.total)}</strong><span>${browser.loading?'Chargement du dossier…':browser.error?'Dossier indisponible':`éléments dans ${browser.path==='/'?'la racine':esc(browser.path)}`}</span></div><button type="button" class="neos-btn neos-btn-primary" data-action="workspace" data-workspace="files">${icon('arrow',16)} Ouvrir Fichiers</button></div>${pins.length?`<div class="neos-home-pins">${pins.map(path=>`<button type="button" data-action="home-open-folder" data-path="${esc(path)}">${icon('folder',15)} ${esc(path.split('/').pop())}</button>`).join('')}</div>`:''}${recent.length?widgetList('explorer','neos-home-files-list',recent.map(f=>`<button type="button" class="neos-home-file" ${recentFileAttributes(f)}><span>${icon(String(f.mime||'').startsWith('image/')?'image':'file',17)}</span><strong title="${esc(f.name)}">${esc(f.name)}</strong><small>${humanSize(f.size)}</small>${icon('chevron',14)}</button>`).join('')):'<div class="neos-empty">Aucun fichier récent.</div>'}`;
     return box('explorer',content,'Raccourcis');
   }
 
@@ -3217,7 +3280,7 @@
   }
   function recentWidget(){
     const list = overview?.files || [];
-    return box('files', list.length ? `<div class="neos-list">${list.map(f => `<button type="button" class="neos-item" ${recentFileAttributes(f)}><span class="neos-item-icon">${icon(String(f.mime||'').startsWith('image/') ? 'image' : 'file',16)}</span><span class="neos-item-title"><strong>${esc(f.name)}</strong><small>${esc(f.folder)} · ${ago(f.mtime)}</small></span><span class="neos-item-meta">${humanSize(f.size)}</span></button>`).join('')}</div>` : '<div class="neos-empty">Aucun fichier récent.</div>');
+    return box('files', list.length ? widgetList('files','neos-list',list.map(f => `<button type="button" class="neos-item" ${recentFileAttributes(f)}><span class="neos-item-icon">${icon(String(f.mime||'').startsWith('image/') ? 'image' : 'file',16)}</span><span class="neos-item-title"><strong>${esc(f.name)}</strong><small>${esc(f.folder)} · ${ago(f.mtime)}</small></span><span class="neos-item-meta">${humanSize(f.size)}</span></button>`).join('')) : '<div class="neos-empty">Aucun fichier récent.</div>');
   }
   function calendarWidget(){
     const list = overview?.calendar || [];
@@ -3268,7 +3331,7 @@
     }).join('');
     const status=data.error?`<p class="neos-task-widget-status neos-task-widget-error" role="alert">${esc(data.error)}</p>`:data.loading?'<p class="neos-task-widget-status" role="status">Recherche des tâches…</p>':'';
     const notes=data.total>data.items.length?`<p class="neos-task-widget-status">${data.total-data.items.length} autre${data.total-data.items.length>1?'s':''} tâche${data.total-data.items.length>1?'s':''} dans le module Tâches.</p>`:'';
-    const content=entries?`<div class="neos-list">${entries}</div>${status}${notes}`:data.error?status:`<div class="neos-empty">${data.loading?'Chargement des tâches…':'Aucune tâche ouverte.'}</div>`;
+    const content=entries?`${widgetList('tasks','neos-list',entries)}${status}${notes}`:data.error?status:`<div class="neos-empty">${data.loading?'Chargement des tâches…':'Aucune tâche ouverte.'}</div>`;
     return box('tasks',`${content}<div class="neos-task-widget-footer"><button type="button" class="neos-btn" data-action="workspace" data-workspace="tasks">${icon('arrow',16)} Ouvrir Tâches</button></div>`);
   }
   function linksWidget(){
@@ -3478,18 +3541,26 @@
     masonryFrame=requestAnimationFrame(()=>{masonryFrame=0;layoutMasonry();});
   }
 
+  // Keep saved 22 px rows readable and use an offset for pixel-accurate placement.
+  function widgetAnchorRow(position){
+    return 1+(position.row-1)*widgetRowPitch+(position.offset||0);
+  }
+  function widgetAnchor(row,column){
+    return {row:Math.floor((row-1)/widgetRowPitch)+1,column,offset:(row-1)%widgetRowPitch};
+  }
+
   function packWidgetPositions(cards, anchors){
     const occupied=[];
     const pinned=cards.filter(card=>anchors[card.id]);
     const automatic=cards.filter(card=>!anchors[card.id]);
-    pinned.sort((a,b)=>anchors[a.id].row-anchors[b.id].row);
+    pinned.sort((a,b)=>widgetAnchorRow(anchors[a.id])-widgetAnchorRow(anchors[b.id]));
     const fits=(card,row,column)=>occupied.every(other=>
       column+card.width<=other.column||other.column+other.width<=column||
       row+card.height<=other.row||other.row+other.height<=row
     );
     for(const card of pinned){
-      let {row,column}=anchors[card.id];
-      column=Math.min(13-card.width,column);
+      let row=widgetAnchorRow(anchors[card.id]);
+      const column=Math.min(13-card.width,anchors[card.id].column);
       while(!fits(card,row,column))row++;
       occupied.push({...card,row,column});
     }
@@ -3520,12 +3591,18 @@
       card.style.gridColumnEnd='';
       card.style.gridRowStart='';
       delete card.dataset.gridRow;
+      delete card.dataset.gridOffset;
       delete card.dataset.gridColumn;
       card.style.gridRowEnd=narrow?'auto':'span 1';
       card.style.minHeight='';
       card.style.height='max-content';
       const body=card.querySelector(':scope > .neos-card-body');
       const chosen=Number(card.dataset.height)||0;
+      const list=card.querySelector('[data-widget-list]');
+      if(list){
+        for(const item of list.children)item.hidden=false;
+        card.querySelector('[data-widget-pager]').hidden=true;
+      }
       const note=body.querySelector('#neos-note');
       const measure=()=>{
         if(note&&!CSS.supports('field-sizing','content')){
@@ -3540,8 +3617,9 @@
         card.classList.add('neos-widget-compact');
         natural=measure();
       }
+      if(list)natural=measureWidgetPages(card,chosen,measure);
       const height=Math.max(chosen,natural,narrow?0:112);
-      const rows=Math.max(1,Math.ceil((height+rowGap)/pxPerRow));
+      const rows=precise?height+widgetVerticalGap:Math.max(1,Math.ceil((height+rowGap)/pxPerRow));
       card.style.gridRowEnd=narrow?'auto':`span ${rows}`;
       if(chosen)card.style.height=`${height}px`;
       else {
@@ -3566,8 +3644,11 @@
     const positions=packWidgetPositions(dimensions,settings.positions||{});
     for(const position of positions){
       const card=grid.querySelector(`[data-widget="${position.id}"]`);
-      card.dataset.gridRow=position.row;
+      const anchor=widgetAnchor(position.row,position.column);
+      card.dataset.gridRow=anchor.row;
+      card.dataset.gridOffset=anchor.offset;
       card.dataset.gridColumn=position.column;
+      card.style.height=`${position.height-widgetVerticalGap}px`;
       card.style.gridRowStart=position.row;
       card.style.gridColumnStart=position.column;
       card.style.gridColumnEnd=`span ${position.width}`;
@@ -3596,7 +3677,7 @@
         ${(activeWorkspace==='files'||activeWorkspace==='home')&&warnings.length?`<div class="neos-warning">${icon('info',16)} ${esc(warnings[0])}</div>`:''}
         ${activeWorkspace==='home'?homeWorkspace(widgets):activeWorkspace==='files'?filesWorkspace():currentModule()}
       </div>
-      <footer class="neos-footer"><span>NEOS 0.7.6</span><span>Nextcloud 35</span></footer>
+      <footer class="neos-footer"><span>NEOS 0.7.7</span><span>Nextcloud 35</span></footer>
     </div></main>`;
     updateClock();
     positionTabSlider(pillFrom);
@@ -4086,6 +4167,7 @@
     Object.entries(settings.positions || {}).forEach(([id,position]) => {
       form.append(`settings[positions][${id}][row]`, String(position.row));
       form.append(`settings[positions][${id}][column]`, String(position.column));
+      form.append(`settings[positions][${id}][offset]`, String(position.offset||0));
     });
     (settings.links || []).forEach((l,i) => { form.append(`settings[links][${i}][title]`, l.title); form.append(`settings[links][${i}][url]`, l.url); });
     (settings.pins || []).forEach((p,i) => form.append(`settings[pins][${i}]`, p));
@@ -4447,6 +4529,7 @@
     else if(action==='global-search'){openGlobalSearch(target.dataset.tab||'search');}
     else if(action==='toggle-favorite'){const entry=browser.items.find(x=>x.path===target.dataset.path);if(entry)void toggleFavorite(entry);}
     else if(action==='home-open-folder'){const path=target.dataset.path||'/';void chooseWorkspace('files').then(()=>browse(path));}
+    else if(action==='widget-page'){changeWidgetPage(target);}
     else if(action==='home-open-recent'){void openHomeRecent({...target.dataset});}
     else if(action==='focus-search'){void chooseWorkspace('files').then(()=>surface.querySelector('[data-browser-search]')?.focus());}
     else if(action==='finish-arrange'){editing=false;hiddenWidgetsOpen=false;layoutAnnounce='';render();surface.querySelector('.neos-top-actions [data-action="customize"]')?.focus({preventScroll:true});}
@@ -4830,7 +4913,7 @@
     const form=event.target.closest('[data-widget-position-form]');
     if(!form||popMode!=='widget-position')return;
     event.preventDefault();
-    const position={row:form.elements.row.valueAsNumber,column:form.elements.column.valueAsNumber};
+    const position={row:form.elements.row.valueAsNumber,column:form.elements.column.valueAsNumber,offset:form.elements.offset.valueAsNumber};
     if(setWidgetPosition(form.dataset.widgetPositionForm,position))hidePop();
     else form.querySelector('[data-widget-position-error]').textContent='Emplacement indisponible. Choisis une case libre ou déplace le widget déjà fixé.';
   });
@@ -4842,6 +4925,15 @@
     if(action==='workspace') { const id=actionEl.dataset.workspace; hidePop(); void chooseWorkspace(id); return; }
     if(action==='cal-edit'){const event=groupware.events.find(item=>calendarEventKey(item)===actionEl.dataset.href);if(editableCalendarEvent(event))groupwareEditor('event',event,null,actionEl.dataset.scope||'series');return;}
     if(action==='widget-position-auto'){if(setWidgetPosition(actionEl.dataset.id,null))hidePop();return;}
+    if(action==='widget-position-compact'){
+      const card=surface.querySelector(`.neos-home-grid [data-widget="${actionEl.dataset.id}"]`);
+      if(!card)return;
+      const current={row:Number(card.dataset.gridRow),column:Number(card.dataset.gridColumn),offset:Number(card.dataset.gridOffset)};
+      const position=nearestWidgetPosition(card.parentElement,card.dataset.widget,current);
+      if(setWidgetPosition(card.dataset.widget,position))hidePop();
+      else actionEl.form.querySelector('[data-widget-position-error]').textContent='Aucune place libre au-dessus dans cette colonne.';
+      return;
+    }
     if(action==='gw-save'){void saveGroupware();return;}
     if(action==='deck-card-close'){hidePop();return;}
     if(action==='deck-card-save'){void saveDeckCard();return;}
@@ -4930,10 +5022,25 @@
     anchors[id]=position;
     return packWidgetPositions(cards.filter(card=>anchors[card.id]),anchors)
       .every(placed=>{
-        if(placed.id===id)return placed.row===position.row&&placed.column===position.column;
+        if(placed.id===id)return placed.row===widgetAnchorRow(position)&&placed.column===position.column;
         const previous=baseline.get(placed.id);
         return placed.row===previous.row&&placed.column===previous.column;
       });
+  }
+  function nearestWidgetPosition(grid,id,position){
+    const card=grid.querySelector(`[data-widget="${id}"]`);
+    const width=Number(card.dataset.size);
+    const row=widgetAnchorRow(position);
+    let nearest=1;
+    for(const other of grid.querySelectorAll(':scope > [data-grid-row]')){
+      if(other===card)continue;
+      const column=Number(other.dataset.gridColumn);
+      const bottom=Number(other.style.gridRowStart)+widgetGeometry(other).height;
+      if(column<position.column+width&&column+Number(other.dataset.size)>position.column&&bottom<=row){
+        nearest=Math.max(nearest,bottom);
+      }
+    }
+    return widgetAnchor(nearest,position.column);
   }
   function setWidgetPosition(id,position){
     if(!editing||activeWorkspace!=='home'||!widgetPlacementEnabled()||!widgetIds.includes(id))return false;
@@ -4941,6 +5048,7 @@
     const card=grid?.querySelector(`[data-widget="${id}"]`);
     if(!card)return false;
     if(position&&(!Number.isInteger(position.row)||position.row<1||position.row>maxWidgetRow||
+      !Number.isInteger(position.offset)||position.offset<0||position.offset>=widgetRowPitch||
       !Number.isInteger(position.column)||position.column<1||position.column>13-widgetSpan(id)||
       !canPlaceWidget(grid,id,position)))return false;
     const positions={...settings.positions};
@@ -4967,14 +5075,16 @@
           <header><strong id="neos-widget-position-title">Position · ${esc(widgetLabels[id])}</strong>
             <button type="button" class="neos-iconbtn" data-action="close-pop" aria-label="Fermer">${icon('close',18)}</button></header>
           <div class="neos-gw-form">
-            <p>Les widgets en placement automatique s’organisent autour des widgets fixés.</p>
+            <p>Un widget fixé garde sa position. Utilise « Remonter » pour le rapprocher du widget au-dessus dans la même colonne.</p>
             <div class="neos-gw-form-grid">
               <label>Ligne<input data-widget-position-row name="row" type="number" min="1" max="${maxWidgetRow}" required value="${Math.min(maxWidgetRow,Number(card.dataset.gridRow))}"></label>
               <label>Colonne<input name="column" type="number" min="1" max="${13-widgetSpan(id)}" required value="${card.dataset.gridColumn}"></label>
+              <label>Décalage vertical (px)<input name="offset" type="number" min="0" max="${widgetRowPitch-1}" required value="${card.dataset.gridOffset}"></label>
             </div>
             <p class="neos-gw-status" data-widget-position-error role="alert"></p>
           </div>
           <footer>
+            <button type="button" class="neos-btn" data-action="widget-position-compact" data-id="${id}">Remonter</button>
             <button type="button" class="neos-btn" data-action="widget-position-auto" data-id="${id}" ${settings.positions?.[id]?'':'disabled'}>Placement automatique</button>
             <button type="submit" class="neos-btn neos-btn-primary">Fixer ici</button>
           </footer>
@@ -5047,10 +5157,12 @@
     if(settings.gridMode!=='manual')return;
     const current=widgetHeight(id);const i=allowedHeights.indexOf(current);
     let next=allowedHeights[i+delta];
-    if(delta>0){
+    if(delta>0||current===0){
       const card=surface.querySelector(`.neos-home-grid [data-widget="${id}"]`);
       const visibleHeight=card?.offsetHeight||current;
-      next=fixedHeights.find(height=>height>Math.max(current,visibleHeight));
+      next=delta>0
+        ? fixedHeights.find(height=>height>Math.max(current,visibleHeight))
+        : fixedHeights.findLast(height=>height<visibleHeight);
     }
     if(next===undefined)return;
     applyWidgetDimensions(id,widgetSpan(id),next);
@@ -5133,16 +5245,15 @@
     const {width,height}=widgetGeometry(card);
     const x=event.clientX-bounds.left-grid.clientLeft-paddingLeft-widgetDragOffset.x;
     const y=event.clientY-bounds.top-grid.clientTop-paddingTop-widgetDragOffset.y;
-    const position={
-      column:Math.max(1,Math.min(13-width,Math.round(x/columnPitch)+1)),
-      row:Math.max(1,Math.min(maxWidgetRow,Math.round(y/rowPitch)+1))
-    };
+    const column=Math.max(1,Math.min(13-width,Math.round(x/columnPitch)+1));
+    const row=Math.max(1,Math.min(maxWidgetRow*widgetRowPitch,Math.round(y/rowPitch)+1));
+    const position=widgetAnchor(row,column);
     return {
       position,
       left:paddingLeft+(position.column-1)*columnPitch,
-      top:paddingTop+(position.row-1)*rowPitch,
+      top:paddingTop+(row-1)*rowPitch,
       width:width*columnPitch-columnGap,
-      height:height*rowPitch-rowGap
+      height:height*rowPitch-widgetVerticalGap
     };
   }
   function showWidgetDropGuide(grid,target){

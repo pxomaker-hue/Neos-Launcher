@@ -1,3 +1,8 @@
+## 0.7.7
+
+- Free layout uses pixel-accurate vertical placement. The Move up action in the Position dialog closes gaps between widgets in the same column.
+- Files, Recent Files and Tasks split their previews into pages when space is limited, with a stable height across pages.
+
 ## 0.7.6
 
 - Home widgets compact their content to fit the chosen height and grow if they need more room. Content and controls remain visible without internal scrolling.

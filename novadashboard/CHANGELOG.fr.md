@@ -1,3 +1,8 @@
+## 0.7.7
+
+- En mode Libre, les widgets empilés se placent au pixel près. L’action Position → Remonter rapproche un widget de celui situé au-dessus dans la même colonne, tout en permettant de conserver les espacements choisis.
+- Fichiers, Récents et Tâches répartissent leur aperçu sur plusieurs pages lorsque la hauteur choisie est insuffisante. La hauteur reste stable entre les pages.
+
 ## 0.7.6
 
 - Les widgets de l’accueil se compactent pour tenir dans la hauteur choisie et s’agrandissent si leur contenu a besoin de plus de place. Le contenu et les commandes restent visibles sans défilement interne.

@@ -737,6 +737,12 @@
 }
 #nova-root .neos-home-grid > .neos-card > .neos-card-head{flex:0 0 auto}
 #nova-root .neos-home-grid > .neos-card > .neos-card-body{flex:1 1 auto;min-height:0;container:neos-widget / inline-size;}
+@media (min-width:1121px){
+  #nova-root .neos-home-grid[data-grid-mode="manual"]{grid-auto-rows:1px;row-gap:0;}
+}
+#nova-root .neos-home-grid :is([data-widget-list] > *,[data-widget-pager])[hidden]{display:none;}
+#nova-root .neos-widget-pager{display:flex;align-items:center;justify-content:center;gap:8px;margin-block-start:8px;}
+#nova-root .neos-widget-pager [data-widget-page-count]{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;}
 #nova-root .neos-home-grid .neos-deck[data-size="3"],
 #nova-root .neos-home-grid .neos-deck[data-size="4"]{min-width:0}
 #nova-root .neos-deck-widget-boards{display:grid;gap:8px}

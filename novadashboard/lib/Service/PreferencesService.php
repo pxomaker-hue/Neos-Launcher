@@ -111,6 +111,13 @@ final class PreferencesService {
             $column = filter_var($column, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 12]]);
             if ($row !== false && $column !== false) {
                 $positions[$widget] = ['row' => $row, 'column' => $column];
+                $offset = $position['offset'] ?? 0;
+                if (is_int($offset) || is_string($offset)) {
+                    $offset = filter_var($offset, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 21]]);
+                    if ($offset !== false) {
+                        $positions[$widget]['offset'] = $offset;
+                    }
+                }
             }
         }
 
